@@ -1,0 +1,18 @@
+<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
+**The SNES Cartridge Part 5**
+				Anders Lindqvist - 2015-08-31 - [index](index.html)
+tags: electronics, fpga, snes, 
+
+So my snes projects hit a snag. Well the snag was always there, I just didn't realize it.
+My first attempt was to interface with the SNES using a raspberry PI because... why not? It was my first computer with GPIO. Well as it turns out the GPIO interface was too slow. The amount of GPIO pins was too low and using an external multiplexer/shift register would have made it even slower.
+
+Had I gotten further I think I'd find out that the memory was also too slow. Turns out that modern memories are not that great at fetching single bytes randomly. If I had made an emulator it would be ok if some emulated cycles were slower than other, but when interfacing with real hardware a cycle is a cycle. The Raspberry 2 has twice the speed of the GPIO and with fully cached ROM and running outside of linux I might have been able to pull something off. But it did not feel low-level enough. Or low-level in the right way. I got into this to learn more about electronics, fiddling with linux and making my own OS did not feel like the right way to go.
+
+So what is the fun approach? Some people (like [bazz](http://www.cs.umb.edu/~bazz/snes/cart_flasher/)) have made flash carts where they've pre-programmed a FlashROM or an EEPROM with a game and then let it run with that ROM inside the cartridge. That way the memory can deal with the tricky cycle exact timing. There is a standard for how these memories work and they come in large capacities. It is very neat, but it felt like cheating somehow based on what I wanted to do. I like the approach though and might try to make one later, especially if I make my own PCB. 
+
+I've found 512kb SRAM in DIP-32-form factor (DIP=breadboard). It has 55ns access time, more than good enough for SNES ROMs. Using it would be quite a bit like FlashROM/EEPROM, except that it forgets everything once it looses power. That introduces challenges that I will talk about if I ever get around to using it! I felt that this approach would require me to do too much wiring, but then I found [this page](http://forum.6502.org/viewtopic.php?f=4&t=3329) and now I think I should just do it and program it using my raspberry just to get closure. Oh well.
+
+I also got a [FPGA](http://papilio.cc/index.php?n=Papilio.PapilioDUOHardwareGuide) with 2MB SRAM. That is the train I'm gonna ride for a while. I've made it past the first level of "hello world"-programs. Next time I will show what I've managed to do. Teaser; I've got the ROM read from SD-CARD uploaded in SRAM!
+
+Another thing I might have to do is to expose more snes cartridge pins. The cartridge I worked with did not have RESET, CLOCK etc exposed to the cartridge (it was not needed). I've been opening up a lot of different cartridges and I think that F-ZERO might be a worth donor. I might also try to wing it with my current cartridge. Let's see how that turns out!
+<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

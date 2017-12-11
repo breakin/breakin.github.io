@@ -1,0 +1,46 @@
+<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
+**Multi Meter Madness**
+				Anders Lindqvist - 2015-01-17 - [index](index.html)
+tags: electronics, 
+
+
+So to get a grasp of the multimeter I started measuring things. I like to be perplexed first and then find the answer on the internet rather than only following tutorials "blindly". Anyway the multimeter has two cables, one red and one black.
+
+ First I had some resistors from my beginners-kit that I tried to measure but it didn't tell me anything. I only got the number 1 out, probably meaning 100% resistance. Or 0%. I'll come back to this one! The resistor was color coded brown-black-yellow and according to wikipedia it should be 100kOhm. See [color codes](http://en.wikipedia.org/wiki/Electronic_color_code#Resistor_color-coding).
+
+To make things easier for my confused brain I instead tested two AA batteries; one that was GOOD and one that was WEAK according to my battery tester. Batteries produce direct current (DC). I started with the higest setting and was happy that reversing the position of the red and the black cable would flip the sign of the number. Since I was measuring voltage this was not surprising, but that is ok. I don't always like being suprised. I'm not sure if this is ok, I've seen indication that you should always connect the red cable to the positive side of the battery (the "nipple") and the black cable to the negative side of the battery (the flat side).
+
+ I then dialed down until I got some precision. The full one showed 1253 and the empty one showed 880 when measuring DC at range setting 2000mV. There were four confusing points in interpreting the results:
+
+ * I had put the multimeter at 2000mV, but that was not the unit of the measurement but rather the maximum value it could read. They call it range. The unit was so that 2000mV would fit in the four numbers displayed (or rather 1999, the first number is a [half-number](http://en.wikipedia.org/wiki/Multimeter#Digital)). Thus 1253 would become 1.253V and 8800 would become 0.88V.
+ * Although the good battery indicated 1.2V, AA batteries are supposed to be 1.5V. The answer was that it was rechargeable and those batteries are supposed to be 1.2V (1.25V for lipo batteries whatever that is). Retesting with a "proper" battery I got the reading 1.610V which at least is closer to 1.5V. This explains why the thing I had hooked up three batteries to worked so poorly; two batteries were rechargeable and one was dead (perhaps the one doing most of the work?).
+ * Many tutorials on the internet indicated that the only way of measuring batteries was under load, hence my way of doing it was wrong. Others didn't really care and just [did it anyway](http://www.instructables.com/id/How-to-check-AAAAA-alkaline-battery-voltage-using/)!
+ * I was measuring V, but did I really want to measure ampere? Or are they connected somehow?
+
+ I remember toys from my childhood becoming slow and boring when batteries were drained, as well as nose hair trimmers from my current life. Interesting challenge to design devices that should handle say 1.6V to 1.0V before they stop working.
+
+ Back to the resistance measuring. I found a tutorial. If the multimeter shows 0 I need to lower the mode (lower max resitance). If it reads 1 I need to increase it. Let us see if I can get any numbers out it now! Well look at that. Perhaps it needed to warm up first. Or.. hm... turns out I tried with another resistor that had a lower number. But it is working now! The 100kOhm resistor shows around 99k (I had three, they have a different number). The tolerance is 5% which for 100k is 5k so this seems fine. The other resistor was yellow-purple-black which is 47ohm which is also what I got from the multimeter. The reason I got reading from the 47ohm resistor is because it was so much weaker. The other one had such a high number I only got 1. Puh. The table from the color-coding site was awesome, I should print it once I have a color printer!
+
+(##) More On Batteries
+
+ From comment on the previously mentioned [article](http://www.instructables.com/id/How-to-check-AAAAA-alkaline-battery-voltage-using/) written by [askjerry](http://www.instructables.com/member/askjerry/):
+
+ "Testing a battery with a multimeter will only tell you what the voltage of an UNLOADED cell is. In other words... you could have two batteries that read with an identical reading of voltage... but when you connect them to a load... let's say a motor... one will spin niely and the other will fail... run slow or stall. 
+
+Why? Because the CAPACITY of the failed battery has diminished. Let's take the example of a AA battery... if it has a 2000mAh capacity, that means that it can support a load of 2000 mA for 1 hour... or 1000 mA for 2 hours. This means that if you were running a toy that drew about 200 mA... it would run for 2000mAh/200mA or 10 hours. 
+
+So how do you check the battery? Under a load. Let's use the example above... we don't want to draw 2000mA on the battery... that's a huge load all at once. But instead... let's draw 1/10 of it's capacity... 200mA. We can take the voltage 1.5 volts / 0.2 amps (200mA = 0.2A) and get 7.5 ohms. So if we find an 8 ohm resistor and put it across the battery... it should still be close to 1.5v... but if it drops way down... to less than a volt for example... then it is likely discharged or going bad."
+
+I've copied it verbatim just because I felt that it might go away at any point, all credit to @askjerry.
+
+It seems that once the juice is out the battery start dropping in voltage, but they should be constructed so that they maintain their intended voltage for as long as possible (because that is what devices work well with). You need to have some load because otherwise you don't know if the battery is about to run out.
+
+Some [sources](http://www.reuk.co.uk/Measuring-the-Capacity-of-a-Battery.htm) try to measure the capacity of a battery, that seems harder. 
+
+(##) Future challenges and questions:
+* Learn more about batteries. Is it dangerous to test them the "wrong way"? If so, does that hold for both DCV and DCA testing?
+
+(##) Notes:
+* The multimeter has an error of the measurement so writing out all decimal numbers might not actually be good.
+* Is it correct to say that a resistor is weaker or stronger? What do you call a person who is opposed to change? Conservative? So perhaps it should more/less conservative, or perhaps less/more liberal instead. What is the proper lingo here? Important question, don't want to look like a fool amongst the cool electro dudes
+<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
