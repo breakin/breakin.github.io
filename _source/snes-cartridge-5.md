@@ -1,8 +1,10 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**The SNES Cartridge Part 5**
-				Anders Lindqvist - 2015-08-31 - [index](index.html)
-tags: electronics, fpga, snes, 
-
+---
+layout: post
+date: 2015-08-31
+title: The SNES Cartridge Part 5
+tags: electronics, fpga, snes
+theme: electronics
+---
 So my snes projects hit a snag. Well the snag was always there, I just didn't realize it.
 My first attempt was to interface with the SNES using a raspberry PI because... why not? It was my first computer with GPIO. Well as it turns out the GPIO interface was too slow. The amount of GPIO pins was too low and using an external multiplexer/shift register would have made it even slower.
 
@@ -15,4 +17,3 @@ I've found 512kb SRAM in DIP-32-form factor (DIP=breadboard). It has 55ns access
 I also got a [FPGA](http://papilio.cc/index.php?n=Papilio.PapilioDUOHardwareGuide) with 2MB SRAM. That is the train I'm gonna ride for a while. I've made it past the first level of "hello world"-programs. Next time I will show what I've managed to do. Teaser; I've got the ROM read from SD-CARD uploaded in SRAM!
 
 Another thing I might have to do is to expose more snes cartridge pins. The cartridge I worked with did not have RESET, CLOCK etc exposed to the cartridge (it was not needed). I've been opening up a lot of different cartridges and I think that F-ZERO might be a worth donor. I might also try to wing it with my current cartridge. Let's see how that turns out!
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

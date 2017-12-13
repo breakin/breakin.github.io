@@ -1,8 +1,10 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**The SNES Cartridge Part 2**
-				Anders Lindqvist - 2015-01-28 - [index](index.html)
-tags: electronics, raspberry, snes, 
-
+---
+layout: post
+date: 2015-01-28
+title: The SNES Cartridge Part 2
+tags: snes, electronics, raspberry
+theme: electronics
+---
 
 Just wanted to give an update.
 
@@ -43,4 +45,3 @@ Of the 46 snes pins I can disregard:
 So if I'm lucky I only need 34 pins which is larger than 30. But for now I can try to extract first 64kb or something and then move on from there. If I later want to emulate a cartridge and play it back in the SNES I must be 5V and work with all the 46 pins so I need to figure out how to do that with the Raspberry (or with something else!).
 
 Stay tuned!
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

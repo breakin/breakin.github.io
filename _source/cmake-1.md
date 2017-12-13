@@ -1,13 +1,16 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**CMake**
-				Anders Lindqvist - 2017-12-05 - [index](index.html)
-tags: build, cmake, 
-
+---
+layout: post
+date: 2017-12-05
+title: CMake
+tags: build, cmake
+theme: programming
+landing: review, draft
+---
 Disclaimer; This is WIP-version so not quite finished yet!
 
 Today I want to talk about using [cmake](https://cmake.org/) with Visual Studio on Windows. I use cmake to generate build files for Visual Studio (on Windows) and it helps me build on other platforms as well. I used to have my own project generator but cmake has improved a lot and some of the problems with cmake has gone away (one being that I no longer care about 32-bit compilation). I especially like the new target inheritance mechanisms described in this [blog post](https://schneide.wordpress.com/2016/04/08/modern-cmake-with-target_link_libraries/). The cmake macro language itself is never fun to use but I don't mind it as much anymore. When using cmake with my own code I am mostly happy. But then comes.. external dependencies!
 
-(##) External Dependencies
+# External Dependencies
 
 I recently added scripting support to snestistics (an application I am developing on my spare time). I choose the scripting language [squirrel](https://github.com/albertodemichelis/squirrel). That meant I had my first external dependency. Up to this point I had written all code myself, only depending on the C/C++ standard library.
 
@@ -21,7 +24,7 @@ Because of this I like that all dependencies are compiled _with_ my application.
 
 For larger projects that take a long time to compile I realize that prebuilding some libraries and keeping them out of the Visual Studio solution is much faster.
 
-(##) Squirrel
+# Squirrel
 
 Ok so how do we do this in cmake? Cmake requires a file CMakeLists.txt in each directory. From a CMakeLists.txt you can include another directory using add_subdirectory. Cmake is invoked on the root directory (where the root CMakeLists.txt lives) and then it generates Visual Studio projects (or makefiles) into another directory.
 
@@ -87,15 +90,15 @@ set(SQ_DISABLE_INSTALLER)
 ~~~~~~~~~~
 I also move the remaining projects into folders in Visual Studio so I don't have to see them all the time. For sq_static I didn't manage to remove it, but I managed to remove everything being built using EXCLUDE_FROM_ALL and EXCLUDE_FROM_DEFAULT_BUILD. The varialbes DISABLE_DYNAMIC and SQ_DISABLE_INSTALLER are squirrel specific and I had to look at the squirrel cmake file to know that they existed.
 
-(##) Another library
+# Another library
 
 I tried the same thing with ZLIB. It sortof worked but I got a lot of extra libraries, including example projects. I could use EXCLUDE_FROM_ALL/EXCLUDE_FROM_DEFAULT_BUILD to disable building but I would really liked a varialbe to turn them off before adding the directory.
 
-(##) Further complications
+# Further complications
 
 When I include a library that has no dependencies I have full control. Once it decides to include yet another library it does it on its terms. I would like to know more if it is possible to override this behaviour. I think it is using find_package but I am not sure. The install-nature of cmake suggests that you are not supposed to have that depth of cmake dependencies.
 
-(##) Some sort of solution
+# Some sort of solution
 
 It would be nice if projects could operate in two modes. One is when they are root. Generate everything, install stuff. The second when being used as a library. Don't build tests/examples (unless when asked for).
 
@@ -112,7 +115,6 @@ if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 endif()
 ~~~~~~~~~~~~~~~
 
-(##) Final Thoughts
+# Final Thoughts
 
-This is all for today. Before I leave I want to state that while this makes sense under Windows and Visual Studio it might not make sense on linux/osx. If so I will do special casing in my cmake source to treat external dependencies differently. Next time I will look at find_package to see if it can do what I want after all. After all cmake is quite complex and has been around a long time; perhaps someone has already thought of this
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+This is all for today. Before I leave I want to state that while this makes sense under Windows and Visual Studio it might not make sense on linux/osx. If so I will do special casing in my cmake source to treat external dependencies differently. Next time I will look at find_package to see if it can do what I want after all. After all cmake is quite complex and has been around a long time; perhaps someone has already thought of this?

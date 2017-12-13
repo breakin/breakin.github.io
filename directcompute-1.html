@@ -1,0 +1,69 @@
+<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
+**DirectCompute**
+				Anders Lindqvist - 2017-09-24 - [index](index.html)
+tags: compute, directcompute, dx11, dx12, gpu, 
+
+So for work I've recently dived back into working with DirectCompute. I have a fairly complicated program that I'm moving from pixel shaders into DirectCompute. This is my post where I keep what I found helpful in this ongoing effort.
+
+(##) Learning materials
+
+(###) DirectCompute - Optimizations and Best Practices
+
+This document is quite old (2010) and a lot of tips are (maybe) nvidia centric. That being said it has a very good explanation of parallal reduction that neatly shows many of the concepts in DirectCompute. On page 26 it answered my question of global synchronication; there is none! If the user want to synchronize reads from different thread groups she must make a new dispatch (but see "Persistent Threads" later).
+
+* [DirectCompute Optimizations and Best Practices](http://on-demand.gputechconf.com/gtc/2010/presentations/S12312-DirectCompute-Pre-Conference-Tutorial.pdf).
+
+(###) DirectCompute PROGRAMMING GUIDE
+
+This one is also from 2010 and nvidia centric.
+
+* [Programming Guide](http://developer.download.nvidia.com/compute/DevZone/docs/html/DirectCompute/doc/DirectCompute_Programming_Guide.pdf)
+
+(###) Persistent threads
+
+I've known about persistent threads for a while - since reading [a paper](https://users.aalto.fi/~ailat1/publications/aila2009hpg_paper.pdf) on GPU-raytracing that used/tried them. Since my testing framework currently doesn't support indirect dispatch I dispatch way too many work groups (related to maximum number of possible threads groups instead of actually needed thread groups). If I did add indirect dispatch I would still have more work groups than could run at once (with run I mean be active, some could be waiting for memory reads) so persistent threads might still make sense.
+
+Language is focused around Cuda and OpenCL and some of the solutions/problems they speak of might not exist in DirectCompute.
+
+* [Project homepage](http://www.idav.ucdavis.edu/publications/print_pub?pub_id=1089)
+* [Paper](http://www.idav.ucdavis.edu/func/return_pdf?pub_id=1089)
+* [Slides](http://on-demand.gputechconf.com/gtc/2012/presentations/S0157-Persistent-Threads-Style-Programming-Model-for-GPU-Computing.pdf)
+
+Other google hits:
+* https://devtalk.nvidia.com/default/topic/941253/performance-of-persistent-thread-approach-on-new-gpu-architectures-/?offset=1
+* https://stackoverflow.com/questions/14821029/persistent-threads-in-opencl-and-cuda
+
+(###) TODO:
+
+* https://frostbite-wp-prd.s3.amazonaws.com/wp-content/uploads/2016/03/29204330/GDC_2016_Compute.pdf
+	* Has a lot of good references!
+
+(###) Optimizing GPU occupancy and resource usage with large thread groups
+
+This was a very good writeup about occupancy. The example deals with an example of large thread groups (1024 threads per group) but since it talks about when do use such big groups and when not to to is quite useful for other scenarios. The article is very GCN (AMD) centric and I am not sure if this is because it was published on gpuopen or if it is because the details of the GCN architecture is more known.
+
+https://gpuopen.com/optimizing-gpu-occupancy-resource-usage-large-thread-groups/
+
+Small takeway:
+* Read uniforms from raw buffers or structured buffers, not typed buffers!
+* Use as few VGPR at the same time as possible, no more than 32 is good!
+* I wished it would go into what tools were used to measure occupancy and VGPR usage, but I'll probably find my own favorites before long.
+
+(##) Tools
+
+(###) Radeon GPU Profiler
+
+I have not been able to test this one yet since my program is currently DX11. I am working on making it work in both DX11 and DX12 so I can test it.
+
+https://gpuopen.com/radeon-gpu-profiler-1-0-2/
+
+(###) Radeon GPU Analyzer (RGA)
+
+I have not tested this one yet but seems very promising.
+Interestingly enough it does not support DX12 afaict.
+
+* [Project](https://github.com/GPUOpen-Tools/RGA)
+* [Download](https://github.com/GPUOpen-Tools/RGA/releases)
+* [Tutorial: Live VGPR Analysis with RGA](https://gpuopen.com/live-vgpr-analysis-radeon-gpu-analyzer/)
+
+<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

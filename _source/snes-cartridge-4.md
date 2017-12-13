@@ -1,8 +1,10 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**The SNES Cartridge Part 4**
-				Anders Lindqvist - 2015-02-21 - [index](index.html)
-tags: electronics, raspberry, snes, 
-
+---
+layout: post
+date: 2015-02-21
+title: The SNES Cartridge Part 4
+tags: snes, electronics, raspberry
+theme: electronics
+---
 
 So first a really really long recap. I made the ugliest cable ever:
 
@@ -34,4 +36,3 @@ NOTE: Without a Super Scope I still can't play it, but still... Happy!
 I only got 20-bits data out from the cartridge (1 MB) since I ran out of space on the breadboard. I'm going to clean up the breadboard and make a proper project page for it so that anyone who is stupid enough to solder that cable can make one for themselves!
 
 As a side note. I found an solution partially by reading online. If I had not found that page I would probably have started figuring out which pins on the snes cartridge mapped to what pins on the mask rom. I would then have tried to find information on mask roms to see how to tickle them to get the data out!
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

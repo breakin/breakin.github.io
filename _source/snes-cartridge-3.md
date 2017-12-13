@@ -1,8 +1,10 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**The SNES Cartridge Part 3**
-				Anders Lindqvist - 2015-02-13 - [index](index.html)
-tags: electronics, snes, 
-
+---
+layout: post
+date: 2015-02-13
+title: The SNES Cartridge Part 3
+tags: snes, electronics
+theme: electronics
+---
 
 The frankenchord is finished. Should be able to insert SNES-cartridge in one end (the black socket) and connect the cables on the other end to a breadboard. Quite happy that I've finished it. Or well.. finished and finished... Cables keep falling up and I have to re-solder them, but apart from that is is perfectish!
 
@@ -21,4 +23,3 @@ Here is a close up of the soldering:
 Time to rest.
 
 *edit: While sexy and functional it was quite hard to work with this cable due to the stiff wires. I've made a new cable now that will be described on the project page for the finished extractor.*
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

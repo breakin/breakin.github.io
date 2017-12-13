@@ -1,10 +1,12 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**The SNES Cartridge Part 1**
-				Anders Lindqvist - 2015-01-21 - [index](index.html)
-tags: electronics, raspberry, snes, 
+---
+layout: post
+date: 2015-01-21
+title: The SNES Cartridge Part 1
+tags: snes, electronics, raspberry
+theme: electronics
+---
 
-
-First I want to say this. The Super Scope 6 cartridge I [bought](/out-shopping-electro-noob-style.html) didn't work. I went back to the store where the person who sold me the game hooked it up on a TV and agreed that it didn't work. He then proceeded to blowing into the game cartridge after which it did work. So that was fun. I've ordered more cheap cartridges as well as the game bit tools needed to open the cartridges/console.
+First I want to say this. The Super Scope 6 cartridge I [bought](/out-shopping-electro-noob-style) didn't work. I went back to the store where the person who sold me the game hooked it up on a TV and agreed that it didn't work. He then proceeded to blowing into the game cartridge after which it did work. So that was fun. I've ordered more cheap cartridges as well as the game bit tools needed to open the cartridges/console.
 
 My first project regarding the SNES it to make a ROM extractor. When I write "my project" or "I will need to" that is what I'm referring to! In this blog post I will not think at all about extension chips but rather focus on the "interface" between the SNES and the cartridge for non-extended games. I'm primarily interested in the PAL-version for now (in case they differ).
 
@@ -54,7 +56,7 @@ I've talked to ikari_01 on ircnet #snesdev and he told me the following:
 
 If I get the electronics sorted out it seems quite easy to get the data out. Feed some pins with 0 or 1, iterate over all adresses and then read out the data values. One problem I haven't found a solution to yet is how they sync. When do I write/read? I'm sure it is once a cycle or something like that, but when does the cycle start? It seems like the SNES should tell the cartridge somehow, either once at reset or at every cycle. There are some pins that I don't know what they do (like CPU_CLOCK) and I'm sure I'll figure it out later.
 
-(##) Images inside a cartridge
+# Images inside a cartridge
 My game bits arrived! Here are some images from inside the Super Scope 6:<br>
 ![Opened game](images/snes-carta.jpg)
 
@@ -74,7 +76,7 @@ And here is the backside:<br>
 
 It would be interesting to figure out if the CIC is totally isolated from the rest of the PCB so that I can ignore those pins. Also it would be interesting to see if both +5VDC/GND are used or if one pair is for the CIC.
 
-(##) Connecting a SNES cartridge to a breadboard
+# Connecting a SNES cartridge to a breadboard
 
 It seems one can buy a new (or used) 62-Pin Connector. There are two versions, one that you need to solder onto your SNES yourself and one that is more plug-n-play.
 
@@ -91,4 +93,3 @@ An alternative is to buy a standard edge connector, like the one used in a PCI-b
 One other option would be to do something myeslf. Small insulated clamps that has attached seperate wires for each hand that connects to the two plates? Maybe make a strip of plastic with several wires and attach using clothing pegs? Maybe 3d-print a plastic frame and mount wires? Alternatives are endless. But with so many pins it would require a lot of laboring.
 
 I'll stop here, but I'll continue later!
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

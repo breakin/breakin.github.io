@@ -1,8 +1,10 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**Out Shopping Electro Noob Style**
-				Anders Lindqvist - 2015-01-07 - [index](index.html)
-tags: electronics, snes, 
-
+---
+layout: post
+date: 2015-01-07
+title: Out Shopping Electro Noob Style
+tags: snes, electronics
+theme: electronics
+---
 
 Today I went shopping. I bought myself a multi-meter, a soldering iron and soldering tin. Oscilloscope I left for a distant future purchase. I also bough a small kit so I could nurture my currently non-existant soldering skills. I will need more challenges soon once I've hopefully mastered this one, but it will do for now.
 
@@ -11,4 +13,3 @@ My friend Fredrik who knows a thing or two about these things gave my some point
 I also went into a used games stored and asked for the cheapest PAL SNES-game available. After explaining that I wouldn't play it, just experiment on it, I still felt akward. The game turned out to be Super Scope 6. Without the actual Scope (the bazooka). Since I can't play it, I will have no problem tearing it apart. My wife claims that she had a happier upbringing than me since their family had the bazooka and mine hadn't. Well at least now that I got the game I'm feeling somewhat happier.
 
 I know that I can find images of SNES-cartridges and explanations online, but I'm trying to improve my intution here so I'd like to peek first and then find out what I'm looking at. My intuition tells med it's gonna be a while before I'm gonna have one.
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

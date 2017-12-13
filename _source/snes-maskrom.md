@@ -1,8 +1,10 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
-**Snes MaskROM Breakout**
-				Anders Lindqvist - 2015-03-01 - [index](index.html)
-tags: electronics, raspberry, snes, 
-
+---
+layout: post
+date: 2015-03-01
+title: Snes MaskROM Breakout
+tags: electronics, snes, raspberry
+theme: electronics
+---
 
 So a little detour. I de-soldered the so-called [MaskROM](http://en.wikipedia.org/wiki/Mask_ROM) from a cartridge. Read on to find out what game I destroyed! It was very easy and I'm beginning to think that this should have been how I extracted data from my first cartridge. Oh well sometimes a harder problem is more interesting to solve. If you always get the easiest problem, you never get to make something really hard (since you'll always be good enough not to be challenged).
 
@@ -60,4 +62,3 @@ What did I do with the empty cartridge you might wonder? Let this image be a tea
 This image also says which cartridge I gutted. Hopefully it wasn't the last one!
 
 That's all for this time!
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
