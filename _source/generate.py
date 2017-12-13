@@ -125,7 +125,7 @@ def parse_posts():
 
 				def link_patcher(m): # Simply remove / for now
 					link = m.group(2)
-					if link.startswith("code/") or link.startswith("images/"):
+					if link.startswith("code/") or link.startswith("images/") or link.startswith("pathtracing/"):
 						images.add(link)
 						return m.group(0)
 
