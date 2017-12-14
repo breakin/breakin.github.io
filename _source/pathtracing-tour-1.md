@@ -38,6 +38,10 @@ It was generated using the following code:
 
 ~~~~~~
 Float3 pathtrace_sample(...) {
+	float camera_x = (x + 0.5f) * one_over_width;
+	float camera_y = (y + 0.5f) * one_over_height;
+	Float3 camera_direction = generate_camera_direction(camera, camera_x, camera_y);
+
 	IntersectResult intersect;
 	if (intersect_closest(scene, camera.position, camera_direction, intersect)) {
 		return intersect.diffuse;
@@ -58,6 +62,10 @@ At this point in any graphics tutorial it most be noted that the scene should be
 We have two types of light sources for now. The sky is acting as one big light. The other one is emissive materials. It looks a bit off having a sky without clouds and without a sun at the same time but lets keep it like that for now. The image was generated using the following code:
 ~~~~~~
 Float3 pathtrace_sample(...) {
+	float camera_x = (x + 0.5f) * one_over_width;
+	float camera_y = (y + 0.5f) * one_over_height;
+	Float3 camera_direction = generate_camera_direction(camera, camera_x, camera_y);
+
 	IntersectResult intersect;
 	if (!intersect_closest(scene, camera.position, camera_direction, intersect)) {
 		return sky_color_in_direction(scene, camera_direction);
@@ -72,4 +80,4 @@ With this I think we are ready to do start with the actual pathtracing!
 * [post1.cpp](https://github.com/breakin/pathtracer/blob/master/post1/post1.cpp)
 * [vector_math.h](https://github.com/breakin/pathtracer/blob/master/shared_code/vector_math.h)
 * [shared.h](https://github.com/breakin/pathtracer/blob/master/shared_code/shared.h) / [shared.cpp](https://github.com/breakin/pathtracer/blob/master/shared_code/shared.cpp)
-* [Index](/pathtracing-tour-0)
+* [tour index](/pathtracing-tour-0)
