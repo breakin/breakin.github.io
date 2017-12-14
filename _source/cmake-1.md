@@ -4,7 +4,7 @@ date: 2017-12-05
 title: CMake
 tags: build, cmake
 theme: programming
-landing: review, draft
+landing: review, drafts
 ---
 Disclaimer; This is WIP-version so not quite finished yet!
 

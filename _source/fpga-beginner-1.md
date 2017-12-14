@@ -4,7 +4,7 @@ date: 2018-09-18
 title: FPGA beginners guide #1
 tags: electronics, fpga
 theme: electronics
-landing: draft
+landing: drafts
 ---
 
 Introduction

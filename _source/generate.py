@@ -24,7 +24,7 @@ except:
 
 copyfile(source_directory + "markdeep.min.js", dest_directory+"markdeep.min.js")
 
-link_matcher = re.compile(r'\[([^\]]+)\]\(([^)]+)\)') # Links that starts with /
+link_matcher = re.compile(r'\[([^\]]+)\]\(([^)]+)\)') # markdown link matcher
 
 def start_markdown(dest, title, date):
 	dest.write("<meta charset=\"utf-8\"><style class=\"fallback\">body{visibility:hidden;}</style>\n")
@@ -67,8 +67,10 @@ def format_post(post_id):
 	tags = post[2]
 	if len(tags) != 0:
 		dest.write("tags: ")
+		first = True
 		for tag in sorted(tags):
-			dest.write(tag + ", ")
+			if not first: dest.write(", ")
+		dest.write(tag)
 		dest.write("\n\n")
 
 	lines = post[3]
@@ -104,6 +106,8 @@ def parse_posts():
 		if not post[-3:] == ".md":
 			continue
 
+		print("Processing " + post)
+
 		f = open(post_directory + post)
 
 		identifier = post[:-3]
@@ -124,14 +128,16 @@ def parse_posts():
 					line = "(" + ("#"*num) + ") " + line[num:]
 
 				def link_patcher(m): # Simply remove / for now
+					print("  Matched link " + m.group(0))
 					link = m.group(2)
-					if link.startswith("code/") or link.startswith("images/") or link.startswith("pathtracing/"):
+					if link.startswith("code/") or link.startswith("images/"):
 						images.add(link)
 						return m.group(0)
 
 					if link[0] == '/':
-						print("\""+m.group(0)+"\"")
-						return "[" + m.group(1) + "](" + m.group(2) + ".html)" # TODO: Remove space here
+						return "[" + m.group(1) + "](" + m.group(2)[1:] + ".html)" # TODO: Remove space here
+
+					print("    External, not modifying")
 					return m.group(0)
 
 				line = link_matcher.sub(link_patcher, line)
@@ -167,8 +173,6 @@ def parse_posts():
 
 		if len(landings)==0:
 			landings.add("index")
-
-		print(identifier + " " + str(landings))
 
 		all_posts[identifier] = (title, date, tags, content, images, themes)
 

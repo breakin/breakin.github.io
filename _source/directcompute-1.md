@@ -4,7 +4,7 @@ date: 2017-09-24
 title: DirectCompute
 tags: gpu, compute, directcompute, dx11, dx12
 theme: gpu
-landing: draft
+landing: drafts
 ---
 So for work I've recently dived back into working with DirectCompute. I have a fairly complicated program that I'm moving from pixel shaders into DirectCompute. This is my post where I keep what I found helpful in this ongoing effort.
 
