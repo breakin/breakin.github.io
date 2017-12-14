@@ -7,7 +7,7 @@ When I was young I was always interested in computers. When I found out about gr
 
 After studying I worked on and off with pathtracing (at work!) and I've always found it rewarding and fun! Here I wanted to make a tour through pathtracing, starting from a very simple pathtracer and then gradually introducing more advanced concepts. I will never be a full-fledged pathtracer (if you want one there are many commercial or free alternatives to choose from) but hopefully it can be educational to follow me on this tour.
 
-![Sneak peak!](images/pathtracing-tour/image2-1.png)
+![Sneak peak of things to come!](images/pathtracing-tour/image4-2.png)
 
 (##) Posts
 
@@ -26,10 +26,12 @@ The source code for the images produced in each blog post can be found [here](ht
 
 The source code does not look like other source code I've produced and this partially because I had a specific goal with this tour; I intend to stay away from raytracing (that ray<>triangle-intersections) as well as scene creation (such as texturing, shading systems etc). Instead I want to focus on what I consider to be the fun part of pathtracers. Because of this I tried to make the source code for each post feel almost like a shader. While not interactive I've been very much inspired by ShaderToy; have some code around a shader. Let the reader focus on that shader and forget about the rest. But if someone wants to know about the rest it is all there of course.
 
+The snippets in the blog are somewhat simplified. Sometimes I remove a const to make lines shorter. The blog post code itself can often produce multiple output images from the same function. When talking about the content of such an image I sometime remove the if-statements to make the code snippet be more clear.
+
 (###) External Dependencies
 
 * [Intel embree](https://embree.github.io) for raytracing
-* [STB libraries](https://github.com/nothings/stb) for image handling
+* [stb libraries](https://github.com/nothings/stb) for image handling
 * [CMake](https://cmake.org/) for building
 
 See [README](https://github.com/breakin/pathtracer/blob/master/README.md) on github for more information on building/running the code from each post
