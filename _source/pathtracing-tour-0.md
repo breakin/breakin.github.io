@@ -10,7 +10,7 @@ When I was young I was always interested in computers. When I found out about gr
 
 After studying I worked on and off with pathtracing (at work!) and I've always found it rewarding and fun! Here I wanted to make a tour through pathtracing, starting from a very simple pathtracer and then gradually introducing more advanced concepts. I will never be a full-fledged pathtracer (if you want one there are many commercial or free alternatives to choose from) but hopefully it can be educational to follow me on this tour.
 
-# Prerequisite
+# Pre-requisites
 
 Currently I think that the reader knows quite a bit of graphics and linear algebra and some monte carlo integration as well. I'm still contemplating if I should put MC-integration in this tour or not. If not I should put it elsewhere since I do want to cover it. I will try to keep things on a light and simple level but given the subject I'm sure to fail from time to time.
 
