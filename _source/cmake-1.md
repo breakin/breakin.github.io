@@ -41,7 +41,11 @@ endif(MSVC)
 add_subdirectory(source)
 ~~~~~~~~~~
 
-As we can see I have a few build settings that I like all the projects to use. I added the squirrel repro as a GIT submodule in a directory named squirrel. Then I simply tried what felt most natural to me and added a line to my root CMakeLists.txt like this:
+As we can see I have a few build settings that I like all the projects to use. I added the squirrel repro as a GIT submodule in a directory named squirrel. I got the following Visual Studio projects:
+
+![Visual Studio Project without Squirrel](images/cmake-1-1.png)
+
+Then I simply tried what felt most natural to me and added a line to my root CMakeLists.txt like this:
 
 ~~~~~~~~~~
 cmake_minimum_required (VERSION 2.8.11)
@@ -54,6 +58,9 @@ add_subdirectory(source)
 ~~~~~~~~~~
 
 To some degree this actually worked and it made me very happy. Quite a few squirrel libraries popped up in my solution.
+
+![Visual Studio Project with Squirrel (no changes)](images/cmake-1-2.png)
+
 That way in source I can simply add a dependency to the squirrel CMakeLists.txt like this
 
 ~~~~~~~~~~
@@ -90,7 +97,9 @@ set(DISABLE_DYNAMIC)
 # Make sure nothing is installed by squirrel. That should be managed by snestistics
 set(SQ_DISABLE_INSTALLER)
 ~~~~~~~~~~
-I also move the remaining projects into folders in Visual Studio so I don't have to see them all the time. For sq_static I didn't manage to remove it, but I managed to remove everything being built using EXCLUDE_FROM_ALL and EXCLUDE_FROM_DEFAULT_BUILD. The varialbes DISABLE_DYNAMIC and SQ_DISABLE_INSTALLER are squirrel specific and I had to look at the squirrel cmake file to know that they existed.
+I also move the remaining projects into folders in Visual Studio so I don't have to see them all the time. For sq_static I didn't manage to remove it, but I managed to remove everything being built using EXCLUDE_FROM_ALL and EXCLUDE_FROM_DEFAULT_BUILD. The variables DISABLE_DYNAMIC and SQ_DISABLE_INSTALLER are squirrel specific and I had to look at the squirrel cmake file to know that they existed.
+
+![Visual Studio Project with Squirrel](images/cmake-1-3.png)
 
 # Another library - Let's test ZLIB
 
