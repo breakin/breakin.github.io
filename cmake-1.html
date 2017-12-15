@@ -1,29 +1,27 @@
 <meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
 **CMake**
-				Anders Lindqvist - 2017-12-05 - [index](index.html)
+				Anders Lindqvist - 2017-12-15 - [index](index.html)
 tags: cmake
 
-Disclaimer; This is WIP-version so not quite finished yet!
-
-Today I want to talk about using [cmake](https://cmake.org/) with Visual Studio on Windows. I use cmake to generate build files for Visual Studio (on Windows) and it helps me build on other platforms as well. I used to have my own project generator but cmake has improved a lot and some of the problems with cmake has gone away (one being that I no longer care about 32-bit compilation). I especially like the new target inheritance mechanisms described in this [blog post](https://schneide.wordpress.com/2016/04/08/modern-cmake-with-target_link_libraries/). The cmake macro language itself is never fun to use but I don't mind it as much anymore. When using cmake with my own code I am mostly happy. But then comes.. external dependencies!
+Today I want to talk about using [cmake](https://cmake.org/) with Visual Studio on Windows. I use cmake to generate build files for Visual Studio and it helps me build on other platforms as well. I used to have my own project generator but cmake has improved a lot and some of the problems with cmake has gone away (one being that I no longer care about 32-bit compilation). I especially like the new target inheritance mechanisms described in this [blog post](https://schneide.wordpress.com/2016/04/08/modern-cmake-with-target_link_libraries/). The cmake macro language itself is never fun to use but I don't mind it as much anymore. When using cmake with my own code I am mostly happy. But then comes.. external dependencies! In this blog post I will show how I would want it to work. While I've been using cmake for a long time I do hope that a reader suggests better ways to do this.
 
 (##) External Dependencies
 
-I recently added scripting support to snestistics (an application I am developing on my spare time). I choose the scripting language [squirrel](https://github.com/albertodemichelis/squirrel). That meant I had my first external dependency. Up to this point I had written all code myself, only depending on the C/C++ standard library.
+I recently added scripting support to an application I am developing on my spare time called snestistics. I needed a scripting language and I choose the scripting language [squirrel](https://github.com/albertodemichelis/squirrel). That meant I had my first external dependency. Up to this point I had written all code myself, only depending on the standard library.
 
-First I use GIT and I prefer to keep all my dependencies in my source tree. That way I can change the exact version being compiled. This time I choose to use a git submodule but I might as well put a zip of the source code in there and extract it using cmake on first compile.
+I use GIT and I prefer to keep all my dependencies in my source tree (as opposed to letting the user download/build/install them on the system somewhere). That way I can control the exact version being compiled. This time I choose to use a git submodule but sometimes I just put a zip file of the source code in my repository and extract it using cmake on the first compile.
 
-The alternative on some platforms would be to let the user build squirrel themselves and install it on their system. This could perhaps happen as part of an APT-GET command or something. But then I have little control over the exact version and I can't change build settings etc. This is especially cumbersome on windows where there is nowhere to install things to (although I suppose cmake could add a way to do that).
+The alternative on some platforms would be to let the user build squirrel themselves and install it on their system. This could perhaps happen as part of an *apt-get*/*homebrew* command or something. But then I have little control over the exact version and I can't change build settings. This might be ok on some systems but at least on Windows having explicit control is very important. Since C++ does not have an standard ABI (application binary interface) you must compile all libraries being linked together with the same compiler (most of the time) and with mostly the same compiler settings. Otherwise things will crash. This also makes it impossible to link together release and debug built libraries in most cases.
 
-Since C++ does not have an standard ABI (application binary interface) you must compile all libraries beging linked together with the same compiler (most of the time) and with mostly the same compiler settings. Otherwise things will crash. This also makes it impossible to link together release and debug built libraries in most cases.
+Because of this I like that all dependencies are compiled _with_ my application. That is they are never pre-built and they live in my Visual Studio solution. This makes it easy to experiment with compiler settings, compiler versions etc without having to build/install a lot of different projects. I just change in cmake and it it propagated to all libraries. Switching between different configurations (Release, Debug, ...) doesn't put you in situation where you have mismatch between the different libraries being linked together. Debug build is always available as well as the source code is always available if I want to step into the code of a dependency to see what it does. I simply think it is a nicer way to organize the code. For foreign code that only comes pre-built this is not an option but lets not discuss that today.
 
-Because of this I like that all dependencies are compiled _with_ my application. That is they are never pre-built and they live in my Visual Studio solution. This makes it easy to experiment with compiler settings, compiler versions etc without having to build/install a lot of differnet projects. Switching between different configurations (Release, Debug, ...) doesn't put you in situation where you have mismatch between the different libraries being linked together. Debug build is always available as well as the source code is always available if I want to step into the code of a dependency to see what it does. I simply think it is a nicer way to organize the code. For foreign code that only comes pre-built this is not an option but lets not discuss that today.
+Disclaimer; For larger projects that take a long time to compile I realize that pre-building some libraries and keeping them out of the Visual Studio solution helps compile times when building for the first time or doing full rebuild of all projects in the solution.
 
-For larger projects that take a long time to compile I realize that prebuilding some libraries and keeping them out of the Visual Studio solution is much faster.
+(##) World shortest cmake tutorial
+
+So how do we do this in cmake? Quick cmake recap first! Cmake requires a file CMakeLists.txt in each directory. From a CMakeLists.txt you can include another directory using add_subdirectory. Cmake is invoked on the root directory (where the root CMakeLists.txt lives) and then it generates Visual Studio projects (or makefiles) into a directory chosen by the user.
 
 (##) Squirrel
-
-Ok so how do we do this in cmake? Cmake requires a file CMakeLists.txt in each directory. From a CMakeLists.txt you can include another directory using add_subdirectory. Cmake is invoked on the root directory (where the root CMakeLists.txt lives) and then it generates Visual Studio projects (or makefiles) into another directory.
 
 Before squirrel my root CMakeLists.txt looked like this:
 ~~~~~~~~~~
@@ -41,7 +39,7 @@ endif(MSVC)
 add_subdirectory(source)
 ~~~~~~~~~~
 
-As we can see I have a few build settings that I like for all the projects to use. For scripting language I choose squirrel. I added the squirrel repro as a GIT submodule in a directory named squirrel. Then I simply tried what felt most natural to me and added a line to my root CMakeLists.txt.
+As we can see I have a few build settings that I like all the projects to use. I added the squirrel repro as a GIT submodule in a directory named squirrel. Then I simply tried what felt most natural to me and added a line to my root CMakeLists.txt like this:
 
 ~~~~~~~~~~
 cmake_minimum_required (VERSION 2.8.11)
@@ -53,7 +51,7 @@ add_subdirectory(squirrel) # The new line!
 add_subdirectory(source)
 ~~~~~~~~~~
 
-This actually worked and quite a few squirrel libraries popped up in my solution.
+To some degree this actually worked and it made me very happy. Quite a few squirrel libraries popped up in my solution.
 That way in source I can simply add a dependency to the squirrel CMakeLists.txt like this
 
 ~~~~~~~~~~
@@ -72,37 +70,43 @@ set(SQ_DISABLE_INSTALLER 1)
 
 add_subdirectory(squirrel)
 
+(##) Make sure sq_static isn't built
 set_target_properties(sq_static PROPERTIES 
 	EXCLUDE_FROM_ALL 1
 	EXCLUDE_FROM_DEFAULT_BUILD 1)
 
 if(MSVC)
+	# Visual Studio folders
 	set_target_properties(sq_static       PROPERTIES FOLDER squirrel)
 	set_target_properties(sqstdlib_static PROPERTIES FOLDER squirrel)
 	set_target_properties(squirrel_static PROPERTIES FOLDER squirrel)
 endif(MSVC)
 
+(##) Don't include the dynamic (shared) libraries
 set(DISABLE_DYNAMIC)
+
+(##) Make sure nothing is installed by squirrel. That should be managed by snestistics
 set(SQ_DISABLE_INSTALLER)
 ~~~~~~~~~~
 I also move the remaining projects into folders in Visual Studio so I don't have to see them all the time. For sq_static I didn't manage to remove it, but I managed to remove everything being built using EXCLUDE_FROM_ALL and EXCLUDE_FROM_DEFAULT_BUILD. The varialbes DISABLE_DYNAMIC and SQ_DISABLE_INSTALLER are squirrel specific and I had to look at the squirrel cmake file to know that they existed.
 
-(##) Another library
+(##) Another library - Let's test ZLIB
 
 I tried the same thing with ZLIB. It sortof worked but I got a lot of extra libraries, including example projects. I could use EXCLUDE_FROM_ALL/EXCLUDE_FROM_DEFAULT_BUILD to disable building but I would really liked a varialbe to turn them off before adding the directory.
 
-(##) Further complications
-
-When I include a library that has no dependencies I have full control. Once it decides to include yet another library it does it on its terms. I would like to know more if it is possible to override this behaviour. I think it is using find_package but I am not sure. The install-nature of cmake suggests that you are not supposed to have that depth of cmake dependencies.
-
 (##) Some sort of solution
 
-It would be nice if projects could operate in two modes. One is when they are root. Generate everything, install stuff. The second when being used as a library. Don't build tests/examples (unless when asked for).
+It would be nice if projects could operate in two modes. One is when they are root. Generate everything, install stuff. The second when being used as a library. Don't build tests/examples (unless when asked for) and don't install anything.
 
-Also it would be nice if projects didn't have to produce both static and non-static variants. That could happen automatically by inheriting settings from the outside world. Something like
+It would also be nice if projects didn't have to produce both static and non-static variants. That could happen automatically by inheriting settings from the outside world. Something like
 
 ~~~~~~~~~~~~~~~
 add_subdirectory(directory STATIC)
+~~~~~~~~~~~~~~~
+or
+~~~~~~~~~~~~~~~
+set(mode_zlib STATIC)
+add_subdirectory(zlib) # Will read modes for project zlib from mode_zlib
 ~~~~~~~~~~~~~~~
 
 It is possible for a script to see if it is running as root or not using something like
@@ -112,7 +116,11 @@ if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 endif()
 ~~~~~~~~~~~~~~~
 
+(##) Further complications
+
+When I include a library that has no dependencies it works like shown above. I have a quite a bit of control. But once a dependency has dependencies of its own it does it on its terms. Because of this it would be nice if cmake had a general facility to solve this. The one facility that I've found and often seen used is find_package. It seems tailored toward libraries being pre-built and installed on the system, but I am hoping it can be used/abused in a smart way to give me what I want. Anyone has an example for this?
+
 (##) Final Thoughts
 
-This is all for today. Before I leave I want to state that while this makes sense under Windows and Visual Studio it might not make sense on linux/osx. If so I will do special casing in my cmake source to treat external dependencies differently. Next time I will look at find_package to see if it can do what I want after all. After all cmake is quite complex and has been around a long time; perhaps someone has already thought of this
+This is all for today. Before I leave I want to state that while this makes sense under Windows and Visual Studio it might not make sense on linux/osx. There the make/make install paradigm is more established. If I need to I will treat external dependencies differently on different platforms. Unless someone comes up with a solution for me I will dive into find_package to see how it works in more detail!
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
