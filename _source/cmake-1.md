@@ -137,4 +137,4 @@ This is all for today. Before I leave I want to state that while this makes sens
 
 # TL;DR
 
-It would be nice if it was possible to add external dependencies in a special mode where you only got the library and not other crap, and where dependencies of the dependencies also was controllable.
+It would be nice if it was possible to add external dependencies in a special mode where you only got the library and not other crap, and where dependencies of the dependencies also was controllable. And not via installed packages but actually add it for real!
