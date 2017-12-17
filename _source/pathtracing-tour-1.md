@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2017-12-15
-title: PathTracing Tour - Our scene
+title: PathTracing Tour - Our test scene
 tags: graphics
 landing: drafts
 theme: graphics
