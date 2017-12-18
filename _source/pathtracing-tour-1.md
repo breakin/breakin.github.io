@@ -11,28 +11,28 @@ theme: graphics
 In computer graphics we traditionally create scenes with multiple meshes consisting of triangles. In order to generate an image of our scene we must shoot a ray through each pixel and into the scene to find the surface that is visible in that pixel. The *generate_camera_direction function* wants a pixel coordinate with x and y from 0.0 to 1.0. The full code we use looks like this:
 ~~~~~~~~~~~~
 Float3 pathtrace_sample(...) {
-	float camera_x = (x + uniform(thread_context)) * one_over_width;
-	float camera_y = (y + uniform(thread_context)) * one_over_height;
-	Float3 camera_direction = generate_camera_direction(camera, camera_x, camera_y);
-	...
+ float cx = (x + uniform(thread_context)) * one_over_width;
+ float cy = (y + uniform(thread_context)) * one_over_height;
+ Float3 camera_direction = generate_camera_direction(camera, cx, cy);
+ ...
 ~~~~~~~~~~~~
 The function uniform returns a random number between 0.0 and 1.0. It uses thread_context to store the random seed such that multi-threading doesn't influence the random numbers. Using the camera position (*camera.position*) and the camera direction calculated here we have our ray. It starts at the camera and it travels in the direction of *camera_direction*. We can use *intersect_closest* to find out if we hit anything
 ~~~~~~~~~~~~
-	...
-	IntersectResult intersect;
-	if (intersect_closest(scene, camera.position, camera_direction, intersect)) {
-		// hit, information in intersect
-	} else {
-		// miss
-	}
-	...
+ ...
+ IntersectResult i;
+ if (intersect_closest(scene, camera.position, camera_direction, i)) {
+  // hit, information in i
+ } else {
+  // miss
+ }
+ ...
 ~~~~~~~~~~~~
 
 If we always wanted to shoot through the middle of the pixel we could have used
 ~~~~~~~~~~~~
-float camera_x = (x + 0.5f) * one_over_width;
-float camera_y = (y + 0.5f) * one_over_height;
-Float3 camera_direction = generate_camera_direction(camera, camera_x, camera_y);
+float cx = (x + 0.5f) * one_over_width;
+float cy = (y + 0.5f) * one_over_height;
+Float3 camera_direction = generate_camera_direction(camera, cx, cy);
 ~~~~~~~~~~~~
 instead.
 
@@ -50,15 +50,15 @@ It was generated using the following code:
 
 ~~~~~~~~~~~~
 Float3 pathtrace_sample(...) {
-	float camera_x = (x + 0.5f) * one_over_width;
-	float camera_y = (y + 0.5f) * one_over_height;
-	Float3 camera_direction = generate_camera_direction(camera, camera_x, camera_y);
+ float cx = (x + 0.5f) * one_over_width;
+ float cy = (y + 0.5f) * one_over_height;
+ Float3 camera_direction = generate_camera_direction(camera, cx, cy);
 
-	IntersectResult intersect;
-	if (intersect_closest(scene, camera.position, camera_direction, intersect)) {
-		return intersect.diffuse;
-	}
-	return float3(0,0,0);
+ IntersectResult i;
+ if (intersect_closest(scene, camera.position, camera_direction, i)) {
+  return i.diffuse;
+ }
+ return float3(0,0,0);
 }
 ~~~~~~~~~~~~
 It looks quite booring but hopefully it is the start of something.. less booring!
@@ -74,15 +74,15 @@ At this point in any graphics tutorial it most be noted that the scene should be
 We have two types of light sources for now. The sky is acting as one big light. The other one is emissive materials. It looks a bit off having a sky without clouds and without a sun at the same time but lets keep it like that for now. The image was generated using the following code:
 ~~~~~~
 Float3 pathtrace_sample(...) {
-	float camera_x = (x + 0.5f) * one_over_width;
-	float camera_y = (y + 0.5f) * one_over_height;
-	Float3 camera_direction = generate_camera_direction(camera, camera_x, camera_y);
+ float cx = (x + 0.5f) * one_over_width;
+ float cy = (y + 0.5f) * one_over_height;
+ Float3 camera_direction = generate_camera_direction(camera, cx, cy);
 
-	IntersectResult intersect;
-	if (!intersect_closest(scene, camera.position, camera_direction, intersect)) {
-		return sky_color_in_direction(scene, camera_direction);
-	}
-	return intersect.emissive;
+ IntersectResult i;
+ if (!intersect_closest(scene, camera.position, camera_direction, i)) {
+  return sky_color_in_direction(scene, camera_direction);
+ }
+ return i.emissive;
 }
 ~~~~~~
 With this I think we are ready to do start with the actual pathtracing!
