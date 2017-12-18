@@ -4,9 +4,7 @@ date: 2017-12-18
 title: FPGA intro
 tags: electronics, fpga
 theme: electronics
-landing: drafts
 ---
-
 Introduction
 ============
 I've been spending some time playing around with FPGAs. It has been quite challenging since they don't allow for as much sloppiness as a micro controller. I even managed to get a friend hooked on FPGAs. When I met him later he told me that he stopped because he got stuck in some details... And that made realize that I should write up my first stumbling steps into FPGAs. Maybe it could have helped him and maybe it will someone else! I will here assume that a FPGA is the right tool for you and describe how my understanding improved from not even beginner level to beginner level. In reality a FPGA might often not be the tool you need. But it is a fun tool!
@@ -162,7 +160,9 @@ Note that the term logical elements here is a FPGA term. On an ASIC they are sim
 
 Summary
 =======
-That was all for today. Thanks [Ferris](https://twitter.com/ferristweetsnow) and [Gustaf](https://twitter.com/GustafLindqvis2) for comment on drafts. See below for some reading tips!
+In the end I am not sure if a FPGA was the right tool for the task I was having, but once I knew some FPGA programming I came up with new projects that required it. And now I know more. Perhaps a micro controller with a SRAM memory could have solved my initial problem just as well, who knows? There is a commercial product called [SD2SNES](https://sd2snes.de/blog/about) that uses a FPGA. I never did get it to work using a FPGA for analog electrical issues, but I did try to hook it up! I need to level-up a bit before writing another intro course but if I do I think it will be on using memory.
+
+Thanks [Ferris](https://twitter.com/ferristweetsnow) for comment on early drafts of this post. See below for some reading tips! That's all for today!
 
 ## TL;DR
 
