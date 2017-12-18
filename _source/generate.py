@@ -29,6 +29,8 @@ link_matcher = re.compile(r'\[([^\]]+)\]\(([^)]+)\)') # markdown link matcher
 
 def start_markdown(dest, title, date):
 	dest.write("<meta charset=\"utf-8\"><link rel=\"stylesheet\" href=\"style.css?\">\n")
+	dest.write("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">\n")
+	
 	dest.write("<script>window.markdeepOptions = {tocStyle: 'short'};</script>\n") 
 	dest.write("**" + title+"**\n")
 	dest.write("\t\t\t\tAnders Lindqvist - " + date + " - [index](index.html)\n")
