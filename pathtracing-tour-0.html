@@ -1,4 +1,5 @@
-<meta charset="utf-8"><style class="fallback">body{visibility:hidden;}</style>
+<meta charset="utf-8"><link rel="stylesheet" href="style.css?">
+<script>window.markdeepOptions = {tocStyle: 'short'};</script>
 **PathTracing Tour - Index**
 				Anders Lindqvist - 2017-12-14 - [index](index.html)
 tags: graphics
@@ -9,7 +10,7 @@ After studying I worked on and off with pathtracing (at work!) and I've always f
 
 ![Sneak peak of things to come!](images/pathtracing-tour/image5-2.png)
 
-(##) Posts
+# Posts
 
 1. [Our test scene](pathtracing-tour-1.html)
 2. [Path Tracing with one bounce](pathtracing-tour-2.html)
@@ -17,11 +18,11 @@ After studying I worked on and off with pathtracing (at work!) and I've always f
 4. [Adding Russian Roulette](pathtracing-tour-4.html)
 5. [Importance Sampling Diffuse](pathtracing-tour-5.html)
 
-(##) Pre-requisites
+# Pre-requisites
 
 Currently I think that the reader knows quite a bit of graphics and linear algebra and some monte carlo integration as well. I'm still contemplating if I should put MC-integration in this tour or not. If not I should put it elsewhere since I do want to cover it. I will try to keep things on a light and simple level but given the subject I'm sure to fail from time to time.
 
-(##) Soure Code
+# Soure Code
 
 The source code for the images produced in each blog post can be found [here](https://github.com/breakin/pathtracer). The code that is shared between the posts can be found [here](https://github.com/breakin/pathtracer/tree/master/shared_code).
 
@@ -29,11 +30,14 @@ The source code does not look like other source code I've produced and this part
 
 The snippets in the blog are somewhat simplified. Sometimes I remove a const to make lines shorter. The blog post code itself can often produce multiple output images from the same function. When talking about the content of such an image I sometime remove the if-statements to make the code snippet be more clear.
 
-(###) External Dependencies
+## External Dependencies
 
 * [Intel embree](https://embree.github.io) for raytracing
 * [stb libraries](https://github.com/nothings/stb) for image handling
 * [CMake](https://cmake.org/) for building
 
 See [README](https://github.com/breakin/pathtracer/blob/master/README.md) on github for more information on building/running the code from each post
-<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
+<script src="markdeep.min.js"></script>
+<script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script>
+<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>

@@ -5,10 +5,12 @@ title: CMake
 tags: build, cmake
 theme: programming
 ---
+Introduction
+============
 Today I want to talk about using [cmake](https://cmake.org/) with Visual Studio on Windows. I use cmake to generate build files for Visual Studio and it helps me build on other platforms as well. I used to have my own project generator but cmake has improved a lot and some of the problems with cmake has gone away (one being that I no longer care about 32-bit compilation). I especially like the new target inheritance mechanisms described in this [blog post](https://schneide.wordpress.com/2016/04/08/modern-cmake-with-target_link_libraries/). The cmake macro language itself is never fun to use but I don't mind it as much anymore. When using cmake with my own code I am mostly happy. But then comes.. external dependencies! In this blog post I will show how I would want it to work. While I've been using cmake for a long time I do hope that a reader suggests better ways to do this.
 
-# External Dependencies
-
+External Dependencies
+=====================
 I recently added scripting support to an application I am developing on my spare time called snestistics. I needed a scripting language and I choose the scripting language [squirrel](https://github.com/albertodemichelis/squirrel). That meant I had my first external dependency. Up to this point I had written all code myself, only depending on the standard library.
 
 I use GIT and I prefer to keep all my dependencies in my source tree (as opposed to letting the user download/build/install them on the system somewhere). That way I can control the exact version being compiled. This time I choose to use a git submodule but sometimes I just put a zip file of the source code in my repository and extract it using cmake on the first compile.
@@ -19,11 +21,13 @@ Because of this I like that all dependencies are compiled _with_ my application.
 
 Disclaimer; For larger projects that take a long time to compile I realize that pre-building some libraries and keeping them out of the Visual Studio solution helps compile times when building for the first time or doing full rebuild of all projects in the solution.
 
-# World shortest cmake tutorial
+World shortest cmake tutorial
+=============================
 
 So how do we do this in cmake? Quick cmake recap first! Cmake requires a file CMakeLists.txt in each directory. From a CMakeLists.txt you can include another directory using add_subdirectory. Cmake is invoked on the root directory (where the root CMakeLists.txt lives) and then it generates Visual Studio projects (or makefiles) into a directory chosen by the user.
 
-# Squirrel
+Squirrel
+========
 
 Before squirrel my root CMakeLists.txt looked like this:
 ~~~~~~~~~~
@@ -101,11 +105,12 @@ I also move the remaining projects into folders in Visual Studio so I don't have
 
 ![Visual Studio Project with Squirrel](images/cmake-1-3.png)
 
-# Another library - Let's test ZLIB
-
+Another library - Let's test ZLIB
+=================================
 I tried the same thing with ZLIB. It sortof worked but I got a lot of extra libraries, including example projects. I could use EXCLUDE_FROM_ALL/EXCLUDE_FROM_DEFAULT_BUILD to disable building but I would really liked a varialbe to turn them off before adding the directory.
 
-# Some sort of solution
+Some sort of solution
+=====================
 
 It would be nice if projects could operate in two modes. One is when they are root. Generate everything, install stuff. The second when being used as a library. Don't build tests/examples (unless when asked for) and don't install anything.
 
@@ -127,14 +132,14 @@ if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 endif()
 ~~~~~~~~~~~~~~~
 
-# Further complications
-
+Further complications
+=====================
 When I include a library that has no dependencies it works like shown above. I have a quite a bit of control. But once a dependency has dependencies of its own it does it on its terms. Because of this it would be nice if cmake had a general facility to solve this. The one facility that I've found and often seen used is find_package. It seems tailored toward libraries being pre-built and installed on the system, but I am hoping it can be used/abused in a smart way to give me what I want. Anyone has an example for this?
 
-# Final Thoughts
-
+Final Thoughts
+==============
 This is all for today. Before I leave I want to state that while this makes sense under Windows and Visual Studio it might not make sense on linux/osx. There the make/make install paradigm is more established. If I need to I will treat external dependencies differently on different platforms. Unless someone comes up with a solution for me I will dive into find_package to see how it works in more detail!
 
-# TL;DR
+## TL;DR
 
 It would be nice if it was possible to add external dependencies in a special mode where you only got the library and not other crap, and where dependencies of the dependencies also was controllable. And not via installed packages but actually add it for real!

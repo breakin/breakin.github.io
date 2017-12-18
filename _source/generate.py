@@ -23,16 +23,21 @@ except:
 	pass
 
 copyfile(source_directory + "markdeep.min.js", dest_directory+"markdeep.min.js")
+copyfile(source_directory + "style.css", dest_directory+"style.css")
 
 link_matcher = re.compile(r'\[([^\]]+)\]\(([^)]+)\)') # markdown link matcher
 
 def start_markdown(dest, title, date):
-	dest.write("<meta charset=\"utf-8\"><style class=\"fallback\">body{visibility:hidden;}</style>\n")
+	dest.write("<meta charset=\"utf-8\"><link rel=\"stylesheet\" href=\"style.css?\">\n")
+	dest.write("<script>window.markdeepOptions = {tocStyle: 'short'};</script>\n") 
 	dest.write("**" + title+"**\n")
 	dest.write("\t\t\t\tAnders Lindqvist - " + date + " - [index](index.html)\n")
 
 def stop_markdown(dest):
-	dest.write("<!-- Markdeep: --><style class=\"fallback\">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src=\"markdeep.min.js\"></script><script src=\"https://casual-effects.com/markdeep/latest/markdeep.min.js\"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility=\"visible\")</script>")
+	dest.write("<style class=\"fallback\">body{visibility:hidden;white-space:pre;font-family:monospace}</style>\n")
+	dest.write("<script src=\"markdeep.min.js\"></script>\n")
+	dest.write("<script src=\"https://casual-effects.com/markdeep/latest/markdeep.min.js\"></script>\n")
+	dest.write("<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility=\"visible\")</script>\n")
 
 copied_resources = set([])
 
@@ -123,9 +128,9 @@ def parse_posts():
 
 		for line in f:
 			if state == 2:
-				if line.startswith("#"): # TODO: This might intefer with python comments in python blocks.. oops
-					num = len(line.split(" ")[0])+1
-					line = "(" + ("#"*num) + ") " + line[num:]
+				#if line.startswith("#"): # TODO: This might intefer with python comments in python blocks.. oops
+				#	num = len(line.split(" ")[0])+1
+				#	line = "(" + ("#"*num) + ") " + line[num:]
 
 				def link_patcher(m): # Simply remove / for now
 					print("  Matched link " + m.group(0))

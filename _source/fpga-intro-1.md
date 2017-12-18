@@ -73,7 +73,7 @@ Back to the actual FPGA. First thing first. The FPGA has a number of physical _p
 
 When thinking about the computation that takes places in a FPGA I like to think not about individual gates or logical elements but rather groups of such. There are two types of groups that can be connected together. The first type is called _combinational_ and the second type is _sequential_.
 
-# Combinational computations
+## Combinational computations
 
 Yes, I made a header for this section just so I could have a header with an alliteration in it.
 
@@ -93,7 +93,7 @@ Rules to respect in our mental model:
 
 But the FPGA isn't infinitely fast. It feels like someone need to care about _when_ values are stable. And someone does. The tool chain that compiles your program will determine the maximum time that the combinational networks needs until all outputs are stable. This determines the maximum length of a clock cycle. If you respect the value given to you by your compiler you will be fine for that particular device. But what is a clock cycle really?
 
-# Clocked computations
+## Clocked computations
 
 Yes, another alliteration. I'm on fire today!
 
@@ -105,7 +105,7 @@ Now it is time to use our magical external device and hook it up to the FPGA. It
 
 These magical devices actually exists inside the FPGA. More or less. They can only store one bit of information each and there is no button. There is, however, a global clock signal that goes off at fixed interval.
 
-# All together
+## All together
 
 That section on clocking was short but that is because clocking on its own isn't all that fun. We need to combine combinational and sequential computations to make something interesting.
 
@@ -132,13 +132,13 @@ Here is an illustration:
 
 Note that this is not related to actual circuitry. This image just represents our mental model on a high level. A good way to think about this is to think that the combinational computations prepare the next state. The new state is accepted when the next clock arrives and then the combinational computations is run again for the new inputs. And loop.
 
-# What about clock frequency?
+## What about clock frequency?
 
 The longer chains we have, the lower the clock frequency must be such that all outputs from combinational computations are stable when the next clock goes off. It is possible to increase the clock frequency by dividing long combinational computations into several steps, saving the intermediate values as clocked state. The FPGA itself often is specified to have a maximum clock frequency so it is not possible to run faster than that of course.
 
 When starting with FPGAs it is easy to be bogged down in talk about meta-stable signals. It seems hard to work with and it is a real problem, but in our setup we need not worry about it just yet. Meta-stable signals are signals that are being produced by another clock. When you try to consume them there is a window where they don't have a defined value (0 or 1) and they can be anything. The signal simply isn't stable yet since the end of the external clock cycle has not been reached yet. There are ways to combat this, especially if you run at a much higher clock frequency, but I am leaving that topic for a later date!
 
-# A note on clock frequency
+## A note on clock frequency
 
 When doing a simple design you can assume that the project will run on the clock frequency provided by the crystal on the FPGA development board. This could be 33Mhz, 100Mhz or something different. Unless you explicitly use the built in circuitry to generate a custom clock this is what you will get. I'm adding this note because at first I thought my design would automatically run as fast as possible. It is much more convenient to be in control since you often want to interface with external hardware so I am glad I was wrong!
 
@@ -162,26 +162,28 @@ These two designs are quite different. The FPGA on is superior when you are talk
 
 Summary
 =======
-That was all for today. Here is a short TL;DR list for the blog post:
+That was all for today. Thanks [Ferris](https://twitter.com/ferristweetsnow) and [Gustaf](https://twitter.com/GustafLindqvis2) for comment on drafts. See below for some reading tips!
+
+## TL;DR
 
 * Length of longest / most complicated combinational chain determines maximum possible clock frequency
 * Make sure you specify what clock frequency you want to run with
 * It is hard to buy a FPGA development board. Be prepared to buy the wrong one at first :)
 
-# Recommended Reading / Watching
+## Recommended Reading / Watching
 
-* [http://www.fpga4fun.com/](http://www.fpga4fun.com/). Many small projects that helps you get a feeling for what can be done.
+* [http://www.fpga4fun.com/](http://www.fpga4fun.com/). Projects! Shows what can be done.
+* [A walk-through of Xilinx's Vivado FPGA design suite](https://www.youtube.com/watch?v=uTbBw-q5JnY).
 * [A structured VHDL design method (book chapter)](http://www.gaisler.com/doc/vhdl2proc.pdf). Once you've started writing VHDL or Verilog this article helps you organize your code.
-* [A walk-through of Xilinx's Vivado FPGA design suite (Per Vognsen)](https://www.youtube.com/watch?v=uTbBw-q5JnY).
 * [The Fastest, Easiest FPGA Blinker, Ever! (on IceStorm)](http://www.xess.com/static/media/pages/pygmyhdl/examples/1_blinker/fastest_easiest_FPGA_blinker_ever.html)
 
-# Lies, lies, lies...
+## Lies, lies, lies...
 
 Here I put facts to illustrate where I lied or over-simplified my mental model. Note that very word is an over-simplification, these are just the bigger ones!
 
 * FPGAs can have multiple clock domains, each with their own clock frequency. If you try to interface them you have to be careful! There is something called meta-stability that can affect you if you READ from another clock domain (something using a different clock so that you are not in sync). If you are just writing to outputs it is up to the consumer of your bits to handle meta-stability.
 * There are cool ways to sync up clock domains if you have control over both sides (or if the other sides implements something you can adhere to)
-* I'm still not sure how combinational results are stored in the FPGA. They must be written backwards somehow.
+* I'm still not sure how combinational results are stored in the FPGA. They must be written backwards somehow. I mean I know they are stored in flip-flops but lets say we have a counter. The counter comes as input to a combinational network. It ripples. And then somehow the result is written back to the flip-flops where it started. I think it would be interesting to see how routing is done to get a better picture of how this is done!
 * FPGA pins are divided into different banks. Some FPGAs can run each bank on a different voltage. This affects what can be connected to them. The reason for this is that lower voltage leads to lower energy consumption. By only using higher voltage on the pins that needs it total energy consumption is lower compared to a chip where all pins supports the higher voltage.
 * FPGAs these days have dedicated DSP blocks that can do some combination computations very fast by not using a FPGA. These typically take the form of integer multiplications with sufficient number of bits to implements floating point operations.
 * Even if all computations happen inside a clock domain the output signal can be skewed. That is while all of outputs (to the outside of the FPGA) are ready at the end of a clock-cycle, they might be ready at different times. If an external device that doesn't care about the clock coming from the FPGA this can cause troubles with some external devices.

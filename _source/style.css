@@ -1,0 +1,16 @@
+/* Style sheet for Markdeep that corresponds closely to the default Latex article format 
+   Put the following in your Markdeep document to use this:
+ 
+   <link rel="stylesheet" href="https://casual-effects.com/markdeep/latest/dark.css">
+*/
+
+
+@import url('https://fonts.googleapis.com/css?family=Teko:700');
+
+@media screen {
+body {
+  max-width: 800px;
+  text-align: left;
+  font-size: 120%;
+}
+}
