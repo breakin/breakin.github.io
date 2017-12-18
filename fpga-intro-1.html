@@ -62,6 +62,8 @@ Purchasing a FPGA development board was not easy for me. The idea is that if you
 
  I should mention two other brands of FPGAs. First there is [Altera](https://www.altera.com/products/fpga/overview.html) that is now owned by Intel. The second one is [Lattice Semiconductor](http://www.latticesemi.com/Products.aspx#_D5A173024E414501B36997F26E842A31). They are notable because there now exist open source tool chains for some of their FPGAs. See [project IceStorm](http://www.clifford.at/icestorm/). There currently are many ongoing reverse-engineering efforts to be able to produce bit streams for various FPGAs.
 
+ I also want to mention that there is a difference between hobbyist FPGAs and professional FPGAs. If you look at [FPGAs available in AWS](https://aws.amazon.com/ec2/instance-types/f1/) they cost thousands of US dollars. Hobbyist FPGAs on the other hand can be quite cheap.
+
 A better mental model of our FPGA
 =================================
 Back to the actual FPGA. First thing first. The FPGA has a number of physical _pins_ that can be configured to be inputs, outputs or both. How the pins are configured is part of the configuration of the FPGA. On the outside of the FPGA the pins can be connected to pretty much anything that operates at the correct voltage (which is seldom above 3.3V for current FPGAs). The values at the input pins affect the computations performed by the FPGA and the outputs pins are fed results from the computations. What computations are performed is decided by the bit stream that the FPGA is programmed with. The bit stream is most often constructed through proprietary tool chains supplied by the FPGA manufacturer. The computational elements (called logical elements) of the FPGA are also configured using the bit stream. How they actually behave on an electrical level depends on exact FPGA model. It is up to the _compiler_ to know about the particulars of the FPGA being used. Today we will work on a higher level where we only need a mental model of how it all fits together so we will not discuss it in detail.
@@ -76,17 +78,17 @@ Combinational computations does not have an internal state. Given an arbitrary n
 
 Let's outline how it can work. When the input signal changes the computation happens. Bit change in the network of logical elements, propagating towards the output. After a _short_ duration each output signal have a stable value. The time that it takes for different output to be stable depends on both the amount of computation taking place to compute that output bit, but also on how it was layout physically on the FPGA. Did some propagate through the faster carry chains? Was the combinational moved around on the FPGA due to being complicated, making some routes longer than others?
 
-What value do we get if we try to access an output value before is is stable? If we only stay within our FPGA and everything runs on the same clock, we don't need to know the answer to that question!
+What value do we get if we try to access an output value before is is stable? If we only deal with values generated from within our FPGA and everything runs on the same clock, we don't need to know the answer to that question! We can even generate output from our FPGA and it doesn't really matter much (depending on what you hook into the output).
 
 Rules to respect in our mental model:
 
 - Arbitrary number of inputs
-- Computations are performed, propagating signals within the logical elements
-- Each output become stable once all propagation it depends on is done
-- Different output bits can be stable at different times
+- Computations are performed and signals are propagating between the logical elements
+- Each output become stable once all inputs it depends on have been stable for a little while
+- Different output bits can become stable at different times
 - If someone tries to read an output bit before it is stable the value will be undefined
 
-But the FPGA isn't infinitely fast. It feels like someone need to care about when values are stable. And someone does. The tool chain that compiles your program will determine the maximum time that the combinational networks needs until all outputs are stable. This determines the length of a clock cycle. If you respect the value given to you by your compiler you will be fine for that particular device.
+But the FPGA isn't infinitely fast. It feels like someone need to care about _when_ values are stable. And someone does. The tool chain that compiles your program will determine the maximum time that the combinational networks needs until all outputs are stable. This determines the maximum length of a clock cycle. If you respect the value given to you by your compiler you will be fine for that particular device. But what is a clock cycle really?
 
 (##) Clocked computations
 
@@ -104,7 +106,7 @@ These magical devices actually exists inside the FPGA. More or less. They can on
 
 That section on clocking was short but that is because clocking on its own isn't all that fun. We need to combine combinational and sequential computations to make something interesting.
 
-We are ready to introduce a mental model for an actual FPGA. We have two types of actors. We will denote them M and C for now. 
+We are ready to introduce a mental model for an actual FPGA. We have two types of groups of logical elements. We will denote them M and C for now. 
 
 M1 stores an arbitrary large state. Parts of that state is fed forward to a combinational computation box denoted C1. C1 does some simple combinational calculations to produce a new result. Parts of that result can be fed back to M1 and parts of it can be fed forward to M2.
 
@@ -125,11 +127,17 @@ Here is an illustration:
 *              '--------'                                  *
 ************************************************************
 
-Note that this is not related to actual circuitry. This image just represents our mental model on a high level.
+Note that this is not related to actual circuitry. This image just represents our mental model on a high level. A good way to think about this is to think that the combinational computations prepare the next state. The new state is accepted when the next clock arrives and then the combinational computations is run again for the new inputs. And loop.
 
-...
+(##) What about clock frequency?
 
-The longer chains we have, the lower the clock frequency must be such that all outputs from combinational computations are stable when the next clock goes off. It is possible to increase the clock frequency by dividing long combinational computations into several steps, saving the intermediate values as clocked state.
+The longer chains we have, the lower the clock frequency must be such that all outputs from combinational computations are stable when the next clock goes off. It is possible to increase the clock frequency by dividing long combinational computations into several steps, saving the intermediate values as clocked state. The FPGA itself often is specified to have a maximum clock frequency so it is not possible to run faster than that of course.
+
+When starting with FPGAs it is easy to be bogged down in talk about meta-stable signals. It seems hard to work with and it is a real problem, but in our setup we need not worry about it just yet. Meta-stable signals are signals that are being produced by another clock. When you try to consume them there is a window where they don't have a defined value (0 or 1) and they can be anything. The signal simply isn't stable yet since the end of the external clock cycle has not been reached yet. There are ways to combat this, especially if you run at a much higher clock frequency, but I am leaving that topic for a later date!
+
+(##) A note on clock frequency
+
+When doing a simple design you can assume that the project will run on the clock frequency provided by the crystal on the FPGA development board. This could be 33Mhz, 100Mhz or something different. Unless you explicitly use the built in circuitry to generate a custom clock this is what you will get. I'm adding this note because at first I thought my design would automatically run as fast as possible. It is much more convenient to be in control since you often want to interface with external hardware so I am glad I was wrong!
 
 Side quest: How to you develop for a FPGA?
 ==========================================
@@ -152,6 +160,7 @@ Recommended Reading / Watching
 * [http://www.fpga4fun.com/](http://www.fpga4fun.com/). Many small projects that helps you get a feeling for what can be done.
 * [A structured VHDL design method (book chapter)](http://www.gaisler.com/doc/vhdl2proc.pdf). Once you've started writing VHDL or Verilog this article helps you organize your code.
 * [A walk-through of Xilinx's Vivado FPGA design suite (Per Vognsen)](https://www.youtube.com/watch?v=uTbBw-q5JnY).
+* [The Fastest, Easiest FPGA Blinker, Ever! (on IceStorm)](http://www.xess.com/static/media/pages/pygmyhdl/examples/1_blinker/fastest_easiest_FPGA_blinker_ever.html)
 
 Lies, lies, lies...
 ===================
@@ -163,4 +172,8 @@ Here I put facts to illustrate where I lied or over-simplified my mental model. 
 * FPGA pins are divided into different banks. Some FPGAs can run each bank on a different voltage. This affects what can be connected to them. The reason for this is that lower voltage leads to lower energy consumption. By only using higher voltage on the pins that needs it total energy consumption is lower compared to a chip where all pins supports the higher voltage.
 * FPGAs these days have dedicated DSP blocks that can do some combination computations very fast by not using a FPGA. These typically take the form of integer multiplications with sufficient number of bits to implements floating point operations.
 * Even if all computations happen inside a clock domain the output signal can be skewed. That is while all of outputs (to the outside of the FPGA) are ready at the end of a clock-cycle, they might be ready at different times. If an external device that doesn't care about the clock coming from the FPGA this can cause troubles with some external devices.
+
+Big take-aways
+==============
+* Length of longest / most complicated combinational chain determines maximum possible clock frequenc
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
