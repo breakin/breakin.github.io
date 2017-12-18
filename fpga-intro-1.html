@@ -157,21 +157,23 @@ When you build a CPU you build it using similar tools as when you program a FPGA
 
 These two designs are quite different. The FPGA on is superior when you are talking to external devices on a BUS on a fixed cycle. Lets say you are making a chip to do video signal conversion. When using a FPGA you have exact control over timing and can make sure that you satisfy the demand of the downstream gadgets.
 
-Recommended Reading / Watching
-==============================
+Summary
+=======
+That was all for today. Here is a short TL;DR list for the blog post:
+
+* Length of longest / most complicated combinational chain determines maximum possible clock frequency
+* Make sure you specify what clock frequency you want to run with
+* It is hard to buy a FPGA development board. Be prepared to buy the wrong one at first :)
+
+(##) Recommended Reading / Watching
+
 * [http://www.fpga4fun.com/](http://www.fpga4fun.com/). Many small projects that helps you get a feeling for what can be done.
 * [A structured VHDL design method (book chapter)](http://www.gaisler.com/doc/vhdl2proc.pdf). Once you've started writing VHDL or Verilog this article helps you organize your code.
 * [A walk-through of Xilinx's Vivado FPGA design suite (Per Vognsen)](https://www.youtube.com/watch?v=uTbBw-q5JnY).
 * [The Fastest, Easiest FPGA Blinker, Ever! (on IceStorm)](http://www.xess.com/static/media/pages/pygmyhdl/examples/1_blinker/fastest_easiest_FPGA_blinker_ever.html)
 
-Big take-aways
-==============
-* Length of longest / most complicated combinational chain determines maximum possible clock frequency
-* Make sure you specify what clock frequency you want to run with
-* It is hard to buy a FPGA development board. Be prepared to buy the wrong one at first :)
+(##) Lies, lies, lies...
 
-Lies, lies, lies...
-===================
 Here I put facts to illustrate where I lied or over-simplified my mental model. Note that very word is an over-simplification, these are just the bigger ones!
 
 * FPGAs can have multiple clock domains, each with their own clock frequency. If you try to interface them you have to be careful! There is something called meta-stability that can affect you if you READ from another clock domain (something using a different clock so that you are not in sync). If you are just writing to outputs it is up to the consumer of your bits to handle meta-stability.
