@@ -7,8 +7,8 @@ theme: electronics
 landing: drafts
 ---
 
-# Introduction
-
+Introduction
+============
 I've been spending some time playing around with FPGAs. It has been quite challenging since they don't allow for as much sloppiness as a micro controller. I even managed to get a friend hooked on FPGAs. When I met him later he told me that he stopped because he got stuck in some details... And that made realize that I should write up my first stumbling steps into FPGAs. Maybe it could have helped him and maybe it will someone else! I will here assume that a FPGA is the right tool for you and describe how my understanding improved from not even beginner level to beginner level. In reality a FPGA might often not be the tool you need. But it is a fun tool!
 
 First lets talk about why I started looking into FPGAs. At the time I had just completed a _backup_ device that could extract ROMs from a Super Nintendo Cartridge. I did a small writeup [here](/snes-cartridge-4). It looked something like this:
@@ -55,8 +55,8 @@ Here somewhere my mental model had other issues. If everything always fed "forwa
 
 Yes I was this naive; I did not know about clocking before I started this! To my defense I did go to math school, not electric school.
 
-# Side quest: Buying a FPGA
-
+Side quest: Buying a FPGA
+=========================
 Purchasing a FPGA development board was not easy for me. The idea is that if you are doing a commercial product using a FPGA you will make your own PCB eventually with only the peripherals you need. You want the smallest FPGA possible since that will cut power consumption and cost of the final product. The development boards are different. They try to cater either to students or professional who don't quite know what product they are making. If you buy the wrong one it might not be possible to make it do what you need and after a while you are likely to buy another development board. In my so-far limited experience memory (DRAM, SRAM etc) is a very important factor. In particular if the memory subsystem is wrong for your application it might be hard to make everything work. I got a [Papilio DUO](http://papilio.cc/index.php?n=Papilio.PapilioDUOHardwareGuide) featuring a small variant of the Spartan-6 FPGA from Xilinx. The variant I purchases has a 2MB (mega *bytes*, not mega *bits*! Most sites for hardware specify memory sizes in bits, not bytes so be aware of that!). This made sense since I could easily fit most Super Nintendo ROMs in there.
 
 ![Not an endorsement for Papillio DUO but it has been OK!](images/papillio-duo.jpg)
@@ -65,13 +65,13 @@ Purchasing a FPGA development board was not easy for me. The idea is that if you
 
  I should mention two other brands of FPGAs. First there is [Altera](https://www.altera.com/products/fpga/overview.html) that is now owned by Intel. The second one is [Lattice Semiconductor](http://www.latticesemi.com/Products.aspx#_D5A173024E414501B36997F26E842A31). They are notable because there now exist open source tool chains for some of their FPGAs. See [project IceStorm](http://www.clifford.at/icestorm/). There currently are many ongoing reverse-engineering efforts to be able to produce bit streams for various FPGAs.
 
- # A better mental model of our FPGA
-
+A better mental model of our FPGA
+=================================
 Back to the actual FPGA. First thing first. The FPGA has a number of physical _pins_ that can be configured to be inputs, outputs or both. How the pins are configured is part of the configuration of the FPGA. On the outside of the FPGA the pins can be connected to pretty much anything that operates at the correct voltage (which is seldom above 3.3V for current FPGAs). The values at the input pins affect the computations performed by the FPGA and the outputs pins are fed results from the computations. What computations are performed is decided by the bit stream that the FPGA is programmed with. The bit stream is most often constructed through proprietary tool chains supplied by the FPGA manufacturer. The computational elements (called logical elements) of the FPGA are also configured using the bit stream. How they actually behave on an electrical level depends on exact FPGA model. It is up to the _compiler_ to know about the particulars of the FPGA being used. Today we will work on a higher level where we only need a mental model of how it all fits together so we will not discuss it in detail.
 
 When thinking about the computation that takes places in a FPGA I like to think not about individual gates or logical elements but rather groups of such. There are two types of groups that can be connected together. The first type is called _combinational_ and the second type is _sequential_.
 
-## Combinational computations
+# Combinational computations
 
 Yes, I made a header for this section just so I could have a header with an alliteration in it.
 
@@ -91,7 +91,7 @@ Rules to respect in our mental model:
 
 But the FPGA isn't infinitely fast. It feels like someone need to care about when values are stable. And someone does. The tool chain that compiles your program will determine the maximum time that the combinational networks needs until all outputs are stable. This determines the length of a clock cycle. If you respect the value given to you by your compiler you will be fine for that particular device.
 
-## Clocked computations
+# Clocked computations
 
 Yes, another alliteration. I'm on fire today!
 
@@ -103,7 +103,7 @@ Now it is time to use our magical external device and hook it up to the FPGA. It
 
 These magical devices actually exists inside the FPGA. More or less. They can only store one bit of information each and there is no button. There is, however, a global clock signal that goes off at fixed interval.
 
-## All together
+# All together
 
 That section on clocking was short but that is because clocking on its own isn't all that fun. We need to combine combinational and sequential computations to make something interesting.
 
@@ -134,26 +134,30 @@ Note that this is not related to actual circuitry. This image just represents ou
 
 The longer chains we have, the lower the clock frequency must be such that all outputs from combinational computations are stable when the next clock goes off. It is possible to increase the clock frequency by dividing long combinational computations into several steps, saving the intermediate values as clocked state.
 
-# Side quest: How to you develop for a FPGA?
-
+Side quest: How to you develop for a FPGA?
+==========================================
 In the beginnings people were designing processors using gates. Maybe they didn't had FPGAs then but made [ASICs](https://en.wikipedia.org/wiki/Application-specific_integrated_circuit) instead. Then there was talk for many years about a high level language. Eventually the compilers got good enough and there was two high level language called VHDL and Verilog. I've personally only used VHDL so far and I will use the word VHDL here to mean either VHDL or Verilog. The tool chain takes the VHDL source and figures out what gates it would use for that program. It eliminates gates that are not needed and merge gates that does the same thing. I tries to do as much as possible to reduce the number of gates and increase the maximum clock frequency. It then tries to map that onto the FPGA currently being compiled for.
 
 There are two nice things. Most IDEs have some sort of simulator where you can see what your program does without running on actual hardware. This can be nice, especially since debugging on hardware can be challenging (or impossible). The second is that you can write test programs that tests your code. This enables you to write code in functional blocks that can be tested/simulated in isolation and then put together.
 
 There are many ready-made blocks you can use. Some come in form av standard library, some come with the IDE/tool chain and some come from somewhere else. One such place is [OpenCores](https://opencores.org/) that has a lot of cores. I especially want to mention "Soft Cores" which are processors running on the FPGA. We will discuss why you might want to have a CPU on a FPGA in the next section.
 
-# The cost of code
+The cost of code
+================
+When you develop for a FPGA you might write some code that does say an increment of a counter stored in the FPGA. When the counter is stored inside the FPGA it is sort similar to how a register is stored in a processor. It is not stored in memory somewhere but it is stored inside the transistors of the chip itself. This is just one small part of the entire program running on the FPGA. The crucial thing to understand here is that it all runs in parallel. The counter increment code is always there, physically. It consumes a few flip-flops for the calculation and some more for the storage of the counter. If it has been setup so it only increments on some cycles it will just do nothing most cycles (except storing the counter). The increment flip-flops are wasted in some regard.
 
-TODO: Talk about writing unique code uses flops which makes them unfit to do anything else (most of the time). Talk about pipelining where you can reuse the flops each cycle and flops that reuse a state (so no pipeline).
+When you build a CPU you build it using similar tools as when you program a FPGA. But instead of trying to put the program running on the CPU inside the CPU, it is stored in memory. The CPU pulls out the next instruction and then it give it away to one a of a few functional units doing arithmetics, memory fetching, floating pointer operations etc. The instructions coming from memory are generally decomposed so that they can run on the existing functional blocks. In this way not as much flip-flops are wasted. Modern CPUs are very advanced and run multiple instructions at once pipelined to make sure all functional units are used.
 
-# Recommended Reading / Watching
+These two designs are quite different. The FPGA on is superior when you are talking to external devices on a BUS on a fixed cycle. Lets say you are making a chip to do video signal conversion. When using a FPGA you have exact control over timing and can make sure that you satisfy the demand of the downstream gadgets.
 
+Recommended Reading / Watching
+==============================
 * [http://www.fpga4fun.com/](http://www.fpga4fun.com/). Many small projects that helps you get a feeling for what can be done.
 * [A structured VHDL design method (book chapter)](http://www.gaisler.com/doc/vhdl2proc.pdf). Once you've started writing VHDL or Verilog this article helps you organize your code.
 * [A walk-through of Xilinx's Vivado FPGA design suite (Per Vognsen)](https://www.youtube.com/watch?v=uTbBw-q5JnY).
 
-# Lies, lies, lies...
-
+Lies, lies, lies...
+===================
 Here I put facts to illustrate where I lied or over-simplified my mental model. Note that very word is an over-simplification, these are just the bigger ones!
 
 * FPGAs can have multiple clock domains, each with their own clock frequency. If you try to interface them you have to be careful! There is something called meta-stability that can affect you if you READ from another clock domain (something using a different clock so that you are not in sync). If you are just writing to outputs it is up to the consumer of your bits to handle meta-stability.
