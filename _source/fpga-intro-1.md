@@ -150,6 +150,8 @@ There are two nice things. Most IDEs have some sort of simulator where you can s
 
 There are many ready-made blocks you can use. Some come in form av standard library, some come with the IDE/tool chain and some come from somewhere else. One such place is [OpenCores](https://opencores.org/) that has a lot of cores. I especially want to mention "Soft Cores" which are processors running on the FPGA. We will discuss why you might want to have a CPU on a FPGA in the next section.
 
+In my experience developing has been slower than anticipated. This is partially because of the tooling (compilers are slow etc) but mostly because this is very new to me. There are efforts to bring OpenCL and C++ code directly to the FPGA to make people more productive, but for most application I would guess that it is probably more efficient to put a CPU there instead :)
+
 The cost of code
 ================
 When you develop for a FPGA you might write some code that does say an increment of a counter stored in the FPGA. When the counter is stored inside the FPGA it is sort similar to how a register is stored in a processor. It is not stored in memory somewhere but it is stored inside the transistors of the chip itself. This is just one small part of the entire program running on the FPGA. The crucial thing to understand here is that it all runs in parallel. The counter increment code is always there, physically. It consumes a few flip-flops for the calculation and some more for the storage of the counter. If it has been setup so it only increments on some cycles it will just do nothing most cycles (except storing the counter). The increment flip-flops are wasted in some regard.
@@ -165,6 +167,12 @@ Recommended Reading / Watching
 * [A walk-through of Xilinx's Vivado FPGA design suite (Per Vognsen)](https://www.youtube.com/watch?v=uTbBw-q5JnY).
 * [The Fastest, Easiest FPGA Blinker, Ever! (on IceStorm)](http://www.xess.com/static/media/pages/pygmyhdl/examples/1_blinker/fastest_easiest_FPGA_blinker_ever.html)
 
+Big take-aways
+==============
+* Length of longest / most complicated combinational chain determines maximum possible clock frequency
+* Make sure you specify what clock frequency you want to run with
+* It is hard to buy a FPGA development board. Be prepared to buy the wrong one at first :)
+
 Lies, lies, lies...
 ===================
 Here I put facts to illustrate where I lied or over-simplified my mental model. Note that very word is an over-simplification, these are just the bigger ones!
@@ -175,7 +183,3 @@ Here I put facts to illustrate where I lied or over-simplified my mental model. 
 * FPGA pins are divided into different banks. Some FPGAs can run each bank on a different voltage. This affects what can be connected to them. The reason for this is that lower voltage leads to lower energy consumption. By only using higher voltage on the pins that needs it total energy consumption is lower compared to a chip where all pins supports the higher voltage.
 * FPGAs these days have dedicated DSP blocks that can do some combination computations very fast by not using a FPGA. These typically take the form of integer multiplications with sufficient number of bits to implements floating point operations.
 * Even if all computations happen inside a clock domain the output signal can be skewed. That is while all of outputs (to the outside of the FPGA) are ready at the end of a clock-cycle, they might be ready at different times. If an external device that doesn't care about the clock coming from the FPGA this can cause troubles with some external devices.
-
-Big take-aways
-==============
-* Length of longest / most complicated combinational chain determines maximum possible clock frequency
