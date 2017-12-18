@@ -11,13 +11,12 @@ theme: graphics
 In computer graphics we traditionally create scenes with multiple meshes consisting of triangles. In order to generate an image of our scene we must shoot a ray through each pixel and into the scene to find the surface that is visible in that pixel. The *generate_camera_direction function* wants a pixel coordinate with x and y from 0.0 to 1.0. The full code we use looks like this:
 ~~~~~~~~~~~~
 Float3 pathtrace_sample(...) {
- float cx = (x+uniform(tc))*one_over_width;
- float cy = (y+uniform(tc))*one_over_height;
- Float3 camera_direction =
-  generate_camera_direction(camera, cx, cy);
+ float cx = (x + uniform(thread_context)) * one_over_width;
+ float cy = (y + uniform(thread_context)) * one_over_height;
+ Float3 camera_direction = generate_camera_direction(camera, cx, cy);
  ...
 ~~~~~~~~~~~~
-The function uniform returns a random number between 0.0 and 1.0. It uses a ThreadContext (in *tc*) to store the random seed such that multi-threading doesn't influence the random numbers. Using the camera position (*camera.position*) and the camera direction calculated here we have our ray. It starts at the camera and it travels in the direction of *camera_direction*. We can use *intersect_closest* to find out if we hit anything
+The function uniform returns a random number between 0.0 and 1.0. It uses thread_context to store the random seed such that multi-threading doesn't influence the random numbers. Using the camera position (*camera.position*) and the camera direction calculated here we have our ray. It starts at the camera and it travels in the direction of *camera_direction*. We can use *intersect_closest* to find out if we hit anything
 ~~~~~~~~~~~~
  ...
  IntersectResult i;
@@ -31,8 +30,8 @@ The function uniform returns a random number between 0.0 and 1.0. It uses a Thre
 
 If we always wanted to shoot through the middle of the pixel we could have used
 ~~~~~~~~~~~~
-float cx = (x+0.5f)*one_over_width;
-float cy = (y+0.5f)*one_over_height;
+float cx = (x + 0.5f) * one_over_width;
+float cy = (y + 0.5f) * one_over_height;
 Float3 camera_direction = generate_camera_direction(camera, cx, cy);
 ~~~~~~~~~~~~
 instead.
@@ -41,7 +40,7 @@ instead.
 
 Armed with the ability to shoot rays into our scenes we now know something about the geometry of the scene. But we need more. What does the triangle look like? Is it metallic? Or plastic? Green? For each triangle we have a material that describe the surface properties for that triangle. Often a texture or a shader is used to give the surfaces varying surface properties over the triangles.
 
-The surface properties are used as parameters to a material model. One of the simplest material models is called the Lambert model and that is what we are going to start with. In the Lambert model we have a single colored property called the diffuse color that describe how much light is reflected diffusivly. If a surface with a bluish diffuse color is illuminate by a white lightsource it will reflect a bluish color. It is reflected over the entire hemisphere around the surface normal but more light is reflected in the direction of the surface normal.
+The surface properties are used as parameters to a material model. One of the simplest material models is called the Lambert model and that is what we are going to start with. In the Lambert model we have a single colored property called the diffuse color that describe how much light is reflected diffusively. If a surface with a bluish diffuse color is illuminate by a white light source it will reflect a bluish color. It is reflected over the entire hemisphere around the surface normal but more light is reflected in the direction of the surface normal.
 
 Here is a diffuse only view of our test scene:
 
@@ -51,10 +50,9 @@ It was generated using the following code:
 
 ~~~~~~~~~~~~
 Float3 pathtrace_sample(...) {
- float cx = (x+0.5f)*one_over_width;
- float cy = (y+0.5f)*one_over_height;
- Float3 camera_direction = 
-  generate_camera_direction(camera, cx, cy);
+ float cx = (x + 0.5f) * one_over_width;
+ float cy = (y + 0.5f) * one_over_height;
+ Float3 camera_direction = generate_camera_direction(camera, cx, cy);
 
  IntersectResult i;
  if (intersect_closest(scene, camera.position, camera_direction, i)) {
@@ -76,10 +74,9 @@ At this point in any graphics tutorial it most be noted that the scene should be
 We have two types of light sources for now. The sky is acting as one big light. The other one is emissive materials. It looks a bit off having a sky without clouds and without a sun at the same time but lets keep it like that for now. The image was generated using the following code:
 ~~~~~~
 Float3 pathtrace_sample(...) {
- float cx = (x+0.5f)*one_over_width;
- float cy = (y+0.5f)*one_over_height;
- Float3 camera_direction =
-  generate_camera_direction(camera, cx, cy);
+ float cx = (x + 0.5f) * one_over_width;
+ float cy = (y + 0.5f) * one_over_height;
+ Float3 camera_direction = generate_camera_direction(camera, cx, cy);
 
  IntersectResult i;
  if (!intersect_closest(scene, camera.position, camera_direction, i)) {
