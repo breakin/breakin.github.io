@@ -1,6 +1,6 @@
 ---
 layout: post
-date: 2017-12-16
+date: 2017-12-18
 title: FPGA intro
 tags: electronics, fpga
 theme: electronics
