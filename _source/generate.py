@@ -27,32 +27,18 @@ copyfile(source_directory + "style.css", dest_directory+"style.css")
 
 link_matcher = re.compile(r'\[([^\]]+)\]\(([^)]+)\)') # markdown link matcher
 
-def start_markdown(dest, title, date):
-	dest.write("<meta charset=\"utf-8\"><link rel=\"stylesheet\" href=\"style.css?\">\n")
-	dest.write("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">\n")
-	
-	dest.write("<script>window.markdeepOptions = {tocStyle: 'short'};</script>\n") 
-	dest.write("**" + title+"**\n")
-	dest.write("\t\t\t\tAnders Lindqvist - " + date + " - [index](index.html)\n")
-
-def stop_markdown(dest):
-	dest.write("<style class=\"fallback\">body{visibility:hidden;white-space:pre;font-family:monospace}</style>\n")
-	dest.write("<script src=\"markdeep.min.js\"></script>\n")
-	dest.write("<script src=\"https://casual-effects.com/markdeep/latest/markdeep.min.js\"></script>\n")
-	dest.write("<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility=\"visible\")</script>\n")
+custom_word_matcher = re.compile(r'\$\{([^}]+)\}') # Mark 
 
 copied_resources = set([])
 
 def format_post(post_id):
-
 	post = all_posts[post_id]
 	post_date = post[1]
 	post_title = post[0]
 	target_dest = dest_directory
 	post_link = post_id+".html"
 
-	dest = open(target_dest+post_link, "wt")
-
+	# Copy used files
 	for img in post[4]:
 		src = post_directory + img
 		dst = target_dest + img
@@ -69,48 +55,69 @@ def format_post(post_id):
 			pass
 		copyfile(src, dst)
 
-	start_markdown(dest, post[0], post_date)
+	dest = open(target_dest+post_link, "wt")
+	post_template = open(source_directory + "post_page.html", "rt")
 
-	tags = post[2]
-	if len(tags) != 0:
-		dest.write("tags: ")
-		first = True
-		for tag in sorted(tags):
-			if not first: dest.write(", ")
-		dest.write(tag)
-		dest.write("\n\n")
+	def word_changer(m): # Simply remove / for now
+		print("  Matched word " + m.group(0))
+		w = m.group(1)
+		if w == "POST_DATE": return post_date
+		if w == "POST_TITLE": return post_title
+		raise Exception("Invalid variable " + w + " in post_page.html")
 
-	lines = post[3]
-	in_python = False
-	block = ""
+	my_locals = {}
+	my_globals = {}
 
-	old_stdout = sys.stdout
-	sys.stdout = dest
+	for line in post_template:
+		if line != "<<content>>\n":
+			line = custom_word_matcher.sub(word_changer, line)
+			dest.write(line)
+			continue
 
-	for line in lines:
-		if line == "{{python}}\n":
-			if len(block)>=0:
-				exec(block)
-				block = ""
-			in_python = False if in_python else True
-		else:
-			if in_python:
-				block = block + line[1:]
+		tags = post[2]
+		if len(tags) != 0:
+			dest.write("tags: ")
+			first = True
+			for tag in sorted(tags):
+				if not first: dest.write(", ")
+			dest.write(tag)
+			dest.write("\n\n")
+
+		lines = post[3]
+		in_python = False
+		block = ""
+
+		old_stdout = sys.stdout
+		sys.stdout = dest
+
+		for line in lines:
+			if line == "{{python}}\n":
+				if len(block)>=0:
+					exec(block, my_locals, my_globals)
+					block = ""
+				in_python = False if in_python else True
 			else:
-				print(line[:-1])
-		dest.flush()
+				if in_python:
+					block = block + line[1:]
+				else:
+					print(line[:-1])
+			dest.flush()
 
 	if len(block)>=0:
-		exec(block)
+		exec(block, my_locals, my_globals)
 	block = ""
 	sys.stdout = old_stdout
 
-	stop_markdown(dest)
+	dest.close()
+	post_template.close()
+
 
 def parse_posts():
 	filenames = next(os.walk(post_directory))[2]
 	for post in filenames:
 		if not post[-3:] == ".md":
+			continue
+		if not post == "fpga-intro-1.md":
 			continue
 
 		print("Processing " + post)
