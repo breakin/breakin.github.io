@@ -2,10 +2,53 @@
 <link rel="stylesheet" href="style.css?">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <script>window.markdeepOptions = {tocStyle: 'short'};</script>
-**${POST_TITLE}**
-				Anders Lindqvist - ${POST_DATE} - [index](index.html)
+**The SNES Cartridge Part 2**
+				Anders Lindqvist - 2015-01-28 - [index](index.html) - [contact](https://twitter.com/anders_breakin)
 
-<<content>>
+tags: snes
+
+
+Just wanted to give an update.
+
+I managed to find an old "standard" edge connector with 2*23 pins (just like a SNES cartridge with no extension chips). I found it at the physical store [Tema Elektronik](http://www.temaelektronik.se) here in Gothenburg. It is the only physical store that I know of that sells electronics stuff since ELFA closed (Kjell&co does have some stuff and they are super helpful, but still).
+
+Here it is in all its glory:
+
+![Standard edge connector](images/edgecon.jpg)
+![Standard edge connector](images/edgecon2.jpg)
+
+When mounted on a game it looks like this:
+
+![Mounted on SNES cartridge](images/edgecon_mounted.jpg)
+
+I'm not sure if it is 2.54mm or 2.5mm, probably 2.54mm since that is the standard. The game seems to fit tightly though. The pins are a bit large but do fit in a breadboard BUT they are not seperated enough to be placed on opposite sides of the "ridge", thus is will short circuit. I haven't found a nice solution here yet... My hope is to be able to use the individual pins of a cable such as
+
+![40-pin cable with male-female-connectors](images/cable-40p-male-female.jpg)
+
+EDIT: This cable did not work. I got one and just looking at it I can see that the female end have too large holes. Seems that the pins on cables made for breadboards have quite large pins. Expect a future invective-filled post when I've soldered everything instead! I could go for clamp-based solution instead but f*ck it.
+
+and use the females on the edge connector and the males on the breadboard. I do have everything I need to build cables myself, but I'll think I'll buy something this time. To be continued.
+
+I also found some information on [SNES Cartridges](http://www.cs.umb.edu/~bazz/snes/cartridges/) here. Especially [this](http://www.cs.umb.edu/~bazz/snes/cartridges/electronics/simple_components.html), [this](http://www.cs.umb.edu/~bazz/snes/cartridges/electronics/speeds.html) and [this](http://www.cs.umb.edu/~bazz/snes/cartridges/lorom.html) seems helpful. I will probably learn a lot from these.
+
+Feels like I've taken a step forward somehow. I'm back at work after my parental leave and Rasmus has been giving me helpful tips on the electronics side so I feel that I should have something up and running. My biggest challenge is that the RaspberryPi model B+ only have 26 data pins (it has 40 in total, but only 26 that can be used as input/output). One can solder on 4 more somehow so that could be 30. The SNES OTOH uses 32-pins for adress (24-bit) and data (8-bit). Then I need some more pins to communicate.
+
+Of the 46 snes pins I can disregard:
+
+* 2 +5VDC
+* 2 GND
+* 4 CIC
+* /CART will always be 1 for ROM extraction
+* /RESET will probably always have one value
+* CPU_CLOCK I might be abel to disregard
+* Perhaps /RD can be ignored, don't know
+* 24-bit adresses means 16MB cartridges. Most games are smaller. Perhaps I can make a compromise here.
+
+So if I'm lucky I only need 34 pins which is larger than 30. But for now I can try to extract first 64kb or something and then move on from there. If I later want to emulate a cartridge and play it back in the SNES I must be 5V and work with all the 46 pins so I need to figure out how to do that with the Raspberry (or with something else!).
+
+Stay tuned!
+
+For questions or feedback please reach out to me at [twitter](https://twitter.com/anders_breakin)!
 
 <style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
 <script src="markdeep.min.js"></script>

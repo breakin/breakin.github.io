@@ -59,7 +59,6 @@ def format_post(post_id):
 	post_template = open(source_directory + "post_page.html", "rt")
 
 	def word_changer(m): # Simply remove / for now
-		print("  Matched word " + m.group(0))
 		w = m.group(1)
 		if w == "POST_DATE": return post_date
 		if w == "POST_TITLE": return post_title
@@ -116,8 +115,6 @@ def parse_posts():
 	filenames = next(os.walk(post_directory))[2]
 	for post in filenames:
 		if not post[-3:] == ".md":
-			continue
-		if not post == "fpga-intro-1.md":
 			continue
 
 		print("Processing " + post)
