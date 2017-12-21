@@ -55,8 +55,8 @@ def format_post(post_id):
 			pass
 		copyfile(src, dst)
 
-	dest = open(target_dest+post_link, "wt")
-	post_template = open(source_directory + "post_page.html", "rt")
+	dest = open(target_dest+post_link, "wb")
+	post_template = open(source_directory + "post_page.html", "rb")
 
 	def word_changer(m): # Simply remove / for now
 		w = m.group(1)
@@ -68,6 +68,8 @@ def format_post(post_id):
 	my_globals = {}
 
 	for line in post_template:
+		line = line.replace("\r\n", "\n")
+
 		if line != "<<content>>\n":
 			line = custom_word_matcher.sub(word_changer, line)
 			dest.write(line)
@@ -133,6 +135,10 @@ def parse_posts():
 		content = []
 
 		for line in f:
+
+			line = line.replace("\r\n", "\n")
+			#print("<" + line + "> state=" + str(state))
+
 			if state == 2:
 				#if line.startswith("#"): # TODO: This might intefer with python comments in python blocks.. oops
 				#	num = len(line.split(" ")[0])+1

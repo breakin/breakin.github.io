@@ -11,6 +11,8 @@ Introduction
 ============
 I've been spending some time playing around with FPGAs. It has been quite challenging since they don't allow for as much sloppiness as a micro controller. I even managed to get a friend hooked on FPGAs. When I met him later he told me that he stopped because he got stuck in some details... And that made realize that I should write up my first stumbling steps into FPGAs. Maybe it could have helped him and maybe it will someone else! I will here assume that a FPGA is the right tool for you and describe how my understanding improved from not even beginner level to beginner level. In reality a FPGA might often not be the tool you need. But it is a fun tool!
 
+This blog post is intended for beginners but it won't show any code. A post like this would have helped me during the time when I tried things on myself, sometimes succeeding and sometimes failing. A high-level post with a little bit of this and a little bit of that hopefully can clear up some confusion.
+
 First lets talk about why I started looking into FPGAs. At the time I had just completed a _backup_ device that could extract ROMs from a Super Nintendo Cartridge. I did a small writeup [here](snes-cartridge-4.html). It looked something like this:
 
 ![My Super Nintendo Backup Setup. Connected to my Raspberry PI](images/extractor.jpg)
@@ -64,6 +66,8 @@ Purchasing a FPGA development board was not easy for me. The idea is that if you
  By now I've bought another one, partially so I can use the new [Vivado](https://www.xilinx.com/products/design-tools/vivado.html) IDE from Xilinx that is available to the 7-series FPGAs. For Spartan-6 FPGAs you need to use [Xilinx ISE](https://www.xilinx.com/products/design-tools/ise-design-suite.html) which is almost discontinued (but it seems as if they are adding Windows 10 support after all). I also kinda had to get a new FPGA because I wanted to! Hobbies are not hobbies unless you buy stuff and maybe sometime do stuff with the stuff you've bought! There are other brands of FPGAs.
 
  I should mention two other brands of FPGAs. First there is [Altera](https://www.altera.com/products/fpga/overview.html) that is now owned by Intel. The second one is [Lattice Semiconductor](http://www.latticesemi.com/Products.aspx#_D5A173024E414501B36997F26E842A31). They are notable because there now exist open source tool chains for some of their FPGAs. See [project IceStorm](http://www.clifford.at/icestorm/). There currently are many ongoing reverse-engineering efforts to be able to produce bit streams for various FPGAs.
+
+ UPDATE: It seems as if reverse-engineering of Xilinx Series-7 is progressing. [Here](https://symbiflow.github.io) is more information.
 
  I also want to mention that there is a difference between hobbyist FPGAs and professional FPGAs. If you look at [FPGAs available in AWS](https://aws.amazon.com/ec2/instance-types/f1/) they cost thousands of US dollars. Hobbyist FPGAs on the other hand can be quite cheap.
 
