@@ -248,6 +248,7 @@ for landing in all_landing_pages:
 			theme_pages[theme].append(p)
 
 	for line in index:
+		line = line.replace("\r\n", "\n")
 		if line == "<<themes>>\n":
 			for theme in theme_pages:
 				theme_name = theme[0].upper() + theme[1:]
