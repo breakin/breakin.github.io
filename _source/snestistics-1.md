@@ -6,6 +6,8 @@ tags: snes, programming, asm, snestistics
 theme: snestistics
 landing: index, snestistics
 ---
+(Notice that this is a historical post that has been re-posted. Most facts in this post are no longer true!)
+
 I've finally put some code up on the net!
 
 First I have a modified snes9x branch at https://github.com/breakin/snes9x-debugtrace.
