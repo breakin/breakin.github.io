@@ -1,12 +1,11 @@
-<meta charset="utf-8">
-<link rel="stylesheet" href="style.css?">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<script>window.markdeepOptions = {tocStyle: 'short'};</script>
-**Snestistics - Super Famicon Wars English translation**
-				Anders Lindqvist - 2017-12-24 - [index](index.html) - [contact](https://twitter.com/anders_breakin)
-
-tags: snestistics
-
+---
+layout: post
+date: 2017-12-24
+title: Snestistics - Super Famicon Wars English translation
+tags: snes, programming, asm, snestistics
+theme: snestistics
+landing: snestistics
+---
 We've released a game translation using snestistics. We translated an obscure game that only existed in Japanese into English. The patch and more information can be found [here](TODO). I am super proud to have been part of this project and I hope that others want to use snestistics o do other projects. While I might not be as involved in those I would be happy to help out fixing bugs specific to that game.
 
 My involvement
@@ -25,13 +24,6 @@ I am continuing work on my tool at [https://github.com/breakin/snestistics](http
 
 Snestistics
 ===========
-I am currently cleaning up the code we used. We had feature for which David needed to use make files to compile in things that really should live in data or as some form of plugin. To enable users who don't love building C++ projects I added support for a scripting language (squirrel). The entire C++-program "plugin" that we used for the SFW translation has been translated into squirrel script so that was not a limitation.
+I am currently cleaning up the code we used. We had feature for which David needed to use make files to compile in things that really should live in data or as some form of plugin. To enable users who don't love building C++ projects I added support for a scripting language (squirrel). I am also working on new features. The coolest feature is the ability to get an answer to the question "why is register or memory this or that at this point". The answer is given as a .dot-file that can be rendered using graphviz into a beautiful graph. The feature is kinda half-baked but it sure is fun to come up with new ways to reduce the complexity of breaking things apart!
 
-Snestistics can be found at [github](https://github.com/breakin/snestistics)
-
-For questions or feedback please reach out to me at [twitter](https://twitter.com/anders_breakin)!
-
-<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
-<script src="markdeep.min.js"></script>
-<script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script>
-<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
+Snestistics can be found at [github](https://github.com/breakin/snestistics).
