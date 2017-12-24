@@ -3,10 +3,10 @@ layout: post
 date: 2017-12-24
 title: Snestistics - Super Famicon Wars English translation
 tags: snes, programming, asm, snestistics
-theme: snestistics
+theme: index, snestistics
 landing: snestistics
 ---
-We've released a game translation using snestistics. We translated an obscure game that only existed in Japanese into English. The patch and more information can be found [here](TODO). I am super proud to have been part of this project and I hope that others want to use snestistics o do other projects. While I might not be as involved in those I would be happy to help out fixing bugs specific to that game.
+We've released a game translation using snestistics. We translated an obscure game that only existed in Japanese into English. The patch and more information can be found [here](http://www.romhacking.net/translations/3354/). I am super proud to have been part of this project and I hope that others want to use snestistics o do other projects. While I might not be as involved in those I would be happy to help out fixing bugs specific to that game.
 
 My involvement
 ==============
