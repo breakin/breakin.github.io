@@ -24,6 +24,6 @@ I am continuing work on my tool at [https://github.com/breakin/snestistics](http
 
 Snestistics
 ===========
-I am currently cleaning up the code we used. We had feature for which David needed to use make files to compile in things that really should live in data or as some form of plugin. To enable users who don't love building C++ projects I added support for a scripting language (squirrel). I am also working on new features. The coolest feature is the ability to get an answer to the question "why is register or memory this or that at this point". The answer is given as a .dot-file that can be rendered using graphviz into a beautiful graph. The feature is kinda half-baked but it sure is fun to come up with new ways to reduce the complexity of breaking things apart!
+I am currently cleaning up the code we used. We had a feature for which David needed to use make files to compile in things that really should live in data or as some form of plugin. To enable users who don't love building C++ projects I added support for a scripting language (squirrel). I am also working on new features. The coolest feature is the ability to get an answer to the question "why is register or memory this or that at this point". The answer is given as a .dot-file that can be rendered using graphviz into a beautiful graph. The feature is kinda half-baked but it sure is fun to come up with new ways to reduce the complexity of breaking things apart!
 
 Snestistics can be found at [github](https://github.com/breakin/snestistics).
