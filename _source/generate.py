@@ -145,7 +145,7 @@ def parse_posts():
 				#	line = "(" + ("#"*num) + ") " + line[num:]
 
 				def link_patcher(m): # Simply remove / for now
-					print("  Matched link " + m.group(0))
+					# print("  Matched link " + m.group(0))
 					link = m.group(2)
 					if link.startswith("code/") or link.startswith("images/"):
 						images.add(link)
@@ -154,7 +154,7 @@ def parse_posts():
 					if link[0] == '/':
 						return "[" + m.group(1) + "](" + m.group(2)[1:] + ".html)" # TODO: Remove space here
 
-					print("    External, not modifying")
+					#print("    External, not modifying")
 					return m.group(0)
 
 				line = link_matcher.sub(link_patcher, line)
