@@ -4,7 +4,7 @@ date: 2017-12-27
 title: Snestistics Tutorial - Getting started
 tags: snes, programming, asm, snestistics
 theme: snestistics
-landing: snestistics
+landing: drafts
 ---
 Introduction
 ============
