@@ -6,7 +6,7 @@ tags: snes, programming, asm, snestistics
 theme: snestistics
 landing: index, snestistics
 ---
-We've released a game translation using snestistics. We translated an obscure game that only existed in Japanese into English. The patch and more information can be found [here](http://www.romhacking.net/translations/3354/). I am super proud to have been part of this project and I hope that others want to use snestistics o do other projects. While I might not be as involved in those I would be happy to help out fixing bugs specific to that game.
+We've released a game translation using snestistics. We translated an obscure super nintendo game that only existed in Japanese into English. Still for the SNES. The english version is playable on real hardware! The patch and more information can be found [here](http://www.romhacking.net/translations/3354/). I am super proud to have been part of this project and I hope that others want to use snestistics o do other projects. While I might not be as involved in those I would be happy to help out fixing bugs specific to that game.
 
 My involvement
 ==============

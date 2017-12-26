@@ -2,7 +2,7 @@
 layout: post
 date: 2017-12-27
 title: Snestistics Tutorial - Getting started
-tags: snes, programming, asm, snestistics
+tags: snes, snestistics
 theme: snestistics
 landing: drafts
 ---
@@ -52,6 +52,8 @@ snestistics
 This assumes that you are standing in the directory where you've placed _battle_pinball.smc_ and _capture1.trace_. The outputs will be _pinball.asm_ and _pinball_report.txt_. There might be other output files (depending on settings for our snes9x variant9 but they can be ignored. There are many more [options available](DOC COMMAND LINE) but lets concentrate on these for today.
 
 It is very important to note here that some games will work flawlessly out of the box while some will simply cause an error here (or even a crash). If you want to work on a game and you encounter issues here, don't hestiate to contact us and we will fix the issue. There are some known limitations discussed in the [snestistics readme](https://github.com/breakin/snestistics/).
+
+Since we re-emulate the CPU portion of the game session and our emulator is not very fast this can take quite some time, but the reuslt is cached so all future runs will be fast. It should be noted that there will be some files created next to the trace file that contains this cached data. If they are deleted they will be regenerated. They have a version so if a new version of snestistics is donwloaded they will also be regenerated.
 
 The assembler source
 ====================
