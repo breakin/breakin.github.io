@@ -27,3 +27,15 @@ Snestistics
 I am currently cleaning up the code we used. We had a feature for which David needed to use make files to compile in things that really should live in data or as some form of plugin. To enable users who don't love building C++ projects I added support for a scripting language (squirrel). I am also working on new features. The coolest feature is the ability to get an answer to the question "why is register or memory this or that at this point". The answer is given as a .dot-file that can be rendered using graphviz into a beautiful graph. The feature is kinda half-baked but it sure is fun to come up with new ways to reduce the complexity of breaking things apart!
 
 Snestistics can be found at [github](https://github.com/breakin/snestistics).
+
+Coverage (updated!)
+===================
+* RomHacking project page - [http://www.romhacking.net/translations/3354/](http://www.romhacking.net/translations/3354/)
+	* Has two reviews [review 1](http://www.romhacking.net/reviews/3253/#review), [review 2](http://www.romhacking.net/reviews/3239/#review).
+* RomHacking release news - [http://www.romhacking.net/forum/index.php?topic=25468](http://www.romhacking.net/forum/index.php?topic=25468)
+* Kotaku - [https://kotaku.com/oh-nice-super-famicom-wars-is-playable-in-english-1821695070](https://kotaku.com/oh-nice-super-famicom-wars-is-playable-in-english-1821695070)
+* Fan Translation Makes Super Famicom Wars Playable In English - [http://www.siliconera.com/2018/01/02/fan-translation-makes-super-famicom-wars-playable-english/](http://www.siliconera.com/2018/01/02/fan-translation-makes-super-famicom-wars-playable-english/)
+* Let's Play Translated Super Famicom Wars! by Mangs- [https://www.youtube.com/watch?v=xIGvah0ZWKo](https://www.youtube.com/watch?v=xIGvah0ZWKo)
+	* Made English Let's play based on Japanese version
+	* ... got a sneak-peak-release from us!
+

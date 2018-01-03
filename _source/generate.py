@@ -234,7 +234,7 @@ for post in all_posts:
 
 for landing in all_landing_pages:
 	index = open(source_directory + "index_page.html")
-	dest = open(dest_directory + landing + ".html", "wt")
+	dest = open(dest_directory + landing + ".html", "wb")
 
 	post_names = all_landing_pages[landing]
 
