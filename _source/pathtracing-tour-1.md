@@ -85,7 +85,7 @@ Float3 pathtrace_sample(...) {
  return i.emissive;
 }
 ~~~~~~
-With this I think we are ready to do start our little tour! See [next post](/pathtracing-tour-1) here.
+With this I think we are ready to do start our little tour! See [next post](/pathtracing-tour-2) here.
 
 # Source code
 
