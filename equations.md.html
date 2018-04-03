@@ -1,0 +1,347 @@
+<meta charset="utf-8">
+
+# Introduction
+
+Just some notes I am taking down on different subjects. Mostly my derivations of different formulas, keeping a few extra steps to make it easier to follow (at least to me!). Note that pseudo-code might be numerical unstable, it is mostly there to make the math concrete.
+
+# Linear Algrebra
+
+## Rotate Coordinate frame
+
+Sometimes we construct a result in a simple local space and want to transform the result into the correct space for the solution. A common case is that we are supposed to construct a result around a normal vector $N$ but instead we construct it in a space where the direction corresponding to $N$ is $(0,0,1)$. Below I've outlined a simple way to do this. It has a few issues in more advanced scenarios but it works as a starting point!
+
+Warning: Pseudo-code below is untested and probably needs negation of some cross product!
+
+~~~~~~~~~~~~~~
+vec3 minor_axis(v) {
+	if (abs(v.x) < abs(v.y)) {
+		if (abs(v.x) < abs(v.z)) {
+			return vec3(1,0,0)
+		} else {
+			return vec3(0,0,1)
+		}
+	} else {
+		if (abs(v.y) < abs(v.z)) {
+			return vec3(0,1,0)
+		} else {
+			return vec3(0,0,1)
+		}
+	}
+}
+
+// note: x,y,z are scalars, normal is a vec3
+vec3 rotate_frame(x,y,z,normal) {
+	m = minor_axis(normal)
+	up = normalize(cross(m, normal))
+	right = cross(normal, up)
+	return right * x + up * y + normal * z
+}
+~~~~~~~~~~~~~~
+
+# Spherical Coordinates
+
+To go from spherical to cartesian coordinate we can do
+\begin{eqnarray}
+x &= & r \sin{\theta} \cos{\phi} \nonumber \\
+y &= & r \sin{\theta} \sin{\phi} \nonumber \\
+z &= & r \cos{\theta} \nonumber 
+\end{eqnarray}
+with $r>0$, $\theta \in [0,\pi]$ and $\phi \in [0,2\pi]$. The angle $\theta$ is called theta and the angle $\phi$ is phi. If we only want the upper hemisphere we should limit $\theta$ to $[0,\frac{\pi}{2}]$.
+
+When integrating diredctions on the surface with $r=1$ we need the factor $\sin{\theta} d\theta d\phi$ to account for the fact that the parametrization is not uniform over the sphere (a change in $\theta$ does not lead to a linear change in area of surface elements). When we integrate like this we say that we integrate over differential solid angles.
+
+# Random
+
+## CDF
+
+If $p(x)$ says how likely it is to generate $x$ then the CDF $F(x)$ says how likely it is the generate a value smaller or equal to $x$. $F$ is the integral of $p$.
+
+It we want to know the probability that an event in the range $x \in [x0,x1]$ happens then we can calculate $\int_{x_0}^{x_1}p(x)dx$. This is the same as $F(x_1)-F(x-0)$. This is exactly how summed area tables work; turn an integral (or sum) into two evaluations.
+
+TODO:
+* Show using a graph p(x) and F(x).
+
+## Inverse CDF sampling
+
+We need to find the inverse of the CDF of a probability function. The CDF is monotonically nondecreasing since it is an integral of a probabilty function which is always non-negative. This doesn't guarantee an inverse though.
+
+TODO:
+* Show method using a graph
+* It seems as if p(x) with many p(x)=0 isn't invertible (since CDF gets same value for many xs). But ok if only invertible in a range.
+
+## Random point in sphere (or spherical shell)
+
+We want to construct a function $random\_in\_sphere\_shell(r_0,r_1,u_0,u_1,u_2)$ that generates an uniform point in a shell of a sphere (the part between radius $r_0$ and $r_1$ in our case). The variable $u_0, u_1, u_2$ are random uniform numbers. As a special case we will get a formula to generate random points in a sphere as well by setting $r_0=0$. I'm doing it this way since some people might want to generate numbers inside a shell (perhaps for generating particle positions in a particle system).
+
+What do we need? First lets assume that we can generate a point on the surface of a sphere using a function $random\_on\_sphere(r, u_0, u_1)$ where $r$ is the radius of the sphere and $u0,u1$ are two uniform random numbers in the interval $[0,1)$. Any point on the sphere is equally likely to be generated given that $u_0,u_1$ are uniform. Once we've chosen a radius $r \in [r_0,r_1]$ we can use $random\_on\_sphere$ with that radius $r$ to get our final point. Our current challenge then seems to be to pick $r$.
+
+What properties do we need from $r$? First it needs to be in the range between $r0$ and $r1$. Furthermore we don't want to get a small radius as often as a large; we want the number of points chosen for a particular radius to be proportional to the area of a sphere with that radius. Larger sphere should give more points.
+
+Let use formulate a probability function for the radiuses. The area of a sphere is $area\_sphere(r) = 4\pi r^2$. We seek a function that gives out a radius with $p_{radius}(r) \propto area\_sphere(r)$. We use the sign $\propto$ to indicate that it is proportional to $area\_sphere$. In order to get an exact expression we need to normalize it such that $\int_{r_0}^{r_1} p_{radius}(r) = 1$. Using integration of $area\_sphere$ we get
+
+\begin{eqnarray}
+\int_{r_0}^{r_1} area\_sphere(r) dr & =&  \frac{4\pi}{3} (r_1^3-r_0^3) \\
+p_{radius}(r) & = & \frac{4\pi r^2}{\frac{4\pi}{3} (r_1^3-r_0^3)}, r \in [r_0, r_1] \nonumber \\
+p_{radius}(r) & = & \left (\frac{3}{r_1^3-r_0^3} \right) r^2, r \in [r_0, r_1] \\
+\end{eqnarray}
+
+Now that we have the desired probability function we need to find a function that generates radiuses according to it. To do this we can use the method of inverse CDF sampling. First we need to integrate once more to find the CDF $F$. We get
+
+\begin{eqnarray}
+F(r) & = & \int_{r_0}^{r} p_{radius}(t) dt, r \in [r_0, r_1] \\
+F(r) & = & \left (\frac{3}{r_1^3-r_0^3} \right) \frac{r^3-r_0^3}{3} \\
+F(r) & = & \frac{r^3-r_0^3}{r_1^3-r_0^3}
+\end{eqnarray}
+
+Now we want to find the inverse $F^{-1}(u)$ of $F(r)$ in the interval $r \in [r_0, r_1]$. We know that it is invertible there since $p(r)>0$. We change name of $F(r)$ to $y$ and solve for r. We get
+\begin{eqnarray}
+y & \equiv & \frac{r^3-r_0^3}{r_1^3-r_0^3} \\
+y (r_1^3-r_0^3)+r_0^3 & = & r^3 \\
+\left[ y (r_1^3-r_0^3) + r_0^3 \right]^\frac{1}{3} & = & r \\
+\end{eqnarray}
+
+Now $r$ is our $F^{-1}(u)$ and we get
+\begin{eqnarray}
+F^{-1}(u) & = & \left[ (u (r_1^3-r_0^3) + r_0^3 \right]^\frac{1}{3}
+\end{eqnarray}
+
+We see that $F^{-1}(0)=r_0$ and $F^{-1}(1) = r_1$ as expected. We can now sample $F^{-1}$ using a random number $u$. Here is pseudo-code:
+
+~~~~~~~~~~~~~~
+vec3 random_in_sphere_shell(r0,r1,u0,u1,u2) {
+	a0 = pow(r0,3)
+	a1 = pow(r1,3)
+	r = pow(u2 * (a1-a0) + a0, 1.0/3.0) 
+	return random_on_sphere(r, u0, u1)
+}
+
+vec3 random_in_sphere(radius,u0,u1,u2) {
+	r = pow(u2 * pow(radius, 3), 1.0/3.0)
+	return random_on_sphere(r, u0, u1)
+}
+
+vec3 random_in_unit_sphere(u0,u1,u2) {
+	r = pow(u2, 1.0/3.0)
+	return random_on_sphere(r, u0, u1)
+}
+~~~~~~~~~~~~~~
+
+If $random\_in\_sphere\_shell$ is called many times then $a1-a0$ and $a0$ can be sent in as constants to avoid the costly $pow$ calculations.
+
+But what is the probability of choosing the point we get? We aimed to get uniform sampling of the shell. The volume of the sphere is $volume\_sphere(r) = \frac{4}{3} \pi r^3$ and thus the volume of our shell is $volume\_sphere(r_1)-volume\_sphere(r_0) = \frac{4}{3} \pi (r_1^3-r_0^3)$. The probability to choose a particular point should then be $\frac{3}{4 \pi (r_1^3-r_0^3)}$. This is constant and integrates to 1.
+
+We should be able to arrive at the same number using the probabilities from choosing the point. The probability of choosing a particular point using $point\_on\_sphere(r)$ is $\frac{1}{4\pi r^2}$ (one divided by area of a sphere with radius $r$). The full probability then becomes
+\begin{eqnarray}
+p_{point\_on\_sphere}(r) & = & \frac{1}{4\pi r^2} \\
+p_{radius}(r) & = & \frac{3r^2}{r_1^3-r_0^3} \\
+\left( \frac{1}{4\pi r^2} \right) \left (\frac{3r^2}{r_1^3-r_0^3} \right) & = & \frac{3}{4\pi(r_1^3-r_0^3)}
+\end{eqnarray}
+
+which is exactly the same expression we arrived at when using the volume of the shell.
+
+### Rejection Sampling
+
+A rejection sampling based method could look like this
+~~~~~~~~~~~~~~
+// rejection sampling variant, not preferred
+vec3 random_in_sphere_shell(r0,r1,random_generator) {
+	while (true) {
+		x = random_generator.uniform(-r1, r1)
+		y = random_generator.uniform(-r1, r1)
+		z = random_generator.uniform(-r1, r1)
+		d2 = x*x + y*y + z*z 
+		if (d2 >= r0*r0 && d2 <= r1*r1)
+			return vec3(x,y,z);
+		// loop again and try a new point
+	}
+}
+
+// rejection sampling variant, not preferred
+vec3 random_in_unit_sphere(random_generator) {
+	while (true) {
+		x = random_generator.uniform(-1, 1)
+		y = random_generator.uniform(-1, 1)
+		z = random_generator.uniform(-1, 1)
+		d2 = x*x + y*y + z*z 
+		if (d2 <= 1.0)
+			return vec3(x,y,z);
+		// loop again and try a new point
+	}
+}
+~~~~~~~~~~~~~~
+
+I don't like to use rejection sampling for two reasons. First the running time is not certain which gives the processor more to do (especially on a GPU). Secondly it requires a lot of random numbers and in many applications it is not possible to draw an arbitrary number of random numbers. This is especially true when using low-discrepancy sequences or tabulated blue noise random numbers.
+
+## Random point on sphere
+
+This will be going quite fast! Look at some of the other derivations to get a feeling for the inverse CDF sampling procedure!
+
+We have $p(\theta, \phi)=\frac{1}{area\_sphere(1)}=\frac{1}{4\pi}$ (which is normalized since it integrates to 1 over the sphere). We go straight to inverse CDF sampling.
+
+\begin{eqnarray}
+F(\theta, \phi) & = & \frac{1}{4\pi} \int_0^{\phi} \int_0^{\theta} \sin{\widehat{\theta}} d\widehat{\theta} d\widehat{\phi} \\
+& = & \frac{\phi}{4\pi} (1-\cos{\theta}) \\
+F_{\phi}   & = & \frac{\phi}{2\pi} \\
+F_{\theta} & = & \frac{1}{2}(1-\cos{\theta})
+\end{eqnarray}
+
+These are easily invertible and we arrive at the two following expressions to go from random numbers $u_0, u_1$ to $\theta, \phi$ on the sphere
+
+\begin{eqnarray}
+F_{\phi}^{-1}(u_0) & = & 2\pi u_0 \\
+F_{\theta}^{-1}(u_1) & = & \arccos{(2*u_1-1)} 
+\end{eqnarray}
+
+When dividing up the $\frac{1}{4\pi}$ I choose $\frac{1}{2\pi}$ to go with $\phi$ since I knew that it would lead to $\phi$ spanning exactly one turn around the circle. I don't know if there is a robust way to split it up without assuming something like this.
+
+Pseudo-code time:
+
+~~~~~~~~~~~~~~
+vec3 random_on_sphere(radius,u0,u1) {
+	phi = 2*PI*u0
+	cos_theta = u1*2-1
+	sin_theta = 1-sqrt(cos_theta*cos_theta)
+	x = radius * sin_theta * cos(phi)
+	y = radius * sin_theta * sin(phi)
+	z = radius * cos_theta
+	return vec3(x,y,z)
+}
+~~~~~~~~~~~~~~
+
+## Random point on hemisphere
+
+~~~~~~~~~~~~~~
+vec3 random_hemisphere(normal,radius,u0,u1) {
+	vec3 p = random_on_sphere(radius, u0, u1)
+	if (dot(p, normal) >= 0)
+		return p;
+	return -p;
+}
+~~~~~~~~~~~~~~
+
+If the direction ends up in the wrong hemisphere we simply negate it. The probability is uniform over the hemisphere.
+
+## Random point on hemisphere - $cos^n$-weighted
+
+We want to generate direction in a hemisphere around a forward direction. We want to have more directions parallell to the forward direction and fewer sideways. No directions in the negative hemisphere (behind the forward direction). We will qualify this exactly soon. We divide the solution into two steps. We start by generating directions in a simpler space where the normal direction is replaced by $(0,0,1)$. When we are done we will transform them into the final space using $rotate\_frame(x,y,z,forward)$.
+
+The usual case for importance sampling a lambert material model is to have $n=1$ but I've made it a bit more generic if someone wants to try it for the reflections in say a phong material model. If you do try it for a phong model then care must be taken since quite a few of the directions will go behind the plane of the intersection. Perhaps rejection sampling can be used. Either way care must be taken so that the solution is still unbiased and energy conserving.
+
+To make this easier we will jump to spherical coordinates. It is quite common when working with directions over the sphere or hemisphere.
+
+What probabilty function do we want for out result? The angle $\theta$ dictates how far we are from the forward direction. In spherical coordinates our probabilify function is $p(\theta,\phi) \propto \cos^n{\theta}$. Now how do we normalize it? If we start with the case wher $n=1$ and integrate $\cos{\theta}$ over $\theta \in [0,\frac{\pi}{4}]$ we get the value 1. But that is not the value we are looking for. This time splitting the probability into a part that depends on $\theta$ and one on $\phi$ does not work. Instead we need to integrate $\cos{\theta}$ over the full hemisphere. In doing so we must not forget the differential solid angle $\sin{\theta}d\theta d\phi$ in our integral to compensate for the fact that the sphere is shrinking closer to $\theta=0$. This come from the spherical coordinates parametrization.
+
+Before we jump head first into this we need to solve an integral that will come in handy very soon. We want to find the integral of $\int \cos^n{x} \sin{x} dx$ for $n>0$. The solutions is based on the reverse of the chain rule (as outlined [here](http://sydney.edu.au/stuserv/documents/maths_learning_centre/chainrulereverse.pdf)). First we restate the chain rule as well as some simple derivation rules that we will need
+\begin{eqnarray}
+y(x)  & \equiv & f(g(x)) \\
+y(x)' & = & f'(g(x)) g'(x) \\
+\cos'{x} & = & -\sin{x} \\
+(x^n)' & = & \frac{x^{n-1}}{n}
+\end{eqnarray}
+
+Now we try to put out integral on the form of $y$ above. This seems possible since $-\sin{x}$ happens to be the derivate of $\cos{x}$. We get
+\begin{eqnarray}
+f(x)  & \equiv & \frac{x^{n+1}}{n+1} \\
+g(x)  & \equiv & -\cos{x} \\
+y(x)  & \equiv & f(g(x)) \\
+      & = & -\frac{\cos{x}^{n+1}}{n+1} \\
+f'(x) & = & x^n \\
+g'(x) & = & \sin{x} \\
+y'(x) & = & f'(g(x)) g'(x) \\
+      & = & \cos^n{x} \sin{x} \\
+\int_a^b \cos^n{x}\sin{x}dx & = & \left[-\frac{\cos^{n+1}{x}}{n+1}\right]_a^b
+\end{eqnarray}
+
+If we have an expression whose derivate becomes the function we want to integrate, then we know the integral! It is that simple! Finding that expression can be hard. Armed with this integral the rest will be simple! First we make sure $p$ integrate to 1 so it is a proper probability function
+\begin{eqnarray}
+p(\theta,\phi) & \propto & \cos^n{\theta} \\
+\int_0^{2\pi} \int_0^{\frac{\pi}{2}} \cos^n{(\theta)} \sin{(\theta)} d\theta d\phi & = & 2\pi \int_0^{\frac{\pi}{2}} \cos^n{(\theta)} \sin{(\theta)} d\theta \\
+ & =& 2\pi \left[-\frac{\cos^{n+1}{\theta}}{n+1}\right]_0^{\pi/2} \\ 
+  & = & \frac{2\pi}{n+1} \\
+p(\theta,\phi) & = & \frac{(n+1)\cos^n{\theta}}{2\pi}
+\end{eqnarray}
+
+For the special case where $n=1$ (as when we need to importance sample a diffuse lobe) we have that $p(\theta, \phi) = \frac{2\cos{\theta}}{2\pi} = \frac{\cos{\theta}}{\pi}$.
+
+It is time to use inverse CDF sampling. To the inverse CDF sampling-o-mobile! 
+
+\begin{eqnarray}
+p(\theta,\phi) & = & \frac{(n+1)\cos^n{\theta}}{2\pi} \\
+F(\theta,\phi) & = & \frac{n+1}{2\pi} \int_0^{\phi} \int_0^\theta \cos^n{\widehat{\theta}} \sin{\widehat{\theta}} d\widehat{\theta} d\widehat{\phi} \\
+ & = & \left( \frac{1}{2\pi} \int_0^{\phi} d\widehat{\phi} \right) \left( (n+1) \int_0^\theta \cos^n{\widehat{\theta}} \sin{\widehat{\theta}} d\widehat{\theta} \right) \\
+               & \equiv & F_{\phi}(\phi) F_{\theta}(\theta) \\
+
+\end{eqnarray}
+
+Here at last we can seperate $F$ into two 1D-functions that we can do inverse CDF sampling of individually. We get
+
+\begin{eqnarray}
+F_{\phi}(\phi) & = & \frac{1}{2\pi} \int_0^{\phi} d\widehat{\phi} \\
+               & = & \frac{\phi}{2\pi} \\
+F_{\theta}(\theta) & = & (n+1)\int_0^\theta \cos^n{\widehat{\theta}} \sin{\widehat{\theta}} d\widehat{\theta} \\
+                   & = & (n+1)\left[-\frac{\cos^{n+1} {\widehat{\theta}}}{n+1} \right]_0^{\theta} \\
+                   & = & 1-\cos^{n+1}{\theta}
+\end{eqnarray}
+ 
+Inverting them gives us our expressions to go from random numbers $u_0, u_1$ to $\theta, $\phi$
+
+\begin{eqnarray}
+F_{\phi}^{-1}(u_0) & = & 2\pi u_0 \\
+F_{\theta}^{-1}(u_1) & = & \arccos^{\frac{1}{n+1}}{(1-u_1)} \\
+ & = & \arccos^{\frac{1}{n+1}}{(u_1)} \\
+\end{eqnarray}
+
+Here we use that $1-u_1$ and $u_1$ both are uniformly distributed in the interval $[0,1]$. Now inverse trigonmetry functions have a bad reputation but sometimes they vanish when actually used. In our case we only need $\cos{theta}$ and $\sin{theta}$. For the first we are happy, we just drop the $\arccos$ completely. For the latter we can use the pythagorn theorem that says that $\sin^2{x}=1-\cos^2{x}$. Thus we can replace the $\arccos$ call with a sqrt. Care must be taken to handle cases where the argument to sqrt can become negative since sqrt is not defined for negative numbers (at least if we expect real numbers as the result).
+
+Time for pseudo-code
+~~~~~~~~~~~~~~
+vec3 random_hemisphere_cosine_pow(normal,n,u0,u1) {
+	phi = 2*PI*u0
+	cos_theta = pow(u1, 1/(1+n))
+	sin_theta = 1-sqrt(cos_theta*cos_theta)
+	x = sin_theta * cos(phi)
+	y = sin_theta * sin(phi)
+	z = cos_theta
+	return rotate_frame(x,y,z,normal)
+}
+
+vec3 random_hemisphere_cosine(normal,u0,u1) {
+	phi = 2*PI*u0
+	cos_theta = sqrt(u1)
+	sin_theta = 1-sqrt(cos_theta*cos_theta)
+	x = sin_theta * cos(phi)
+	y = sin_theta * sin(phi)
+	z = cos_theta
+	return rotate_frame(x,y,z,normal)
+}
+~~~~~~~~~~~~~~
+
+As we can see we have no calls to $\arccos$.
+
+## Random point on hemisphere - $\cos$-weighted (alternate version)
+
+WIP!
+
+While I am writing this there have been a lot of discussions on twitter about a handy routine to generate random directions that are cosine weighted in the hemisphere. The benefit as far as I understand it is that it doesn't need to rotate into a basis around the normal vector. When I noticed the discussion I felt I lacked to tools to analyze it. In writing this I am trying to rectify that.
+
+Here is pseudo-code for the proposed solutions
+~~~~~~~~~~~~~~
+vec3 random_hemisphere_cosine(normal,...) {
+	p = point_on_unit_sphere(...)
+	return normalize(p + normal)
+}
+~~~~~~~~~~~~~~
+
+There was also this incorrect version that gives direction $cos^{-3}$ distributed over the hemisphere
+~~~~~~~~~~~~~~
+// Incorrect distribution
+vec3 random_hemisphere_cosine(normal,...) {
+	p = point_in_unit_sphere(...)
+	return normalize(p + normal)
+}
+~~~~~~~~~~~~~~
+
+I want to point out that $normalize(point\_in\_unit\_sphere(...)) = point\_on\_unit\_sphere(...)$. I do this only because a few post said that the second version only was correct if you normalized the result from $point\_in\_unit\_sphere(...)$, but if you that the second incorrect variant turns exactly into the first correct variant.
+
+
+<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
