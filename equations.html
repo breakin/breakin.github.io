@@ -34,11 +34,13 @@ vec3 minor_axis(v) {
 // note: x,y,z are scalars, normal is a vec3
 vec3 rotate_frame(x,y,z,normal) {
 	m = minor_axis(normal)
-	up = normalize(cross(m, normal))
-	right = cross(normal, up)
-	return right * x + up * y + normal * z
+	x_axis = normalize(cross(normal, m))
+	y_axis = cross(x_axis, normal)
+	return x_axis * x + y_axis * y + normal * z
 }
 ~~~~~~~~~~~~~~
+
+A numerically improved version to this solution can be found [here](http://jcgt.org/published/0006/01/01/). While it improves numerical precision it might still not be optimal in *when* it rotates the frame. That issue is quite subtle and very application dependant. To give an example on where this might matter we can think of the basis that is generated for different parts of a curved mesh. The normal will always be forward but at some positions there will be a discontinuity where the x_axis and y_axis suddenly will change suddenly. Depending on how the basis is used this might visible and the application might want to put those "errors" in certain places. Thus there might be other choices to be made here as well. 
 
 # Spherical Coordinates
 
@@ -202,7 +204,7 @@ Pseudo-code time:
 vec3 random_on_sphere(radius,u0,u1) {
 	phi = 2*PI*u0
 	cos_theta = u1*2-1
-	sin_theta = 1-sqrt(cos_theta*cos_theta)
+	sin_theta = sqrt(1.0-cos_theta*cos_theta)
 	x = radius * sin_theta * cos(phi)
 	y = radius * sin_theta * sin(phi)
 	z = radius * cos_theta
@@ -293,14 +295,14 @@ F_{\theta}^{-1}(u_1) & = & \arccos^{\frac{1}{n+1}}{(1-u_1)} \\
  & = & \arccos^{\frac{1}{n+1}}{(u_1)} \\
 \end{eqnarray}
 
-Here we use that $1-u_1$ and $u_1$ both are uniformly distributed in the interval $[0,1]$. Now inverse trigonmetry functions have a bad reputation but sometimes they vanish when actually used. In our case we only need $\cos{theta}$ and $\sin{theta}$. For the first we are happy, we just drop the $\arccos$ completely. For the latter we can use the pythagorn theorem that says that $\sin^2{x}=1-\cos^2{x}$. Thus we can replace the $\arccos$ call with a sqrt. Care must be taken to handle cases where the argument to sqrt can become negative since sqrt is not defined for negative numbers (at least if we expect real numbers as the result).
+Here we use that $1-u_1$ and $u_1$ both are uniformly distributed in the interval $[0,1]$. Now inverse trigonmetry functions have a bad reputation but sometimes they vanish when actually used. In our case we only need $\cos{theta}$ and $\sin{theta}$. For the first we are happy, we just drop the $\arccos$ completely. For the latter we can use the [Pythagorean trigonometric identity](https://en.wikipedia.org/wiki/Pythagorean_theorem#Pythagorean_trigonometric_identity) that says that $1=\sin^2{x}+\cos^2{x}$. Thus we can replace the $\arccos$ call with a sqrt. Care must be taken to handle cases where the argument to sqrt can become negative since sqrt is not defined for negative numbers (at least if we expect real numbers as the result).
 
 Time for pseudo-code
 ~~~~~~~~~~~~~~
 vec3 random_hemisphere_cosine_pow(normal,n,u0,u1) {
 	phi = 2*PI*u0
 	cos_theta = pow(u1, 1/(1+n))
-	sin_theta = 1-sqrt(cos_theta*cos_theta)
+	sin_theta = sqrt(1.0-cos_theta*cos_theta)
 	x = sin_theta * cos(phi)
 	y = sin_theta * sin(phi)
 	z = cos_theta
@@ -310,7 +312,7 @@ vec3 random_hemisphere_cosine_pow(normal,n,u0,u1) {
 vec3 random_hemisphere_cosine(normal,u0,u1) {
 	phi = 2*PI*u0
 	cos_theta = sqrt(u1)
-	sin_theta = 1-sqrt(cos_theta*cos_theta)
+	sin_theta = sqrt(1.0-cos_theta*cos_theta)
 	x = sin_theta * cos(phi)
 	y = sin_theta * sin(phi)
 	z = cos_theta
@@ -345,8 +347,13 @@ vec3 random_hemisphere_cosine(normal,...) {
 
 I want to point out that $normalize(point\_in\_unit\_sphere(...)) = point\_on\_unit\_sphere(...)$. I do this only because a few post said that the second version only was correct if you normalized the result from $point\_in\_unit\_sphere(...)$, but if you that the second incorrect variant turns exactly into the first correct variant.
 
-# Revision History
+# Revision History (with credits)
 
-2018-04-03: Initial version.
+* 2018-04-03:
+	* Initial version.
+* 2018-04-04:
+	* Fixed typos in usages of Pythagorean trigonometric identity [found](https://twitter.com/self_shadow/status/981372950145253377) by [Stephen Hill](https://twitter.com/self_shadow). Also added link to wikipedia on the subject for those who wants to know more.
+    * Added link to [http://jcgt.org/published/0006/01/01/](http://jcgt.org/published/0006/01/01/) as suggested by [Stephen Hill](https://twitter.com/self_shadow).
+    * Updated my rotate_frame function a bit.
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
