@@ -6,11 +6,11 @@
 
 Just some notes I am taking down on different subjects. Mostly my derivations of different formulas, keeping a few extra steps to make it easier to follow (at least to me!). Note that pseudo-code might be numerical unstable, it is mostly there to make the math concrete. This document will be corrected as I realize things that are incorrect and new sections might appear! Feel free to request things, ask about things that are unclear or point out mistakes. You can reach me via [twitter](https://twitter.com/anders_breakin).
 
-# Linear Algrebra
+# Tangent Frames
 
 ## Rotate Coordinate frame
 
-Sometimes we construct a result in a simple local space and want to transform the result into the correct space for the solution. A common case is that we are supposed to construct a result around a normal vector $N$ but instead we construct it in a space where the direction corresponding to $N$ is $(0,0,1)$. Below I've outlined a simple way to do this. It has a few issues in more advanced scenarios but it works as a starting point!
+Sometimes we construct a result in a simple local space and want to transform the result into the correct space for the solution. A common case is that we are supposed to construct a result around a forward vector $N$ but instead we construct it in a space where the direction corresponding to $N$ is $(0,0,1)$. Below I've outlined a simple way to do this. It has a few issues in more advanced scenarios but it works as a starting point!
 
 Warning: Pseudo-code below is untested and probably needs negation of some cross product!
 
@@ -31,16 +31,34 @@ vec3 minor_axis(v) {
 	}
 }
 
-// note: x,y,z are scalars, normal is a vec3
-vec3 rotate_frame(x,y,z,normal) {
-	m = minor_axis(normal)
-	x_axis = normalize(cross(normal, m))
-	y_axis = cross(x_axis, normal)
-	return x_axis * x + y_axis * y + normal * z
+// note: x,y,z are scalars, forward is a vec3
+vec3 rotate_frame(x,y,z,forward) {
+	m = minor_axis(forward)
+	x_axis = normalize(cross(forward, m))
+	y_axis = cross(x_axis, forward)
+	return x_axis * x + y_axis * y + forward * z
 }
 ~~~~~~~~~~~~~~
 
-A numerically improved version to this solution can be found [here](http://jcgt.org/published/0006/01/01/). While it improves numerical precision it might still not be optimal in *when* it rotates the frame. That issue is quite subtle and very application dependant. To give an example on where this might matter we can think of the basis that is generated for different parts of a curved mesh. The normal will always be forward but at some positions there will be a discontinuity where the x_axis and y_axis suddenly will change suddenly. Depending on how the basis is used this might visible and the application might want to put those "errors" in certain places. Thus there might be other choices to be made here as well. 
+A numerically improved version to this solution can be found [here](http://jcgt.org/published/0006/01/01/). Another [alternative](http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html) for you who are familiar with quaternions was suggested by Marc B. Reynolds.
+
+While these improves numerical precision and/or performance they might still not be optimal in *when* it introduces discontinuties in the generated tangent frames. That issue can't be avoided for the very same reason that most 3d-objects can't be textured without introducing seams. At the seams te tangent basis will flip completely. To give an example on where this might matter we can think of the basis that is generated for different parts of a curved mesh with forward set to the surface normal. At some positions there will be a discontinuity where the x_axis and y_axis suddenly will change suddenly. Depending on how the basis is used this might visible and the application might want to put those "errors" in certain places. Thus there might be other choices to be made here as well. 
+
+## Update tangent frame for splines/particles
+
+A handy formula that I've used many times can be found in the article ["Calculation of Reference Frames along a Space Curve"](https://perso.liris.cnrs.fr/gilles.gesquiere/Teaching/iut/A2/IN/CM11/ref-frames.pdf) (Jules Bloomenthal, published in Graphics Gems, vol. 1). I always found the article very cute and useful and I want more people to know about it (if they don't already).
+
+The problem is tries to solve is the following. We have something such as a particle in a particle system or a path (think spline in space). Initially it has a position and a forward direction as well as an arbitrary tangent-direction that is perpendicular to the forward vector. Together with the forward vector it can be used to build a coordinate frame to align something such as a mesh (in the particle case) or some 2d-shape being "stamped" along the path (think of a tube that has the cross-section of say a 2D-star pattern). We don't want the mesh or star pattern to twist too much or to make sudden jumps (as would be the case if we just constructed a random basis with the only constraint that forward should be forward). I really recommend reading the paper since it has good figures.
+
+I've mostly used the simplified expression that the paper says Ken Sloan suggested. The idea is that we have calculated a new forward direction and we remember the old tangent (normal to the path) here called old_tangent. This snippet updates the tangent.
+~~~~~~~~~~~~~~
+temp_bitangent = cross(old_tangent, new_forward)
+new_tangent = cross(new_forward, temp_bitangent)
+~~~~~~~~~~~~~~
+
+Note that the tangent can be stored as a single scalar if you need to save space. It can be expressed as an angle in the with forward as the normal. The x_axis and y_axis can be constructed as in our $rotate\_frame$ method. It is no problem if they have discontinuties as long as it is constructed the same way each time. 
+
+In many cases the tangent might be inherent from the simulation of the particle or from some analytic form of the spline of the path, but in the cases where they are not, I really like this simple method.
 
 # Spherical Coordinates
 
@@ -54,7 +72,7 @@ with $r>0$, $\theta \in [0,\pi]$ and $\phi \in [0,2\pi]$. The angle $\theta$ is 
 
 When integrating diredctions on the surface with $r=1$ we need the factor $\sin{\theta} d\theta d\phi$ to account for the fact that the parametrization is not uniform over the sphere (a change in $\theta$ does not lead to a linear change in area of surface elements). When we integrate like this we say that we integrate over differential solid angles.
 
-# Random
+# Random Numbers
 
 ## CDF
 
@@ -65,13 +83,34 @@ It we want to know the probability that an event in the range $x \in [x0,x1]$ ha
 TODO:
 * Show using a graph p(x) and F(x).
 
+# Random Distributions
+
+In my mind there are three types of distributions:
+1) Requires a fixed amount of random numbers. Can be used many times. Example: Point On Sphere.
+2) Requires a variable amount of random numbers. Can be used many times. Example: Anything using Rejection Sampling.
+3) Can only generate a certain number of directions/points. Does not require any random numbers. **All** points/directions needs to be taken to cover say a sphere in a good fashion. Example: Point on Sphere using Spherical Fibanacci.
+
+These distributions can be combined with good random sequences with good properties to improve sampling further. Hopefully I will write some abou that later but the buzzwords are: Stratified Sampling using jittered samples, Blue noise Random Numbers and Low-discrepency sequences.
+
 ## Inverse CDF sampling
 
-We need to find the inverse of the CDF of a probability function. The CDF is monotonically nondecreasing since it is an integral of a probabilty function which is always non-negative. This doesn't guarantee an inverse though.
+First I will talk about a tool that is very useful to derive expressions for random sampling. It starts with a probability function that describes the distribution we want. It must be properly normalized so that it integrates to 1.0. It is then integrated to form a new function called the CDF (cumulative distribution function).
+
+Lets say we want to generate 1D-numbers with a probability proportional to $x^2$ (with $x \in [0,1]$. We integrate this expression and get the number 3. The proper probability distribution function then is $p(x)=3x^2$. We want to get the CDF and to do that we integrate again. This time we don't want a value but a new function. We call the CDF $F$ and we get $F(x)=\int_0^x \widehat{x}^2 d\widehat{x} = x^3$. Here we need to introduce a new variable $\widehat{x}$ since x is already spoken for as the parameter for $F(x)$.
+
+Now while $p(x)$ says how likely it is that $x$ is generated $F(x)$ says how likely it is that a value smaller or equal to $x$ is generated. If $p(x)$ is non-negative it will be an monotonically increasing function that is invertible. If we look at the x-axis we have the events we are interested in. If we look at a range of x-values from say $x_0$ to $x_1$ they will map onto a contiguous range on the y-axis. If the $p$-values in that ranges are small they will correspond to a small range on the y-axis. If they are large they will correspond to a large range. This is the same as saying that the CDF $F$ grows quickly where $p(x)$ is large.
+
+Now $F(x)$ will take values from 0 (since $F(0)=0)) to 1 (since $F(1)=\int_0^1 p(x) dx = 1). If we had our graph tabulated somewhere we could take a random number from 0 to 1. If we got say 0.3 we would pick 0.3 on the y-axis and then trace right to where we found the CDF $F(x)$. Let say they intersects at $x=0.8$. Then we will generate the x-value 0.8.
+
+By inverting $F(x)$ we get a function $F^{-1}(u)$ that does exactly this.
+
+Everything is analog in the 2D-case. If $F(a,b)$ can be factored into $F_a(a)F_b(b)$ then they can be inverted independantly. Each will be driven by one random number. This is not always the case.
+
+If $p(x)$ is zero outside a range then we just look at x-values in that range to make sure we get an invertible CDF.y that 
 
 TODO:
-* Show method using a graph
-* It seems as if p(x) with many p(x)=0 isn't invertible (since CDF gets same value for many xs). But ok if only invertible in a range.
+* A picture is worth more than a thousand words!
+* In the 2D-case it is not always so that the partition into $F_a$ and $F_b$ is unique. What rule then can we use? Currently I need to inspect the resulting inverses to make sure they cover the correct ranges.
 
 ## Random point in sphere (or spherical shell)
 
@@ -322,6 +361,30 @@ vec3 random_hemisphere_cosine(normal,u0,u1) {
 
 As we can see we have no calls to $\arccos$.
 
+## Spherical Fibonacci Point Sets - Point on Hemisphere (uniform or cos-weighted)
+
+WIP: I need to properly verify the formulas here.
+
+This is just some code I wrote after reading [Spherical Fibonacci Point Sets for Illumination Integrals](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.363.5568&rep=rep1&type=pdf). It is a type of generator that let the user select a number of points $N$ and then it can generate them using an index. In order to get a good sampling of the hemisphere/sphere all $N$ points must be used or there will be gaps. This is a good example of a method that uses the golden ratio to do something randomish. The method is also somewhat unique in that it generates points directly on the sphere. Most other methods have a scheme to generate good random numbers and then another scheme to get the onto the sphere. The paper claims that this method has no seam issue whereas other methods might have.
+
+We can generate points on the hemisphere (using spherical coordinates) as:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+z = 1.0 - (0.5 + index)/N
+phi = index * PI * (3 - sqrt(5))
+cos_theta = z
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+or for cos-weigted points as 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+z = 1.0 - (0.5 + index)/N
+phi = index * PI * (3 - sqrt(5))
+cos_theta = sqrt(z)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here index is a value between from 0 to $N-1$. Works for non-power-of-two values of $N$. This uniform variant can also be adapted to the full sphere.
+
 ## Random point on hemisphere - $\cos$-weighted (alternate version)
 
 WIP!
@@ -351,10 +414,16 @@ I want to point out that $normalize(point\_in\_unit\_sphere(...)) = point\_on\_u
 
 * 2018-04-03:
 	* Initial version.
-* 2018-04-04:
+* 2018-04-04a:
 	* Fixed typos in usages of Pythagorean trigonometric identity [found](https://twitter.com/self_shadow/status/981372950145253377) by [Stephen Hill](https://twitter.com/self_shadow).
 	* Added link to wikipedia article on Pythagorean trigonometric identity for those who wants to know more.
 	* Added link to [http://jcgt.org/published/0006/01/01/](http://jcgt.org/published/0006/01/01/) as suggested by [Stephen Hill](https://twitter.com/self_shadow).
 	* Updated my rotate_frame function to make it more clear
+* 2018-04-04b:
+	* Added link to [http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html](http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html) as an alternative for rotate_frame.
+	* Changed disposition (move rotate_frame into new chapter)
+	* Added some introduction to random sampling
+	* Added embryo to Spherical Fibonacci Point Sets
+	* Wrote some more text on inverse CDF sampling
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
