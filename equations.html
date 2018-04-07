@@ -56,7 +56,7 @@ temp_bitangent = cross(old_tangent, new_forward)
 new_tangent = cross(new_forward, temp_bitangent)
 ~~~~~~~~~~~~~~
 
-Note that the tangent can be stored as a single scalar if you need to save space. It can be expressed as an angle in the with forward as the normal. The x_axis and y_axis can be constructed as in our $rotate\_frame$ method. It is no problem if they have discontinuties as long as it is constructed the same way each time. 
+Note that the tangent can be stored as a single scalar if you need to save space. It can be expressed as an angle in the with forward as the normal. The x_axis and y_axis can be constructed as in our $rotate\_frame$ method. It is no problem if they have discontinuties as long as it is constructed the same way each time. Since a forward and a tangent basically is a coordinate frame it can also be represented by a quaternion. Either there is no need to store two full vectors using 6 floats if there are size constraints.
 
 In many cases the tangent might be inherent from the simulation of the particle or from some analytic form of the spline of the path, but in the cases where they are not, I really like this simple method.
 
@@ -74,14 +74,64 @@ When integrating diredctions on the surface with $r=1$ we need the factor $\sin{
 
 # Random Numbers
 
-## CDF
+## Probability Density Function (PDF)
 
-If $p(x)$ says how likely it is to generate $x$ then the CDF $F(x)$ says how likely it is the generate a value smaller or equal to $x$. $F$ is the integral of $p$.
+Let us say that we have a random variable that gives out numbers. A probability density function (PDF) $p(x)$ then says how likely it is that the random variable gives out the value $x$. Sortof. The probability in the continous case is actually the integral of $p(x)$ over a small interval. This means that $p(x)$ can be (and often is) above 1.0 but that doesn't mean that there is $x$ that is more than 100% likely. This explains the word density in the name. The more the density is confined to a small range, the higher the densities. Lets look at an example. Here we've chosen the arbitrary $p(x)=\frac{2\sin{(x\pi)}}{\pi}$
 
-It we want to know the probability that an event in the range $x \in [x0,x1]$ happens then we can calculate $\int_{x_0}^{x_1}p(x)dx$. This is the same as $F(x_1)-F(x-0)$. This is exactly how summed area tables work; turn an integral (or sum) into two evaluations.
+<img src="images/random_px.svg">
+
+All PDFs must integrate to 1.0 but even so we can notice that it is larger than 1.0 in some places. If we want to know the actual probability we need to integrate $p(x)$ (or look at the area which is the same). Lets look at the interval $[0.5, 0.6]$.
+
+<img src="images/random_px_interval.svg">
+
+If we integrate $p(x)$ over that interval we get $~0.063$ so the probability that an value in the range is generated is roughly 6%. 
+
+Probability density functions can be defined over multiple variables such as $p(\theta, \phi)$. It must still always be non-negative and integrate to 1. This time the integral is over both the variables.
+
+## Cumulative Density Function (CDF)
+
+Here we will talk about CDFs. In the next section we will learn about the method of inverse CDF sampling that uses these CDFs.
+
+If $p(x)$ says the density to generate $x$ then the CDF $F(x)$ gives the total density to generate a value smaller or equal to $x$. Here I've chosen to call the CDF $F(x)$ since $P(x)$ is too similar to $p(x)$, but really $F$ is the integral of $p$. This time we don't want the intergral over an interval; the CFG is a function. We call the CDF $F$ and we get $$F(x)=\int_0^x p(\widehat{x}) d\widehat{x} = \int_0^x \frac{2\sin{(\widehat{x}\pi)}}{\pi} d\widehat{x} = \frac{2-2\cos{(x\pi)}}{\pi^2}$$ Here we need to introduce a new variable $\widehat{x}$ since $x$ is already spoken for as the parameter for $F(x)$.
+
+<img src="images/random_cdf.svg">
+
+An obvious but interesting property is that the CDF is steep where the PDF is large, and flat where the PDF is small (or zero). It is also obvious from how we calculate it that it always starts at 0 and ends at 1.
+
+It we want to know the probability that a value in the range $x \in [x0,x1]$ is generated then we can calculate $\int_{x_0}^{x_1}p(x)dx$. This is the same as $F(x_1)-F(x-0)$. This is exactly how summed area tables work; turn an integral (or sum) into two evaluations.
+
+Cumulative Density Functions can also be defined over multiple variables. It is a bit less intutive but if you like the mental image comparing it to a summed area table then it is the same as images are 2D as well.
+
+## Inverse CDF sampling
+
+First I will talk about a tool that is very useful to derive expressions for random sampling. It starts with a probability density function that describes the distribution we want. Perhaps we want to be able to sample something where we generate samples proportional to a function. The first step is to integrate over the active range (which can be anything like $[0,1]$ or $[\pi, 2\pi]$ or whatever). Then we divide by that integral to turn the function from an arbitrary function and into a probability density function (PDF). Then we will construct the CDF for that function. These first steps are straightforward but now the method itself starts so lets turn to a concrete example. We will revisit our old friend $p(x)=\frac{2\sin{(x\pi)}}{\pi}$ with the corresponding CDF $F(x)=frac{2-2\cos{(x\pi)}}{\pi^2}$ from the PDF/CDF section earlier.
+
+<img src="images/random_icdf.svg">
+
+Here we have highlighted two ranges $[0.5,0.6]$ and $[0.8,0.9]$. We that in the first range $p(x)$ is high and $F(X)$ is steep. This means that the difference between $F(0.6)-F(0.5)$ is large. In the second range $p(x)$ is small and $F(X) is flatter. The distance $F(0.9)-F(0.8)$ is smaller. The reason we can talk about distances like this is that $F(x)$ is an ever-growing (monotonic nondecreasing) function. This is because $p(x) \geq 0$.
+
+Now $F(x)$ will take values from 0 (since $F(0)=0) to 1 (since $F(1)=\int_0^1 p(x) dx = 1$). Now lets say that we had a big table with bins for many numbers between 0 and 1. We would fill it by taking many vaues of $x$ and putting them in the bin that corresponded to $F(x)$. If $F(0.7)=0.3$ then the bin representing the place 0.3 would be given the value 0.7. To evaluate this table then we would take a random number in $[0,1]$ and go to the table. If we got 0.3 we would look in the table and get 0.7 back. From our figure above we see that ranges of x where $p(x)$ is large will correspond to more bins in our table. Thus this scheme will give more samples where we want them (where $p(x)$ is large).
+
+Now creating a big table is not always practical but we can find a function that does it for us. By inverting $F(x)$ we get a function $F^{-1}(u)$ that does exactly this. This makes sense. The CDF maps values on x to $F(x)$ (the y-axis). We want it to go the other way around. Pick a random number on y-axis and find the corresponding x-value where we intersect the CDF.
+
+The requirement here of course is that the CDF is invertible. If $p(x)$ is zero anywhere then this won't work since each $F(x)$ will map onto multiple x-values. This might be solved by restricting the range of $x$ to where $p(x) \geq 0$.
+
+To invert a function then is to first set $y=F(x)$. Then we solve for $x$. Once this is done we rename $x$ to $F^{-1}(u)$ and we rename $y$ to $u$. Lets to a very simple example (simpler than our example previously, we will do "harder" once when we are using it for real later so I am not cheating!). Note that our $F(x)$ here isn't a CDF, it is simply an invertible function.
+
+\begin{eqnarray}
+F(x) &=& 3*x^2, x \in [0,1] \\
+y & =& 3*x^2, y \in [0,1] \\
+\frac{y}{3} & = & x^2 \\
+\sqrt{\frac{y}{3}} & = & x \\
+F^{-1}(u) & = & \sqrt{\frac{u}{3}}
+\end{eqnarray}
+
+### 2D case
+
+Everything is analog in the 2D-case. If $F(a,b)$ can be factored into $F_a(a)F_b(b)$ then they can be inverted independantly. Each will be driven by one random number. This is not always the case but it is quite common.
 
 TODO:
-* Show using a graph p(x) and F(x).
+* In the 2D-case it is not always so that the partition into $F_a$ and $F_b$ is unique. What rule then can we use? Currently I need to inspect the resulting inverses to make sure they cover the correct ranges.
 
 # Random Distributions
 
@@ -91,26 +141,6 @@ In my mind there are three types of distributions:
 3) Can only generate a certain number of directions/points. Does not require any random numbers. **All** points/directions needs to be taken to cover say a sphere in a good fashion. Example: Point on Sphere using Spherical Fibanacci.
 
 These distributions can be combined with good random sequences with good properties to improve sampling further. Hopefully I will write some abou that later but the buzzwords are: Stratified Sampling using jittered samples, Blue noise Random Numbers and Low-discrepency sequences.
-
-## Inverse CDF sampling
-
-First I will talk about a tool that is very useful to derive expressions for random sampling. It starts with a probability function that describes the distribution we want. It must be properly normalized so that it integrates to 1.0. It is then integrated to form a new function called the CDF (cumulative distribution function).
-
-Lets say we want to generate 1D-numbers with a probability proportional to $x^2$ (with $x \in [0,1]$. We integrate this expression and get the number 3. The proper probability distribution function then is $p(x)=3x^2$. We want to get the CDF and to do that we integrate again. This time we don't want a value but a new function. We call the CDF $F$ and we get $F(x)=\int_0^x \widehat{x}^2 d\widehat{x} = x^3$. Here we need to introduce a new variable $\widehat{x}$ since x is already spoken for as the parameter for $F(x)$.
-
-Now while $p(x)$ says how likely it is that $x$ is generated $F(x)$ says how likely it is that a value smaller or equal to $x$ is generated. If $p(x)$ is non-negative it will be an monotonically increasing function that is invertible. If we look at the x-axis we have the events we are interested in. If we look at a range of x-values from say $x_0$ to $x_1$ they will map onto a contiguous range on the y-axis. If the $p$-values in that ranges are small they will correspond to a small range on the y-axis. If they are large they will correspond to a large range. This is the same as saying that the CDF $F$ grows quickly where $p(x)$ is large.
-
-Now $F(x)$ will take values from 0 (since $F(0)=0)) to 1 (since $F(1)=\int_0^1 p(x) dx = 1). If we had our graph tabulated somewhere we could take a random number from 0 to 1. If we got say 0.3 we would pick 0.3 on the y-axis and then trace right to where we found the CDF $F(x)$. Let say they intersects at $x=0.8$. Then we will generate the x-value 0.8.
-
-By inverting $F(x)$ we get a function $F^{-1}(u)$ that does exactly this.
-
-Everything is analog in the 2D-case. If $F(a,b)$ can be factored into $F_a(a)F_b(b)$ then they can be inverted independantly. Each will be driven by one random number. This is not always the case.
-
-If $p(x)$ is zero outside a range then we just look at x-values in that range to make sure we get an invertible CDF.y that 
-
-TODO:
-* A picture is worth more than a thousand words!
-* In the 2D-case it is not always so that the partition into $F_a$ and $F_b$ is unique. What rule then can we use? Currently I need to inspect the resulting inverses to make sure they cover the correct ranges.
 
 ## Random point in sphere (or spherical shell)
 
@@ -410,6 +440,10 @@ vec3 random_hemisphere_cosine(normal,...) {
 
 I want to point out that $normalize(point\_in\_unit\_sphere(...)) = point\_on\_unit\_sphere(...)$. I do this only because a few post said that the second version only was correct if you normalized the result from $point\_in\_unit\_sphere(...)$, but if you that the second incorrect variant turns exactly into the first correct variant.
 
+# Interesting Papers on Sampling
+
+* http://www.eugenedeon.com/project/importance-sampling-microfacet-based-bsdfs-using-the-distribution-of-visible-normals/
+
 # Revision History (with credits)
 
 * 2018-04-03:
@@ -425,5 +459,7 @@ I want to point out that $normalize(point\_in\_unit\_sphere(...)) = point\_on\_u
 	* Added some introduction to random sampling
 	* Added embryo to Spherical Fibonacci Point Sets
 	* Wrote some more text on inverse CDF sampling
+* 2018-04-07:
+	* Improved description of PDF, CDF and inverse CDF sampling. Figures done in matplotlib in python.
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
