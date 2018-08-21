@@ -1,0 +1,85 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>Snes External MaskROM</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>Snes External MaskROM</title><div class="title"> Snes External MaskROM </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+My detour that I started in my <a href="snes-maskrom.html">previous post</a> only had one logical next step.
+
+</p><p>
+
+When I de-soldered the MaskROM, I had to put something else on there. I put an angeled pin header in place with a rubber band like this:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/externalmaskrom_building.jpg" target="_blank"><img class="markdeep" src="images/maskrom/externalmaskrom_building.jpg" /></a ><div class="imagecaption">Soldering Pin header</div></div></center>
+
+</p><p>
+
+Very easy soldering. Once I had fixated the side points I removed the rubber band of course so it wouldn't melt. But wait the MaskROM had two sets of legs. If I could have put them both on the same side things would be easy, but the two pin headers would interesect. Annoying. I could put one on the other side, but the problem was that the holes in the PCB only allowed soldering from one side (no metal on the other). When the pin header was in place, the black plastic pieces would be ontop of my soldering points. In the end I raised the pin header slightly from the PCB. I then had access to the PCB and the pin header at the same time. I guess I melted some plastic, but it seemed to work. And it all fitted snuggly inside a closed cartridge!
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/snescartridge_breakout.jpg" target="_blank"><img class="markdeep" src="images/snescartridge_breakout.jpg" /></a ><div class="imagecaption">Finished breakout cartridge/cable</div></div></center>
+
+</p><p>
+
+The extracted MaskROM looked like this:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/maskrom32_outside_cartridge.jpg" target="_blank"><img class="markdeep" src="images/maskrom/maskrom32_outside_cartridge.jpg" /></a ><div class="imagecaption">Extracted MaskROM</div></div></center>
+
+</p><p>
+
+I had already put the MaskROM on a breadboard and there was only one logical thing to do. I had to connect them back together like they were ment to! This would be my first experiment with an actual running SNES. Since the cables were ment to be hooked into a MaskROM it was very easy to connect it correctly. It looked like this:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/externalmaskrom.jpg" target="_blank"><img class="markdeep" src="images/maskrom/externalmaskrom.jpg" /></a ><div class="imagecaption">External MaskROM</div></div></center>
+
+</p><p>
+
+and the game looked like this
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/externalmaskrom_thegame.jpg" target="_blank"><img class="markdeep" src="images/maskrom/externalmaskrom_thegame.jpg" /></a ><div class="imagecaption">External MaskROM</div></div></center>
+
+</p><p>
+
+In retrospect I'm quite happy with the game I decided to gut. I did not enjoy it for even a second. Playing it on my 27" non-blurry-monitor didn't make it any prettier of course.
+
+</p><p>
+
+So what did I gain with this? Well now it will be very easy to monitor what happens on each leg of the MaskROM. How does it behave? What does the timing looks like? I could have done this without breakin out everything with cables, but it feels easier this way. Safer somehow. A friend will lend me his oscilloscope and from what I can tell it should be able to help me figure this out. Also I now have all the cables I need to simulate 1mb LoROM cartridges (I'm really making a 32-leg MaskROM simulator). On a breadboard. I'm still very worried that the Raspberry GPIO will not be fast enough - especially when I add multiplexers into the mix to be able to handle all the data pins - but the oscilloscope might help me answer some questions on what the SNES expects!
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>

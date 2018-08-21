@@ -1,0 +1,787 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>Random Equations</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>Random Equations</title><div class="title"> Random Equations </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+Welcome to the place where I try to derive things I find interesting. I'm trying to keep a few extra steps to make it easier to follow (at least to me!). Note that pseudo-code might be numerical unstable, it is mostly there to make the math concrete. This document will be corrected as I realize things that are incorrect and new sections might appear! Feel free to request things, ask about things that are unclear or point out mistakes. You can reach me via <a href="https://twitter.com/anders_breakin">twitter</a>.
+
+</p><p>
+
+<div class="admonition tip">If you want a gentle introduction to Monte Carlo Integration concepts I am currently writing a text <a href="../mc-intro/index.html">here</a>.</div>
+
+</p>
+<div class="longTOC"><div class="tocHeader">Contents</div><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>Tangent Frames</a><br/>
+&nbsp;&nbsp;<a href="#toc1.1" class="level2"><span class="tocNumber">1.1&nbsp; </span>Rotate Coordinate frame</a><br/>
+&nbsp;&nbsp;<a href="#toc1.2" class="level2"><span class="tocNumber">1.2&nbsp; </span>Update tangent frame for splines/particles</a><br/>
+<a href="#toc2" class="level1"><span class="tocNumber">2&nbsp; </span>Spherical Coordinates</a><br/>
+<a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>Random Theory</a><br/>
+&nbsp;&nbsp;<a href="#toc3.1" class="level2"><span class="tocNumber">3.1&nbsp; </span>Probability Density Function (PDF)</a><br/>
+&nbsp;&nbsp;<a href="#toc3.2" class="level2"><span class="tocNumber">3.2&nbsp; </span>Cumulative Density Function (CDF)</a><br/>
+&nbsp;&nbsp;<a href="#toc3.3" class="level2"><span class="tocNumber">3.3&nbsp; </span>Inverse CDF sampling</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#toc3.3.1" class="level3"><span class="tocNumber">3.3.1&nbsp; </span>2D case</a><br/>
+<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Random Generators</a><br/>
+&nbsp;&nbsp;<a href="#toc4.1" class="level2"><span class="tocNumber">4.1&nbsp; </span>Point on sphere</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#toc4.1.1" class="level3"><span class="tocNumber">4.1.1&nbsp; </span>Rejection Sampling</a><br/>
+&nbsp;&nbsp;<a href="#toc4.2" class="level2"><span class="tocNumber">4.2&nbsp; </span>Point in sphere (or spherical shell)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#toc4.2.1" class="level3"><span class="tocNumber">4.2.1&nbsp; </span>Rejection Sampling</a><br/>
+&nbsp;&nbsp;<a href="#toc4.3" class="level2"><span class="tocNumber">4.3&nbsp; </span>Point on hemisphere</a><br/>
+&nbsp;&nbsp;<a href="#toc4.4" class="level2"><span class="tocNumber">4.4&nbsp; </span>Point on hemisphere - \(cos^n\)-weighted</a><br/>
+&nbsp;&nbsp;<a href="#toc4.5" class="level2"><span class="tocNumber">4.5&nbsp; </span>Point on (hemi-)sphere using Spherical Fibonacci Point Sets (uniform or cos-weighted)</a><br/>
+&nbsp;&nbsp;<a href="#toc4.6" class="level2"><span class="tocNumber">4.6&nbsp; </span>Point on hemisphere - \(\cos\)-weighted (cute alternate version) (WIP)</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Interesting Papers</a><br/>
+&nbsp;&nbsp;<a href="#toc5.1" class="level2"><span class="tocNumber">5.1&nbsp; </span>Sampling</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>License & Credits</a><br/>
+<a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>Revision History (with credits)</a><br/>
+</p></div><a class="target" name="tangentframes">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Tangent Frames</h1>
+
+<a class="target" name="rotatecoordinateframe">&nbsp;</a><a class="target" name="toc1.1">&nbsp;</a><h2>Rotate Coordinate frame</h2>
+<p>
+
+
+Sometimes we construct a result in a simple local space and want to transform the result into the correct space for the solution. A common case is that we are supposed to construct a result around a forward vector�\(N\) but instead we construct it in a space where the direction corresponding to \(N\) is \((0,0,1)\). Below I've outlined a simple way to do this. It has a few issues in more advanced scenarios but it works as a starting point!
+
+</p><p>
+
+Warning: Pseudo-code below is untested and probably needs negation of some cross product!
+
+</p><pre class="listing tilde"><code><span class="hljs-type">vec3</span> minor_axis(v) {
+	<span class="hljs-keyword">if</span> (<span class="hljs-built_in">abs</span>(v.x) &lt; <span class="hljs-built_in">abs</span>(v.y)) {
+		<span class="hljs-keyword">if</span> (<span class="hljs-built_in">abs</span>(v.x) &lt; <span class="hljs-built_in">abs</span>(v.z)) {
+			<span class="hljs-keyword">return</span> <span class="hljs-type">vec3</span>(<span class="hljs-number">1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>)
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">return</span> <span class="hljs-type">vec3</span>(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>)
+		}
+	} <span class="hljs-keyword">else</span> {
+		<span class="hljs-keyword">if</span> (<span class="hljs-built_in">abs</span>(v.y) &lt; <span class="hljs-built_in">abs</span>(v.z)) {
+			<span class="hljs-keyword">return</span> <span class="hljs-type">vec3</span>(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">0</span>)
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">return</span> <span class="hljs-type">vec3</span>(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>)
+		}
+	}
+}
+
+<span class="hljs-comment">// note: x,y,z are scalars, forward is a vec3</span>
+<span class="hljs-type">vec3</span> rotate_frame(x,y,z,forward) {
+	m = minor_axis(forward)
+	x_axis = <span class="hljs-built_in">normalize</span>(<span class="hljs-built_in">cross</span>(forward, m))
+	y_axis = <span class="hljs-built_in">cross</span>(x_axis, forward)
+	<span class="hljs-keyword">return</span> x_axis * x + y_axis * y + forward * z
+}</code></pre><p>
+
+A numerically improved version to this solution can be found <a href="http://jcgt.org/published/0006/01/01/">here</a>. Another <a href="http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html">alternative</a> for you who are familiar with quaternions was suggested by Marc B. Reynolds.
+
+</p><p>
+
+While these improves numerical precision and/or performance they might still not be optimal in <em class="asterisk">when</em> it introduces discontinuities in the generated tangent frames. That issue can't be avoided for the very same reason that most 3d-objects can't be textured without introducing seams. At the seams te tangent basis will flip completely. To give an example on where this might matter we can think of the basis that is generated for different parts of a curved mesh with forward set to the surface normal. At some positions there will be a discontinuity where the x_axis and y_axis suddenly will change suddenly. Depending on how the basis is used this might visible and the application might want to put those &ldquo;errors&rdquo; in certain places. Thus there might be other choices to be made here as well. 
+
+</p>
+<a class="target" name="updatetangentframeforsplines/particles">&nbsp;</a><a class="target" name="toc1.2">&nbsp;</a><h2>Update tangent frame for splines/particles</h2>
+<p>
+
+
+A handy formula that I've used many times can be found in the article <a href="https://perso.liris.cnrs.fr/gilles.gesquiere/Teaching/iut/A2/IN/CM11/ref-frames.pdf">&ldquo;Calculation of Reference Frames along a Space Curve&rdquo;</a> (Jules Bloomenthal, published in Graphics Gems, vol. 1). I always found the article very cute and useful and I want more people to know about it (if they don't already).
+
+</p><p>
+
+The problem is tries to solve is the following. We have something such as a particle in a particle system or a path (think spline in space). Initially it has a position and a forward direction as well as an arbitrary tangent-direction that is perpendicular to the forward vector. Together with the forward vector it can be used to build a coordinate frame to align something such as a mesh (in the particle case) or some 2d-shape being &ldquo;stamped&rdquo; along the path (think of a tube that has the cross-section of say a 2D-star pattern). We don't want the mesh or star pattern to twist too much or to make sudden jumps (as would be the case if we just constructed a random basis with the only constraint that forward should be forward). I really recommend reading the paper since it has good figures.
+
+</p><p>
+
+I've mostly used the simplified expression that the paper says Ken Sloan suggested. The idea is that we have calculated a new forward direction and we remember the old tangent (normal to the path) here called old_tangent. This snippet updates the tangent.
+</p><pre class="listing tilde"><code>temp_bitangent = cross(old_tangent, <span class="hljs-keyword">new</span><span class="hljs-type">_forward</span>)
+<span class="hljs-keyword">new</span><span class="hljs-type">_tangent</span> = cross(<span class="hljs-keyword">new</span><span class="hljs-type">_forward</span>, temp_bitangent)</code></pre><p>
+
+Note that the tangent can be stored as a single scalar if you need to save space. It can be expressed as an angle in the with forward as the normal. The x_axis and y_axis can be constructed as in our \(rotate\_frame\) method. It is no problem if they have discontinuities as long as it is constructed the same way each time. Since a forward and a tangent basically is a coordinate frame it can also be represented by a quaternion. Either there is no need to store two full vectors using 6 floats if there are size constraints.
+
+</p><p>
+
+In many cases the tangent might be inherent from the simulation of the particle or from some analytic form of the spline of the path, but in the cases where they are not, I really like this simple method.
+
+</p>
+<a class="target" name="sphericalcoordinates">&nbsp;</a><a class="target" name="toc2">&nbsp;</a><h1>Spherical Coordinates</h1>
+<p>
+
+
+To go from spherical to cartesian coordinate we can do
+\begin{eqnarray}
+x &= & r \sin{\theta} \cos{\phi} \nonumber \\
+y &= & r \sin{\theta} \sin{\phi} \nonumber \\
+z &= & r \cos{\theta} \nonumber 
+\end{eqnarray}
+with \(r>0\), \(\theta \in [0,\pi]\) and \(\phi \in [0,2\pi]\). The angle \(\theta\) is called theta and the angle \(\phi\) is phi. If we only want the upper hemisphere we should limit \(\theta\) to \([0,\frac{\pi}{2}]\).
+
+</p><p>
+
+When integrating directions on the surface with \(r=1\) we need the factor \(\sin{\theta} d\theta d\phi\) to account for the fact that the parametrization is not uniform over the sphere (a change in \(\theta\) does not lead to a linear change in area of surface elements). When we integrate like this we say that we integrate over differential solid angles.
+
+</p>
+<a class="target" name="randomtheory">&nbsp;</a><a class="target" name="toc3">&nbsp;</a><h1>Random Theory</h1>
+
+<a class="target" name="probabilitydensityfunction(pdf)">&nbsp;</a><a class="target" name="toc3.1">&nbsp;</a><h2>Probability Density Function (PDF)</h2>
+<p>
+
+
+Let us say that we have a random variable that gives out numbers. A probability density function (PDF) \(p(x)\) then says how likely it is that the random variable gives out the value \(x\). Sortof. The probability in the continuous case is actually the integral of \(p(x)\) over a small interval. This means that \(p(x)\) can be (and often is) above 1.0 but that doesn't mean that there is \(x\) that is more than 100% likely. This explains the word density in the name. The more the density is confined to a small range, the higher the densities. Lets look at an example. Here we've chosen the arbitrary \(p(x)=\frac{2\sin{(x\pi)}}{\pi}\)
+
+</p><p>
+
+<img src="images/random_px.svg">
+
+</p><p>
+
+All PDFs must integrate to 1.0 but even so we can notice that it is larger than 1.0 in some places. If we want to know the actual probability we need to integrate \(p(x)\) (or look at the area which is the same). Lets look at the interval \([0.5, 0.6]\).
+
+</p><p>
+
+<img src="images/random_px_interval.svg">
+
+</p><p>
+
+If we integrate \(p(x)\) over that interval we get \(~0.063\) so the probability that an value in the range is generated is roughly 6%. 
+
+</p><p>
+
+Probability density functions can be defined over multiple variables such as \(p(\theta, \phi)\). It must still always be non-negative and integrate to 1. This time the integral is over both the variables.
+
+</p>
+<a class="target" name="cumulativedensityfunction(cdf)">&nbsp;</a><a class="target" name="toc3.2">&nbsp;</a><h2>Cumulative Density Function (CDF)</h2>
+<p>
+
+
+Here we will talk about CDFs. In the next section we will learn about the method of inverse CDF sampling that uses these CDFs.
+
+</p><p>
+
+If \(p(x)\) says the density to generate \(x\) then the CDF \(F(x)\) gives the total density to generate a value smaller or equal to \(x\). Here I've chosen to call the CDF \(F(x)\) since \(P(x)\) is too similar to \(p(x)\), but really \(F\) is the integral of \(p\). This time we don't want the intergral over an interval; the CFG is a function. We call the CDF \(F\) and we get $$F(x)=\int_0^x p(\widehat{x}) d\widehat{x} = \int_0^x \frac{2\sin{(\widehat{x}\pi)}}{\pi} d\widehat{x} = \frac{2-2\cos{(x\pi)}}{\pi^2}$$ Here we need to introduce a new variable \(\widehat{x}\) since \(x\) is already spoken for as the parameter for \(F(x)\).
+
+</p><p>
+
+<img src="images/random_cdf.svg">
+
+</p><p>
+
+An obvious but interesting property is that the CDF is steep where the PDF is large, and flat where the PDF is small (or zero). It is also obvious from how we calculate it that it always starts at 0 and ends at 1.
+
+</p><p>
+
+It we want to know the probability that a value in the range \(x \in [x0,x1]\) is generated then we can calculate \(\int_{x_0}^{x_1}p(x)dx\). This is the same as \(F(x_1)-F(x-0)\). This is exactly how summed area tables work; turn an integral (or sum) into two evaluations.
+
+</p><p>
+
+Cumulative Density Functions can also be defined over multiple variables. It is a bit less intuitive but if you like the mental image comparing it to a summed area table then it is the same as images are 2D as well.
+
+</p>
+<a class="target" name="inversecdfsampling">&nbsp;</a><a class="target" name="toc3.3">&nbsp;</a><h2>Inverse CDF sampling</h2>
+<p>
+
+
+Now I want to bring up a tool that is very useful to derive expressions for random sampling. 
+
+</p><p>
+
+It starts with a probability density function that describes the distribution we want. Perhaps we want to be able to sample something where we generate samples proportional to a function. The first step is to integrate over the active range (which can be anything like \([0,1]\) or \([\pi, 2\pi]\) or whatever). Then we divide by that integral to turn the function from an arbitrary function and into a probability density function (PDF). Then we will construct the CDF for that function. These first steps are straightforward but now the method itself starts so lets turn to a concrete example. We will revisit our old friend \(p(x)=\frac{2\sin{(x\pi)}}{\pi}\) with the corresponding CDF \(F(x)=frac{2-2\cos{(x\pi)}}{\pi^2}\) from the PDF/CDF section earlier.
+
+</p><p>
+
+<img src="images/random_icdf.svg">
+
+</p><p>
+
+Here we have highlighted two ranges \([0.5,0.6]\) and \([0.8,0.9]\). We that in the first range \(p(x)\) is high and \(F(X)\) is steep. This means that the difference between \(F(0.6)-F(0.5)\) is large. In the second range \(p(x)\) is small and $F(X) is flatter. The distance \(F(0.9)-F(0.8)\) is smaller. The reason we can talk about distances like this is that \(F(x)\) is an ever-growing (monotonic nondecreasing) function. This is because \(p(x) \geq 0\).
+
+</p><p>
+
+Now \(F(x)\) will take values from 0 (since $F(0)=0) to 1 (since \(F(1)=\int_0^1 p(x) dx = 1\)). Now lets say that we had a big table with bins for many numbers between 0 and 1. We would fill it by taking many values of \(x\) and putting them in the bin that corresponded to \(F(x)\). If \(F(0.7)=0.3\) then the bin representing the place 0.3 would be given the value 0.7. To evaluate this table then we would take a random number in \([0,1]\) and go to the table. If we got 0.3 we would look in the table and get 0.7 back. From our figure above we see that ranges of x where \(p(x)\) is large will correspond to more bins in our table. Thus this scheme will give more samples where we want them (where \(p(x)\) is large).
+
+</p><p>
+
+Now creating a big table is not always practical but we can find a function that does it for us. By inverting \(F(x)\) we get a function \(F^{-1}(u)\) that does exactly this. This makes sense. The CDF maps values on x to \(F(x)\) (the y-axis). We want it to go the other way around. Pick a random number on y-axis and find the corresponding x-value where we intersect the CDF.
+
+</p><p>
+
+The requirement here of course is that the CDF is invertible. If \(p(x)\) is zero anywhere then this won't work since each \(F(x)\) will map onto multiple x-values. This might be solved by restricting the range of \(x\) to where \(p(x) \geq 0\).
+
+</p><p>
+
+To invert a function then is to first set \(y=F(x)\). Then we solve for \(x\). Once this is done we rename \(x\) to \(F^{-1}(u)\) and we rename \(y\) to \(u\). Lets to a very simple example (simpler than our example previously, we will do &ldquo;harder&rdquo; once when we are using it for real later so I am not cheating!). Note that our \(F(x)\) here isn't a CDF, it is simply an invertible function.
+
+</p><p>
+
+\begin{eqnarray}
+F(x) &=& 3*x^2, x \in [0,1] \\
+y & =& 3*x^2, y \in [0,1] \\
+\frac{y}{3} & = & x^2 \\
+\sqrt{\frac{y}{3}} & = & x \\
+F^{-1}(u) & = & \sqrt{\frac{u}{3}}
+\end{eqnarray}
+
+</p>
+<a class="target" name="2dcase">&nbsp;</a><a class="target" name="toc3.3.1">&nbsp;</a><h3>2D case</h3>
+<p>
+
+
+Everything is analog in the 2D-case. If \(F(a,b)\) can be factored into \(F_a(a)F_b(b)\) then they can be inverted independantly. Each will be driven by one random number. This is not always the case but it is quite common.
+
+</p><p>
+
+TODO:
+
+</p><p>
+
+<ul>
+<li class="asterisk">In the 2D-case it is not always so that the partition into \(F_a\) and \(F_b\) is unique. What rule then can we use? Currently I need to inspect the resulting inverses to make sure they cover the correct ranges.</li></ul>
+
+</p>
+<a class="target" name="randomgenerators">&nbsp;</a><a class="target" name="toc4">&nbsp;</a><h1>Random Generators</h1>
+<p>
+
+
+In my mind there are three types of distributions:
+1) Requires a fixed amount of random numbers. Can be used many times. Example: Point On Sphere.
+2) Requires a variable amount of random numbers. Can be used many times. Example: Anything using Rejection Sampling.
+3) Can only generate a certain number of directions/points. Does not require any random numbers. <strong class="asterisk">All</strong> points/directions needs to be taken to cover say a sphere in a good fashion. Example: Point on (hemi)sphere using Spherical Fibonacci.
+
+</p><p>
+
+These distributions can be combined with good random sequences with good properties to improve sampling further. Hopefully I will write some about that later but the buzzwords are: Stratified Sampling using jittered samples, Blue noise Random Numbers and Low-discrepancy sequences.
+
+</p><p>
+
+I also want to point out that while I use names such as \(point\_on\_sphere\) they can also be used to generate directions on the sphere. No need to derive the same thing twice just to give it two different names. From a theory perspective we want to generate points uniform over an area in the point-on-sphere case and we want to generate directions over an solid angles in the directional case. But it really is the same thing.
+
+</p>
+<a class="target" name="pointonsphere">&nbsp;</a><a class="target" name="toc4.1">&nbsp;</a><h2>Point on sphere</h2>
+<p>
+
+
+This will be going quite fast! Look at some of the other derivations to get a feeling for the inverse CDF sampling procedure!
+
+</p><p>
+
+We have \(p(\theta, \phi)=\frac{1}{area\_sphere(1)}=\frac{1}{4\pi}\) (which is normalized since it integrates to 1 over the sphere). We go straight to inverse CDF sampling.
+
+</p><p>
+
+\begin{eqnarray}
+F(\theta, \phi) & = & \frac{1}{4\pi} \int_0^{\phi} \int_0^{\theta} \sin{\widehat{\theta}} d\widehat{\theta} d\widehat{\phi} \\
+& = & \frac{\phi}{4\pi} (1-\cos{\theta}) \\
+F_{\phi}   & = & \frac{\phi}{2\pi} \\
+F_{\theta} & = & \frac{1}{2}(1-\cos{\theta})
+\end{eqnarray}
+
+</p><p>
+
+These are easily invertible and we arrive at the two following expressions to go from random numbers \(u_0, u_1\) to \(\theta, \phi\) on the sphere
+
+</p><p>
+
+\begin{eqnarray}
+F_{\phi}^{-1}(u_0) & = & 2\pi u_0 \\
+F_{\theta}^{-1}(u_1) & = & \arccos{(2*u_1-1)} 
+\end{eqnarray}
+
+</p><p>
+
+When dividing up the \(\frac{1}{4\pi}\) I choose \(\frac{1}{2\pi}\) to go with \(\phi\) since I knew that it would lead to \(\phi\) spanning exactly one turn around the circle. I don't know if there is a robust way to split it up without assuming something like this.
+
+</p><p>
+
+Pseudo-code time:
+
+</p><pre class="listing tilde"><code>vec3 point_on_sphere(radius,u0,u1) {
+	phi = 2*PI*u0
+	cos_theta = u1<span class="hljs-number">*2</span>-1
+	sin_theta = sqrt(1.0-cos_theta<span class="hljs-number">*c</span>os_theta)
+	x =<span class="hljs-built_in"> radius </span>* sin_theta * cos(phi)
+	y =<span class="hljs-built_in"> radius </span>* sin_theta * sin(phi)
+	z =<span class="hljs-built_in"> radius </span>* cos_theta
+	return vec3(x,y,z)
+}</code></pre>
+<a class="target" name="rejectionsampling">&nbsp;</a><a class="target" name="toc4.1.1">&nbsp;</a><h3>Rejection Sampling</h3>
+<p>
+
+
+We can do this using rejection sampling as well as follows
+
+</p><pre class="listing tilde"><code><span class="hljs-type">vec3</span> point_on_sphere(radius,rng) {
+	<span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>) {
+		x = rng.<span class="hljs-keyword">uniform</span>(<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>)
+		y = rng.<span class="hljs-keyword">uniform</span>(<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>)
+		z = rng.<span class="hljs-keyword">uniform</span>(<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>)
+		<span class="hljs-keyword">if</span> (x*x+y*y+z*z &lt;= <span class="hljs-number">1</span>)
+			<span class="hljs-keyword">break</span>;
+	}
+	<span class="hljs-keyword">return</span> <span class="hljs-built_in">normalize</span>(<span class="hljs-type">vec3</span>(x,y,z))*radius;
+}</code></pre><p>
+
+This is based on the observation that if we normalize the vector from the origin to a point <em class="asterisk">in</em> the sphere we get points <em class="asterisk">on</em> the sphere. If the points in the sphere are generated uniformly then so will the point on the sphere be. While rejection sampling has a few drawbacks I like the simplicity of this solution and thanks to sampling the volume and not the very thin surface it is feasible. Probability of succeeding is \(\frac{volume\_sphere(1)}{volume\_cube(1)}=\frac{\pi}{6} ~ 0.52\). So on average two attempts are needed in order to hit the inside of the sphere.
+
+</p>
+<a class="target" name="pointinsphere(orsphericalshell)">&nbsp;</a><a class="target" name="toc4.2">&nbsp;</a><h2>Point in sphere (or spherical shell)</h2>
+<p>
+
+
+We want to construct a function \(point\_in\_sphere\_shell(r_0,r_1,u_0,u_1,u_2)\) that generates an uniform point in a shell of a sphere (the part between radius \(r_0\) and \(r_1\) in our case). The variable \(u_0, u_1, u_2\) are random uniform numbers. As a special case we will get a formula to generate random points in a sphere as well by setting \(r_0=0\). I'm doing it this way since some people might want to generate numbers inside a shell (perhaps for generating particle positions in a particle system).
+
+</p><p>
+
+What do we need? First lets assume that we can generate a point on the surface of a sphere using a function \(point\_on\_sphere(r, u_0, u_1)\) where \(r\) is the radius of the sphere and \(u0,u1\) are two uniform random numbers in the interval \([0,1)\). Any point on the sphere is equally likely to be generated given that \(u_0,u_1\) are uniform. Once we've chosen a radius \(r \in [r_0,r_1]\) we can use \(point\_on\_sphere\) with that radius \(r\) to get our final point. Our current challenge then seems to be to pick \(r\).
+
+</p><p>
+
+What properties do we need from \(r\)? First it needs to be in the range between \(r0\) and \(r1\). Furthermore we don't want to get a small radius as often as a large; we want the number of points chosen for a particular radius to be proportional to the area of a sphere with that radius. Larger sphere should give more points.
+
+</p><p>
+
+Let use formulate a probability function for the radius. The area of a sphere is \(area\_sphere(r) = 4\pi r^2\). We seek a function that gives out a radius with \(p_{radius}(r) \propto area\_sphere(r)\). We use the sign \(\propto\) to indicate that it is proportional to \(area\_sphere\). In order to get an exact expression we need to normalize it such that \(\int_{r_0}^{r_1} p_{radius}(r) = 1\). Using integration of \(area\_sphere\) we get
+
+</p><p>
+
+\begin{eqnarray}
+\int_{r_0}^{r_1} area\_sphere(r) dr & =&  \frac{4\pi}{3} (r_1^3-r_0^3) \\
+p_{radius}(r) & = & \frac{4\pi r^2}{\frac{4\pi}{3} (r_1^3-r_0^3)}, r \in [r_0, r_1] \nonumber \\
+p_{radius}(r) & = & \left (\frac{3}{r_1^3-r_0^3} \right) r^2, r \in [r_0, r_1] \\
+\end{eqnarray}
+
+</p><p>
+
+Now that we have the desired probability function we need to find a function that generates radiuses according to it. To do this we can use the method of inverse CDF sampling. First we need to integrate once more to find the CDF \(F\). We get
+
+</p><p>
+
+\begin{eqnarray}
+F(r) & = & \int_{r_0}^{r} p_{radius}(t) dt, r \in [r_0, r_1] \\
+F(r) & = & \left (\frac{3}{r_1^3-r_0^3} \right) \frac{r^3-r_0^3}{3} \\
+F(r) & = & \frac{r^3-r_0^3}{r_1^3-r_0^3}
+\end{eqnarray}
+
+</p><p>
+
+Now we want to find the inverse \(F^{-1}(u)\) of \(F(r)\) in the interval \(r \in [r_0, r_1]\). We know that it is invertible there since \(p(r)>0\). We change name of \(F(r)\) to \(y\) and solve for r. We get
+\begin{eqnarray}
+y & \equiv & \frac{r^3-r_0^3}{r_1^3-r_0^3} \\
+y (r_1^3-r_0^3)+r_0^3 & = & r^3 \\
+\left[ y (r_1^3-r_0^3) + r_0^3 \right]^\frac{1}{3} & = & r \\
+\end{eqnarray}
+
+</p><p>
+
+Now \(r\) is our \(F^{-1}(u)\) and we get
+\begin{eqnarray}
+F^{-1}(u) & = & \left[ (u (r_1^3-r_0^3) + r_0^3 \right]^\frac{1}{3}
+\end{eqnarray}
+
+</p><p>
+
+We see that \(F^{-1}(0)=r_0\) and \(F^{-1}(1) = r_1\) as expected. We can now sample \(F^{-1}\) using a random number \(u\). Here is pseudo-code:
+
+</p><pre class="listing tilde"><code><span class="hljs-type">vec3</span> point_in_sphere_shell(r0,r1,u0,u1,u2) {
+	a0 = <span class="hljs-built_in">pow</span>(r0,<span class="hljs-number">3</span>)
+	a1 = <span class="hljs-built_in">pow</span>(r1,<span class="hljs-number">3</span>)
+	r = <span class="hljs-built_in">pow</span>(u2 * (a1-a0) + a0, <span class="hljs-number">1.0</span>/<span class="hljs-number">3.0</span>) 
+	<span class="hljs-keyword">return</span> point_on_sphere(r, u0, u1)
+}
+
+<span class="hljs-type">vec3</span> point_in_sphere(radius,u0,u1,u2) {
+	r = <span class="hljs-built_in">pow</span>(u2 * <span class="hljs-built_in">pow</span>(radius, <span class="hljs-number">3</span>), <span class="hljs-number">1.0</span>/<span class="hljs-number">3.0</span>)
+	<span class="hljs-keyword">return</span> point_on_sphere(r, u0, u1)
+}
+
+<span class="hljs-type">vec3</span> point_in_unit_sphere(u0,u1,u2) {
+	r = <span class="hljs-built_in">pow</span>(u2, <span class="hljs-number">1.0</span>/<span class="hljs-number">3.0</span>)
+	<span class="hljs-keyword">return</span> point_on_sphere(r, u0, u1)
+}</code></pre><p>
+
+If \(point\_in\_sphere\_shell\) is called many times then \(a1-a0\) and \(a0\) can be sent in as constants to avoid the costly \(pow\) calculations.
+
+</p><p>
+
+But what is the probability of choosing the point we get? We aimed to get uniform sampling of the shell. The volume of the sphere is \(volume\_sphere(r) = \frac{4}{3} \pi r^3\) and thus the volume of our shell is \(volume\_sphere(r_1)-volume\_sphere(r_0) = \frac{4}{3} \pi (r_1^3-r_0^3)\). The probability to choose a particular point should then be \(\frac{3}{4 \pi (r_1^3-r_0^3)}\). This is constant and integrates to 1.
+
+</p><p>
+
+We should be able to arrive at the same number using the probabilities from choosing the point. The probability of choosing a particular point using \(point\_on\_sphere(r)\) is \(\frac{1}{4\pi r^2}\) (one divided by area of a sphere with radius \(r\)). The full probability then becomes
+\begin{eqnarray}s
+p_{point\_on\_sphere}(r) & = & \frac{1}{4\pi r^2} \\
+p_{radius}(r) & = & \frac{3r^2}{r_1^3-r_0^3} \\
+\left( \frac{1}{4\pi r^2} \right) \left (\frac{3r^2}{r_1^3-r_0^3} \right) & = & \frac{3}{4\pi(r_1^3-r_0^3)}
+\end{eqnarray}
+
+</p><p>
+
+which is exactly the same expression we arrived at when using the volume of the shell.
+
+</p>
+<a class="target" name="rejectionsampling">&nbsp;</a><a class="target" name="toc4.2.1">&nbsp;</a><h3>Rejection Sampling</h3>
+<p>
+
+
+A rejection sampling based method could look like this
+</p><pre class="listing tilde"><code><span class="hljs-comment">// rejection sampling variant, not preferred</span>
+<span class="hljs-type">vec3</span> point_in_sphere_shell(r0,r1,rng) {
+	<span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) {
+		x = rng.<span class="hljs-keyword">uniform</span>(-r1, r1)
+		y = rng.<span class="hljs-keyword">uniform</span>(-r1, r1)
+		z = rng.<span class="hljs-keyword">uniform</span>(-r1, r1)
+		d2 = x*x + y*y + z*z 
+		<span class="hljs-keyword">if</span> (d2 &gt;= r0*r0 &amp;&amp; d2 &lt;= r1*r1)
+			<span class="hljs-keyword">return</span> <span class="hljs-type">vec3</span>(x,y,z);
+		<span class="hljs-comment">// loop again and try a new point</span>
+	}
+}
+
+<span class="hljs-comment">// rejection sampling variant, not preferred</span>
+<span class="hljs-type">vec3</span> point_in_unit_sphere(rng) {
+	<span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) {
+		x = rng.<span class="hljs-keyword">uniform</span>(<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>)
+		y = rng.<span class="hljs-keyword">uniform</span>(<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>)
+		z = rng.<span class="hljs-keyword">uniform</span>(<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>)
+		d2 = x*x + y*y + z*z 
+		<span class="hljs-keyword">if</span> (d2 &lt;= <span class="hljs-number">1.0</span>)
+			<span class="hljs-keyword">return</span> <span class="hljs-type">vec3</span>(x,y,z);
+		<span class="hljs-comment">// loop again and try a new point</span>
+	}
+}</code></pre><p>
+
+I don't like to use rejection sampling for two reasons. First the running time is not certain which gives the processor more to do (especially on a GPU). Secondly it requires a lot of random numbers and in many applications it is not possible to draw an arbitrary number of random numbers. This is especially true when using low-discrepancy sequences or tabulated blue noise random numbers.
+
+</p>
+<a class="target" name="pointonhemisphere">&nbsp;</a><a class="target" name="toc4.3">&nbsp;</a><h2>Point on hemisphere</h2>
+<pre class="listing tilde"><code><span class="hljs-type">vec3</span> point_on_hemisphere(normal,radius,u0,u1) {
+	<span class="hljs-type">vec3</span> p = point_on_sphere(radius, u0, u1)
+	<span class="hljs-keyword">if</span> (<span class="hljs-built_in">dot</span>(p, normal) &gt;= <span class="hljs-number">0</span>)
+		<span class="hljs-keyword">return</span> p;
+	<span class="hljs-keyword">return</span> -p;
+}</code></pre><p>
+
+If the direction ends up in the wrong hemisphere we simply negate it. The probability is uniform over the hemisphere.
+
+</p>
+<a class="target" name="pointonhemisphere-%EE%80%90004f%EE%80%90-weighted">&nbsp;</a><a class="target" name="toc4.4">&nbsp;</a><h2>Point on hemisphere - \(cos^n\)-weighted</h2>
+<p>
+
+
+We want to generate direction in a hemisphere around a forward direction. We want to have more directions parallel to the forward direction and fewer sideways. No directions in the negative hemisphere (behind the forward direction). We will qualify this exactly soon. We divide the solution into two steps. We start by generating directions in a simpler space where the normal direction is replaced by \((0,0,1)\). When we are done we will transform them into the final space using \(rotate\_frame(x,y,z,forward)\).
+
+</p><p>
+
+The usual case for importance sampling a lambert material model is to have \(n=1\) but I've made it a bit more generic if someone wants to try it for the reflections in say a phong material model. If you do try it for a phong model then care must be taken since quite a few of the directions will go behind the plane of the intersection. Perhaps rejection sampling can be used. Either way care must be taken so that the solution is still unbiased and energy conserving.
+
+</p><p>
+
+To make this easier we will jump to spherical coordinates. It is quite common when working with directions over the sphere or hemisphere.
+
+</p><p>
+
+What probabilty function do we want for out result? The angle \(\theta\) dictates how far we are from the forward direction. In spherical coordinates our probability function is \(p(\theta,\phi) \propto \cos^n{\theta}\). Now how do we normalize it? If we start with the case where \(n=1\) and integrate \(\cos{\theta}\) over \(\theta \in [0,\frac{\pi}{4}]\) we get the value 1. But that is not the value we are looking for. This time splitting the probability into a part that depends on \(\theta\) and one on \(\phi\) does not work. Instead we need to integrate \(\cos{\theta}\) over the full hemisphere. In doing so we must not forget the differential solid angle \(\sin{\theta}d\theta d\phi\) in our integral to compensate for the fact that the sphere is shrinking closer to \(\theta=0\). This come from the spherical coordinates parametrization.
+
+</p><p>
+
+Before we jump head first into this we need to solve an integral that will come in handy very soon. We want to find the integral of \(\int \cos^n{x} \sin{x} dx\) for \(n>0\). The solutions is based on the reverse of the chain rule (as outlined <a href="http://sydney.edu.au/stuserv/documents/maths_learning_centre/chainrulereverse.pdf">here</a>). First we restate the chain rule as well as some simple derivation rules that we will need
+\begin{eqnarray}
+y(x)  & \equiv & f(g(x)) \\
+y(x)' & = & f'(g(x)) g'(x) \\
+\cos'{x} & = & -\sin{x} \\
+(x^n)' & = & \frac{x^{n-1}}{n}
+\end{eqnarray}
+
+</p><p>
+
+Now we try to put out integral on the form of \(y\) above. This seems possible since \(-\sin{x}\) happens to be the derivate of \(\cos{x}\). We get
+\begin{eqnarray}
+f(x)  & \equiv & \frac{x^{n+1}}{n+1} \\
+g(x)  & \equiv & -\cos{x} \\
+y(x)  & \equiv & f(g(x)) \\
+      & = & -\frac{\cos{x}^{n+1}}{n+1} \\
+f'(x) & = & x^n \\
+g'(x) & = & \sin{x} \\
+y'(x) & = & f'(g(x)) g'(x) \\
+      & = & \cos^n{x} \sin{x} \\
+\int_a^b \cos^n{x}\sin{x}dx & = & \left[-\frac{\cos^{n+1}{x}}{n+1}\right]_a^b
+\end{eqnarray}
+
+</p><p>
+
+If we have an expression whose derivate becomes the function we want to integrate, then we know the integral! It is that simple! Finding that expression can be hard. Armed with this integral the rest will be simple! First we make sure \(p\)�integrate to 1 so it is a proper probability function
+\begin{eqnarray}
+p(\theta,\phi) & \propto & \cos^n{\theta} \\
+\int_0^{2\pi} \int_0^{\frac{\pi}{2}} \cos^n{(\theta)} \sin{(\theta)} d\theta d\phi & = & 2\pi \int_0^{\frac{\pi}{2}} \cos^n{(\theta)} \sin{(\theta)} d\theta \\
+ & =& 2\pi \left[-\frac{\cos^{n+1}{\theta}}{n+1}\right]_0^{\pi/2} \\ 
+  & = & \frac{2\pi}{n+1} \\
+p(\theta,\phi) & = & \frac{(n+1)\cos^n{\theta}}{2\pi}
+\end{eqnarray}
+
+</p><p>
+
+For the special case where \(n=1\) (as when we need to importance sample a diffuse lobe) we have that \(p(\theta, \phi) = \frac{2\cos{\theta}}{2\pi} = \frac{\cos{\theta}}{\pi}\).
+
+</p><p>
+
+It is time to use inverse CDF sampling. To the inverse CDF sampling-o-mobile! 
+
+</p><p>
+
+\begin{eqnarray}
+p(\theta,\phi) & = & \frac{(n+1)\cos^n{\theta}}{2\pi} \\
+F(\theta,\phi) & = & \frac{n+1}{2\pi} \int_0^{\phi} \int_0^\theta \cos^n{\widehat{\theta}} \sin{\widehat{\theta}} d\widehat{\theta} d\widehat{\phi} \\
+ & = & \left( \frac{1}{2\pi} \int_0^{\phi} d\widehat{\phi} \right) \left( (n+1) \int_0^\theta \cos^n{\widehat{\theta}} \sin{\widehat{\theta}} d\widehat{\theta} \right) \\
+               & \equiv & F_{\phi}(\phi) F_{\theta}(\theta) \\
+
+\end{eqnarray}
+
+</p><p>
+
+Here at last we can seperate \(F\) into two 1D-functions that we can do inverse CDF sampling of individually. We get
+
+</p><p>
+
+\begin{eqnarray}
+F_{\phi}(\phi) & = & \frac{1}{2\pi} \int_0^{\phi} d\widehat{\phi} \\
+               & = & \frac{\phi}{2\pi} \\
+F_{\theta}(\theta) & = & (n+1)\int_0^\theta \cos^n{\widehat{\theta}} \sin{\widehat{\theta}} d\widehat{\theta} \\
+                   & = & (n+1)\left[-\frac{\cos^{n+1} {\widehat{\theta}}}{n+1} \right]_0^{\theta} \\
+                   & = & 1-\cos^{n+1}{\theta}
+\end{eqnarray}
+
+</p><p>
+
+Inverting them gives us our expressions to go from random numbers \(u_0, u_1\) to $\theta, \(\phi\)
+
+</p><p>
+
+\begin{eqnarray}
+F_{\phi}^{-1}(u_0) & = & 2\pi u_0 \\
+F_{\theta}^{-1}(u_1) & = & \arccos^{\frac{1}{n+1}}{(1-u_1)} \\
+ & = & \arccos^{\frac{1}{n+1}}{(u_1)} \\
+\end{eqnarray}
+
+</p><p>
+
+Here we use that \(1-u_1\) and \(u_1\) both are uniformly distributed in the interval \([0,1]\). Now inverse trigonometry functions have a bad reputation but sometimes they vanish when actually used. In our case we only need \(\cos{theta}\) and \(\sin{theta}\). For the first we are happy, we just drop the \(\arccos\) completely. For the latter we can use the <a href="https://en.wikipedia.org/wiki/Pythagorean_theorem#Pythagorean_trigonometric_identity">Pythagorean trigonometric identity</a> that says that \(1=\sin^2{x}+\cos^2{x}\). Thus we can replace the \(\arccos\) call with a sqrt. Care must be taken to handle cases where the argument to sqrt can become negative since sqrt is not defined for negative numbers (at least if we expect real numbers as the result).
+
+</p><p>
+
+Time for pseudo-code
+</p><pre class="listing tilde"><code>vec3 point_hemisphere_cosine_pow(normal,<span class="hljs-built_in">n</span>,<span class="hljs-symbol">u0</span>,<span class="hljs-symbol">u1</span>) {
+	<span class="hljs-built_in">phi</span> = <span class="hljs-number">2</span>*<span class="hljs-built_in">PI</span>*<span class="hljs-symbol">u0</span>
+	cos_theta = pow(<span class="hljs-symbol">u1</span>, <span class="hljs-number">1</span>/(<span class="hljs-number">1</span>+<span class="hljs-built_in">n</span>))
+	sin_theta = <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">1.0</span>-cos_theta*cos_theta)
+	x = sin_theta * <span class="hljs-built_in">cos</span>(<span class="hljs-built_in">phi</span>)
+	y = sin_theta * <span class="hljs-built_in">sin</span>(<span class="hljs-built_in">phi</span>)
+	z = cos_theta
+	return rotate_frame(x,y,z,normal)
+}
+
+vec3 point_hemisphere_cosine(normal,<span class="hljs-symbol">u0</span>,<span class="hljs-symbol">u1</span>) {
+	<span class="hljs-built_in">phi</span> = <span class="hljs-number">2</span>*<span class="hljs-built_in">PI</span>*<span class="hljs-symbol">u0</span>
+	cos_theta = <span class="hljs-built_in">sqrt</span>(<span class="hljs-symbol">u1</span>)
+	sin_theta = <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">1.0</span>-cos_theta*cos_theta)
+	x = sin_theta * <span class="hljs-built_in">cos</span>(<span class="hljs-built_in">phi</span>)
+	y = sin_theta * <span class="hljs-built_in">sin</span>(<span class="hljs-built_in">phi</span>)
+	z = cos_theta
+	return rotate_frame(x,y,z,normal)
+}</code></pre><p>
+
+As we can see we have no calls to \(\arccos\).
+
+</p>
+<a class="target" name="pointon(hemi-)sphereusingsphericalfibonaccipointsets(uniformorcos-weighted)">&nbsp;</a><a class="target" name="toc4.5">&nbsp;</a><h2>Point on (hemi-)sphere using Spherical Fibonacci Point Sets (uniform or cos-weighted)</h2>
+<p>
+
+
+WIP: I need to properly verify the formulas here.
+
+</p><p>
+
+This is just some code I wrote after reading <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.363.5568&rep=rep1&type=pdf">Spherical Fibonacci Point Sets for Illumination Integrals</a>. It is a type of generator that let the user select a number of points \(N\) and then it can generate them deterministically using an index. In order to get a good sampling of the hemisphere/sphere all \(N\)�points must be used or there will be gaps. This is a good example of a method that uses the golden ratio to do something randomish. The method is also somewhat unique in that it generates points directly on the sphere. Most other methods have a scheme to generate good random numbers and then another scheme to get the onto the sphere. The paper claims that this method has no seam issue whereas other methods might have.
+
+</p><p>
+
+We can generate points on the hemisphere (using spherical coordinates) as:
+
+</p><pre class="listing tilde"><code>vec3 point_on_hemisphere(vec3 normal, <span class="hljs-built_in">int</span> <span class="hljs-built_in">N</span>, <span class="hljs-built_in">int</span> <span class="hljs-built_in">index</span>) {
+	z = <span class="hljs-number">1.0</span> - (<span class="hljs-number">0.5</span> + <span class="hljs-built_in">index</span>)/<span class="hljs-built_in">N</span>
+	<span class="hljs-built_in">phi</span> = <span class="hljs-built_in">index</span> * <span class="hljs-built_in">PI</span> * (<span class="hljs-number">3</span> - <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">5</span>))
+	cos_theta = z
+
+	sin_theta = <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">1.0</span>-cos_theta*cos_theta)
+	x = sin_theta * <span class="hljs-built_in">cos</span>(<span class="hljs-built_in">phi</span>)
+	y = sin_theta * <span class="hljs-built_in">sin</span>(<span class="hljs-built_in">phi</span>)
+	z = cos_theta
+	return rotate_frame(x,y,z,normal);
+}
+
+vec3 point_on_hemisphere_cos(vec3 normal, <span class="hljs-built_in">int</span> <span class="hljs-built_in">N</span>, <span class="hljs-built_in">int</span> <span class="hljs-built_in">index</span>) {
+	z = <span class="hljs-number">1.0</span> - (<span class="hljs-number">0.5</span> + <span class="hljs-built_in">index</span>)/<span class="hljs-built_in">N</span>
+	<span class="hljs-built_in">phi</span> = <span class="hljs-built_in">index</span> * <span class="hljs-built_in">PI</span> * (<span class="hljs-number">3</span> - <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">5</span>))
+	cos_theta = <span class="hljs-built_in">sqrt</span>(z)
+
+	sin_theta = <span class="hljs-built_in">sqrt</span>(<span class="hljs-number">1.0</span>-cos_theta*cos_theta)
+	x = sin_theta * <span class="hljs-built_in">cos</span>(<span class="hljs-built_in">phi</span>)
+	y = sin_theta * <span class="hljs-built_in">sin</span>(<span class="hljs-built_in">phi</span>)
+	z = cos_theta
+	return rotate_frame(x,y,z,normal);
+}	</code></pre><p>
+
+Here index is a value between from 0 to \(N-1\). Works for non-power-of-two values of \(N\). A truly random subset of all the indices might provide a decent covering of the sphere, but I don't recommend using this generator as a basis of a progressive method (where more samples are taken on demand).
+
+</p><p>
+
+TODO:
+
+</p><p>
+
+<ul>
+<li class="asterisk">Verify formulas
+</li>
+<li class="asterisk">Include point-on-sphere as well</li></ul>
+
+</p>
+<a class="target" name="pointonhemisphere-%EE%80%90005i%EE%80%90-weighted(cutealternateversion)(wip)">&nbsp;</a><a class="target" name="toc4.6">&nbsp;</a><h2>Point on hemisphere - \(\cos\)-weighted (cute alternate version) (WIP)</h2>
+<p>
+
+
+While I am writing this there have been a lot of discussions on twitter about a handy routine to generate random directions that are cosine weighted in the hemisphere. The benefit as far as I understand it is that it doesn't need to rotate something such that the hemisphere is properly oriented around the normal vector. When I noticed the discussion I felt I lacked to tools to analyze it. In writing this I am trying to rectify that.
+
+</p><p>
+
+Here is pseudo-code for the proposed solutions
+</p><pre class="listing tilde"><code>vec3 point_hemisphere_cosine(<span class="hljs-attribute">normal</span>,u0,u1) {
+	<span class="hljs-selector-tag">p</span> = point_on_unit_sphere(u0,u1)
+	return normalize(<span class="hljs-selector-tag">p</span> + <span class="hljs-attribute">normal</span>)
+}</code></pre><p>
+
+The reason it made the round on twitter is that the following incorrect version was used. Allegedly it gives out directions that are \(cos^3\)-weighted over the hemisphere oriented around the normal
+</p><pre class="listing tilde"><code><span class="hljs-comment">// Incorrect distribution</span>
+vec3 point_hemisphere_cosine(<span class="hljs-attribute">normal</span>,u0,u1,u2) {
+	<span class="hljs-selector-tag">p</span> = point_in_unit_sphere(u0,u1,<span class="hljs-number">2</span>)
+	return normalize(<span class="hljs-selector-tag">p</span> + <span class="hljs-attribute">normal</span>)
+}</code></pre><p>
+I think the appeal of the last incorrect version is that it works well with rejection sampling as well. In that case you would need a random number generator instead of the three random numbers (or the ability to &ldquo;fail&rdquo; generating a sample somehow).
+
+</p><p>
+
+Note that \(normalize(point\_in\_unit\_sphere(...))\) gives out points on the surface of a sphere, exactly like \(point\_on\_unit\_sphere(...)\). I just point this out since there was speculation that a second normalize was needed, but in adding it you might as well go with the \(point\_on\_unit\_sphere\) instead as it is probably cheaper anyway.
+
+</p><p>
+
+This method (the correct one using \(point\_on\_unit\_sphere\) looks different somehow from the other ones we've derived using the inverse CDF method. We do know the end PDF but if we were to follow the inverse CDF procedure from that one we would not end up with something on this exact form. So we need a new tool in our box. When someone gives us a sampling procedure, how do we know what it actually does?
+
+</p><p>
+
+To be continued.
+
+</p>
+<a class="target" name="interestingpapers">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Interesting Papers</h1>
+
+<a class="target" name="sampling">&nbsp;</a><a class="target" name="toc5.1">&nbsp;</a><h2>Sampling</h2>
+<p>
+
+
+
+<ul>
+<li class="asterisk"><a href="https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf" class="url">https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf</a>
+</li>
+<li class="asterisk"><a href="http://www.eugenedeon.com/project/importance-sampling-microfacet-based-bsdfs-using-the-distribution-of-visible-normals/" class="url">http://www.eugenedeon.com/project/importance-sampling-microfacet-based-bsdfs-using-the-distribution-of-visible-normals/</a></li></ul>
+
+</p>
+<a class="target" name="license&credits">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>License & Credits</h1>
+<p>
+
+
+This document was written using <a href="https://casual-effects.com/markdeep/">markdeep</a>. Figures are done in Python using <a href="https://matplotlib.org">matplotlib</a>.
+
+</p><p>
+
+I'm currently looking for a good license for a project like this. Feel free to help me out. I want to following:
+
+</p><p>
+
+<ul>
+<li class="asterisk">Anyone can copy pseudo-code or formulas as much as they want
+</li>
+<li class="asterisk">Can't copy entire sections or full documents without attribution
+</li>
+<li class="asterisk">Figures/visualizations are free to use for others, attribution not needed but OK.</li></ul>
+
+</p><p>
+
+Basically use the knowledge from this document as you want but don't copy the entire document without attribution.
+
+</p><p>
+
+The source for figures as well as this document can be found at <a href="https://github.com/breakin/equations">github</a>. Feel free to copy equations from the source, file issues etc as you see fit!
+
+</p>
+<a class="target" name="revisionhistory(withcredits)">&nbsp;</a><a class="target" name="toc7">&nbsp;</a><h1>Revision History (with credits)</h1>
+<p>
+
+
+
+<ul>
+<li class="asterisk">2018-04-03:
+<ul>
+	<li class="asterisk">Initial version.
+</li></ul>
+<li class="asterisk">2018-04-04a:
+<ul>
+	<li class="asterisk">Fixed typos in usages of Pythagorean trigonometric identity <a href="https://twitter.com/self_shadow/status/981372950145253377">found</a> by <a href="https://twitter.com/self_shadow">Stephen Hill</a>.
+</li>
+	<li class="asterisk">Added link to wikipedia article on Pythagorean trigonometric identity for those who wants to know more.
+</li>
+	<li class="asterisk">Added link to <a href="http://jcgt.org/published/0006/01/01/"><a href="http://jcgt.org/published/0006/01/01/" class="url">http://jcgt.org/published/0006/01/01/</a></a> as suggested by <a href="https://twitter.com/self_shadow">Stephen Hill</a>.
+</li>
+	<li class="asterisk">Updated my rotate_frame function to make it more clear
+</li></ul>
+<li class="asterisk">2018-04-04b:
+<ul>
+	<li class="asterisk">Added link to <a href="http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html"><a href="http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html" class="url">http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html</a></a> as an alternative for rotate_frame.
+</li>
+	<li class="asterisk">Changed disposition (move rotate_frame into new chapter)
+</li>
+	<li class="asterisk">Added some introduction to random sampling
+</li>
+	<li class="asterisk">Added embryo to Spherical Fibonacci Point Sets
+</li>
+	<li class="asterisk">Wrote some more text on inverse CDF sampling
+</li></ul>
+<li class="asterisk">2018-04-07:
+<ul>
+	<li class="asterisk">Improved description of PDF, CDF and inverse CDF sampling. Figures done in matplotlib in python.
+</li></ul>
+<li class="asterisk">2018-04-08:
+<ul>
+	<li class="asterisk">Added preliminary text on LICENSE
+</li>
+	<li class="asterisk">Formatting changes, renamed master level sections.</li></ul></li></ul>
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>

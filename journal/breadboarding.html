@@ -1,0 +1,115 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>Breadboarding</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>Breadboarding</title><div class="title"> Breadboarding </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div><div class="shortTOC"><a href="#toc1">Counters</a> &middot; <a href="#toc2">Double Counters!</a> &middot; <a href="#toc3">Breadboard</a></div>
+
+</p><p>
+
+Disclaimer: I still don't know what I'm doing so don't try to replicate what I have in my images!
+
+</p><p>
+
+So I finally hooked up my (now old!) raspberry to my breadboard.
+It was more involved than expected since once I sat down to start doing some experiments, it turned out that my raspberry breakout cable required soldering at 80 contact points. Luckily my last <a href="soldering-1.html">soldering side trip</a> left me well prepared. I actually finished it quite fast. Or time went fast. Anyway it felt fast and that is the important part!
+
+</p><p>
+
+When I had the soldering iron up and running I also tried making a cable for my SNES project but I quickly realized that soldering wires requires some sort of mount so I'll get one before I'll continue that. Three hands would also help!
+
+</p><p>
+
+Anyway I started with the hello world of Raspberry-breadboard-interaction. One LED that I could control from python:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/breadboard_helloworld.jpg" target="_blank"><img class="markdeep" src="images/breadboard_helloworld.jpg" /></a ><div class="imagecaption">Hello world</div></div></center>
+
+</p><p>
+
+Quite satisfactory! I realize something about Ohm's law here too. I used to think that the resistor needed to limit the current would be different if I used one of the data pins or one of the +3.3/+5.0 pins. Turns out that the current drawn from the pin will be the same, independent of that pins ability to give out current. If resistance and voltage is known (say 330ohm and 3.3V as in my example) the current is given by Ohm's law directly, independent of the type of data pin used. While there is more &ldquo;juice&rdquo; in the +3.3V pin, it behaves as the data pins. It just doesn't break when you draw more!
+
+</p>
+<a class="target" name="counters">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Counters</h1>
+<p>
+
+
+To make things interesting I then experimented with a &ldquo;counter&rdquo;. I hook it up the ground and +3.3V on the raspberry. One data pin is connected to the CLOCK of the counter. Every time it goes from 0 to 1 the counter increases its' number. I hooked up the +3.3V to quite a lot of input pins of the counter that I just want to keep at 1. I'm not sure if I should add resistors to avoid short circuit... The counter shows the binary code of the current number on four of it's pins, and then once it overflows it shows a 1 on the carry pin. I hooked it up using a LED for each output pin (1,2,4,8,carry) to a visual debugging aid. I love those!
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/breadboard_counter.jpg" target="_blank"><img class="markdeep" src="images/breadboard_counter.jpg" /></a ><div class="imagecaption">Counter</div></div></center>
+
+</p><p>
+
+Quite messy!
+
+</p>
+<a class="target" name="doublecounters!">&nbsp;</a><a class="target" name="toc2">&nbsp;</a><h1>Double Counters!</h1>
+<p>
+
+
+I then hooked up two of these in series. By connecting the CARRY from the first counter into the CLOCK of the second counter they work together.
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/breadboard_doublecounter.jpg" target="_blank"><img class="markdeep" src="images/breadboard_doublecounter.jpg" /></a ><div class="imagecaption">Double Counter!</div></div></center>
+
+</p><p>
+
+And from another angle:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/breadboard_doublecounter2.jpg" target="_blank"><img class="markdeep" src="images/breadboard_doublecounter2.jpg" /></a ><div class="imagecaption">Double Counter, different angle</div></div></center>
+
+</p><p>
+
+When I say work together I mean almost work together. I think that the second counter is activated one cycle too early. I have to figure out a way to delay the usage of the CARRY.
+
+</p><p>
+
+So why the counters? Well my current project is to extract ROM's from SNES cartridges. With 24 pins representing the adress to access I need a way to multiple the pins on the raspberry. But since I only intend to increase the binary number by one to get to the next byte I might as well use counters! Only one data pin required on the raspberry. With 24/4=6 counters I can generate 24-bits addresses.
+
+</p>
+<a class="target" name="breadboard">&nbsp;</a><a class="target" name="toc3">&nbsp;</a><h1>Breadboard</h1>
+<p>
+
+
+So what do I think of the breadboard? Well it seems that some of my components are not really built for it. The resitors have too long legs, I really need to cut them. The counters are fragile and it is easy to damage them when taking them out of the breadboard. Perhaps there is a trick; I think they need to be lifted straight up. Working with soft cables is very nice for longer connections, but the hard cables makes it easier to look at the circuit and say what is going on.
+
+</p><p>
+
+When working with IC it would be nice to have a larger breadboard. If I plug in an IC like the counter it eats up 8 rows. If you look at how I had to with my LED's, I rather be able to do that sideways, straight out from the IC pin. Now I have to move them away vertically to get some room to work!
+
+</p><p>
+
+But in all it is has been really fun and I'm pleasantly surprised that I didn't kill my raspberry. Super happy that the counters worked on the first try!
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>

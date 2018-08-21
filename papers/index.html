@@ -1,0 +1,171 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>Papers (Reading Materials)</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>Papers (Reading Materials)</title><div class="title"> Papers (Reading Materials) </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div><div class="shortTOC"><a href="#toc1">Understanding GPU</a> &middot; <a href="#toc2">Random Sampling and Monte Carlo Methods</a> &middot; <a href="#toc3">TODO</a></div>
+
+</p>
+<a class="target" name="understandinggpu">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Understanding GPU</h1>
+<p>
+
+Here I've gathered links to blogs/papers/manuals that describe how the GPU work.
+Some of them talk about a fictional GPU since not all GPU details are available (or the author is not able to make them fully public).
+There are many different levels of understanding the GPU. There is the GPU itself, the driver and then API used to access the driver. This section mixes all three!
+
+</p><p>
+
+Note that GPU Open is an AMD initative.
+
+</p><p>
+
+<ul>
+<li class="asterisk">A trip through the Graphics Pipeline (Fabian &ldquo;ryg&rdquo; Giesen, 2011)
+<ul>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/09/a-trip-through-the-graphics-pipeline-2011-index/">Index</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/01/a-trip-through-the-graphics-pipeline-2011-part-1/">Part 1: Introduction; the Software stack.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/02/a-trip-through-the-graphics-pipeline-2011-part-2/">Part 2: GPU memory architecture and the Command Processor.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/03/a-trip-through-the-graphics-pipeline-2011-part-3/">Part 3: 3D pipeline overview, vertex processing.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/04/a-trip-through-the-graphics-pipeline-2011-part-4/">Part 4: Texture samplers.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/">Part 5: Primitive Assembly, Clip/Cull, Projection, and Viewport transform.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/06/a-trip-through-the-graphics-pipeline-2011-part-6/">Part 6: (Triangle) rasterization and setup.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/08/a-trip-through-the-graphics-pipeline-2011-part-7/">Part 7: Z/Stencil processing, 3 different ways.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/10/a-trip-through-the-graphics-pipeline-2011-part-8/">Part 8: Pixel processing � �fork phase�.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/12/a-trip-through-the-graphics-pipeline-2011-part-9/">Part 9: Pixel processing � �join phase�.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/07/20/a-trip-through-the-graphics-pipeline-2011-part-10/">Part 10: Geometry Shaders.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/08/14/a-trip-through-the-graphics-pipeline-2011-part-11/">Part 11: Stream-Out.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/09/06/a-trip-through-the-graphics-pipeline-2011-part-12/">Part 12: Tessellation.</a>
+</li>
+	<li class="asterisk"><a href="https://fgiesen.wordpress.com/2011/10/09/a-trip-through-the-graphics-pipeline-2011-part-13/">Part 13: Compute Shaders.</a>
+
+</p><p>
+
+</li></ul>
+<li class="asterisk">Compute Shaders (Anteru, 2018)
+<ul>
+	<li class="asterisk"><a href="https://anteru.net/blog/2018/intro-to-compute-shaders/index.html">Introduction to compute shaders</a>
+</li>
+	<li class="asterisk"><a href="https://anteru.net/blog/2018/more-compute-shaders/">More compute shaders</a>
+</li>
+	<li class="asterisk"><a href="https://anteru.net/blog/2018/even-more-compute-shaders/index.html">Even more compute shaders</a>
+
+</p><p>
+
+</li></ul>
+<li class="asterisk">Breaking Down Barriers (Matt Pettineo, 2018)
+<ul>
+	<li class="asterisk"><a href="https://mynameismjp.wordpress.com/2018/03/06/breaking-down-barriers-part-1-whats-a-barrier/">Part 1: What�s a barrier?</a>
+</li>
+	<li class="asterisk"><a href="https://mynameismjp.wordpress.com/2018/04/01/breaking-down-barriers-part-2-synchronizing-gpu-threads/">Part 2: Synchronizing GPU Threads</a>
+</li>
+	<li class="asterisk"><a href="https://mynameismjp.wordpress.com/2018/06/17/breaking-down-barriers-part-3-multiple-command-processors/">Part 3: Multiple Command Processors</a>
+</li>
+	<li class="asterisk"><a href="https://mynameismjp.wordpress.com/2018/07/03/breaking-down-barriers-part-4-gpu-preemption/">Part 4: GPU Preemption</a>
+
+</p><p>
+
+</li></ul>
+<li class="asterisk"><a href="https://gpuopen.com/understanding-gpu-context-rolls/">Understanding GPU context rolls (2018)</a>
+</li>
+<li class="asterisk"><a href="https://gpuopen.com/first-steps-implementing-fp16/">First steps when implementing FP16 (2018)</a>
+</li>
+<li class="asterisk"><a href="https://gpuopen.com/optimizing-gpu-occupancy-resource-usage-large-thread-groups/">Optimizing GPU occupancy and resource usage with large thread groups (2017)</a>
+
+</p><p>
+
+</li>
+<li class="asterisk">DirectX 12
+<ul>
+	<li class="asterisk"><a href="https://www.youtube.com/watch?v=nmB2XMasz2o">DirectX 12: Resource Barriers and State Tracking (2015)</a>
+</li>
+	<li class="asterisk"><a href="https://www.youtube.com/watch?v=Db2TaG49SRg">DirectX 12: Resources Barriers and You (2016)</a>
+</li>
+	<li class="asterisk"><a href="https://www.youtube.com/watch?v=Uwhhdktaofg">Resource Binding in DirectX 12 (pt.1) (2015)</a>
+</li>
+	<li class="asterisk"><a href="https://www.youtube.com/watch?v=Wbnw87tYqVg">Resource Binding in DirectX 12 (pt.2) (2015)</a>
+</li>
+	<li class="asterisk"><a href="https://www.youtube.com/watch?v=9YdIMYJ96Aw">Resource Binding in DirectX 12 (pt.3) (2015)</a>
+
+</p><p>
+
+</li></ul>
+<li class="asterisk">AMD Reference Material
+<ul>
+	<li class="asterisk"><a href="https://developer.amd.com/resources/developer-guides-manuals/">Developer Guides, Manuals & ISA Documents</a>
+<ul>
+		<li class="asterisk"><a href="https://developer.amd.com/wp-content/resources/Vega_Shader_ISA_28July2017.pdf">&ldquo;Vega&rdquo; Instruction Set Architecture (2017)</a></li></ul></li></ul></li></ul>
+
+</p>
+<a class="target" name="randomsamplingandmontecarlomethods">&nbsp;</a><a class="target" name="toc2">&nbsp;</a><h1>Random Sampling and Monte Carlo Methods</h1>
+<p>
+
+
+<ul>
+<li class="asterisk">Multiple Importance Sampling
+<ul>
+  <li class="asterisk"><a href="http://graphics.stanford.edu/papers/veach_thesis/">Robust Monte Carlo Methods for Light Transport Simulation (1997)</a> (<a href="http://graphics.stanford.edu/papers/veach_thesis/thesis.pdf">pdf</a>)
+<ul>
+  	<li class="asterisk"><a href="https://graphics.stanford.edu/courses/cs348b-03/papers/veach-chapter9.pdf">Chapter 9: Multiple Importance Sampling</a>
+
+</p><p>
+
+</li></ul>
+</li></ul>
+<li class="asterisk">Jittered sampling
+<ul>
+  <li class="asterisk"><a href="http://www.cs.cmu.edu/afs/cs/academic/class/15462-s15/www/lec_slides/p51-cook.pdf">Stochastic Sampling in Computer Graphics (1986)</a>
+</li>
+  <li class="asterisk"><a href="https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf">Correlated Multi-Jittered Sampling (2013</a>
+</li>
+  <li class="asterisk"><a href="https://graphics.pixar.com/library/ProgressiveMultiJitteredSampling/paper.pdf]">Progressive Multi-Jittered Sample Sequences (2018)</a></li></ul></li></ul>
+
+</p>
+<a class="target" name="todo">&nbsp;</a><a class="target" name="toc3">&nbsp;</a><h1>TODO</h1>
+<p>
+
+
+<ul>
+<li class="asterisk"><a href="https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf" class="url">https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf</a>
+</li>
+<li class="asterisk"><a href="http://www.eugenedeon.com/project/importance-sampling-microfacet-based-bsdfs-using-the-distribution-of-visible-normals/" class="url">http://www.eugenedeon.com/project/importance-sampling-microfacet-based-bsdfs-using-the-distribution-of-visible-normals/</a>
+</li>
+<li class="asterisk"><a href="https://www.youtube.com/watch?feature=youtu.be&v=zBANWjpbl74&app=desktop" class="url">https://www.youtube.com/watch?feature=youtu.be&v=zBANWjpbl74&app=desktop</a></li></ul>
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>

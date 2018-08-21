@@ -1,0 +1,133 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>Snestistics - First published code!</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>Snestistics - First published code!</title><div class="title"> Snestistics - First published code! </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+(Notice that this is a historical post that has been re-posted. Most facts in this post are no longer true!)
+
+</p><p>
+
+I've finally put some code up on the net!
+
+</p><p>
+
+First I have a modified snes9x branch at <a href="https://github.com/breakin/snes9x-debugtrace" class="url">https://github.com/breakin/snes9x-debugtrace</a>.
+It is currently a trap since it is just a clean copy of snes9x, without my actual modifications added yet. It should output .snestrace-files and it will soon. But not yet.
+
+</p><p>
+
+Then I have create the fantastic tool snestistics. It can be found at <a href="https://github.com/breakin/snestistics"><a href="https://github.com/breakin/snestistics" class="url">https://github.com/breakin/snestistics</a></a>.
+
+</p><p>
+
+It should work with a variety of snes-roms, but it has only been tested with Zelda 3 NTSC. Visual Studio 2012 projects files are included. It has only been tested with that compiler.
+
+</p><p>
+
+There is one example included with preliminary label definitions and a .snestrace-file that I created by playing through small parts of Zelda 3. By running snestistics an assmebler file of 19000 lines is created. It can be cleanly compiled using WLA DX and it patches on top of the original ROM-file without creating any differences.
+
+</p><p>
+
+Going forward I will most likely extend the list of known labels in Zelda 3 and try to understand more of it. That was my original goal, right?
+
+</p><p>
+
+Lastly and last, here is a small snippet from the asm-file that is outputted just to show the power of it all. Notice that even though the jumps are not deterministic (for various reasons, in this snippet it is always because the databank could be different from the program bank and that there could be a jump straight into this code) the correct taken labels are printed in the comment. If multiple targets exists, there will be multiple labels in the comment! Next step is to figure out what label_00D537 does and give it a proper name!
+
+</p><pre class="listing tilde"><code>.BANK <span class="hljs-variable">$00</span> SLOT <span class="hljs-number">0</span>
+.ORG <span class="hljs-variable">$D231</span>-<span class="hljs-variable">$8000</span>
+.SECTION SnestisticsSection<span class="hljs-number">10</span> OVERWRITE
+
+; Things under investigation
+load_stuff_<span class="hljs-number">1</span>:
+
+    PHB 
+    PHK 
+    PLB 
+    REP #<span class="hljs-variable">$20</span>
+    STZ <span class="hljs-variable">$0A</span>
+    STZ <span class="hljs-variable">$0C</span>
+    LDA #<span class="hljs-variable">$0480</span>.<span class="hljs-keyword">W</span>
+    STA <span class="hljs-variable">$06</span>
+    SEP #<span class="hljs-variable">$20</span>
+    LDA #<span class="hljs-variable">$07</span>.B
+    JSR <span class="hljs-variable">$D537</span>.<span class="hljs-keyword">W</span> ; label_00D<span class="hljs-number">537</span> [<span class="hljs-number">00</span>D<span class="hljs-number">537</span>]
+    LDA #<span class="hljs-variable">$07</span>.B
+    JSR <span class="hljs-variable">$D537</span>.<span class="hljs-keyword">W</span> ; label_00D<span class="hljs-number">537</span> [<span class="hljs-number">00</span>D<span class="hljs-number">537</span>]
+    LDA #<span class="hljs-variable">$03</span>.B
+    JSR <span class="hljs-variable">$D537</span>.<span class="hljs-keyword">W</span> ; label_00D<span class="hljs-number">537</span> [<span class="hljs-number">00</span>D<span class="hljs-number">537</span>]
+    LDY #<span class="hljs-variable">$5F</span>.B
+    LDA #<span class="hljs-variable">$04</span>.B
+    JSR <span class="hljs-variable">$D54E</span>.<span class="hljs-keyword">W</span> ; decompress_and_unpack_image_tableA [<span class="hljs-number">00</span>D54E]
+    LDA #<span class="hljs-variable">$03</span>.B
+    JSR <span class="hljs-variable">$D553</span>.<span class="hljs-keyword">W</span> ; unpack_image_source7f<span class="hljs-number">4000</span> [<span class="hljs-number">00</span>D<span class="hljs-number">553</span>]
+    LDA #<span class="hljs-variable">$01</span>.B
+    JSR <span class="hljs-variable">$D553</span>.<span class="hljs-keyword">W</span> ; unpack_image_source7f<span class="hljs-number">4000</span> [<span class="hljs-number">00</span>D<span class="hljs-number">553</span>]
+    LDA #<span class="hljs-variable">$04</span>.B
+    JSR <span class="hljs-variable">$D537</span>.<span class="hljs-keyword">W</span> ; label_00D<span class="hljs-number">537</span> [<span class="hljs-number">00</span>D<span class="hljs-number">537</span>]
+    LDY #<span class="hljs-variable">$60</span>.B
+    LDA #<span class="hljs-variable">$0E</span>.B
+    JSR <span class="hljs-variable">$D54E</span>.<span class="hljs-keyword">W</span> ; decompress_and_unpack_image_tableA [<span class="hljs-number">00</span>D54E]
+    LDA #<span class="hljs-variable">$07</span>.B
+    JSR <span class="hljs-variable">$D553</span>.<span class="hljs-keyword">W</span> ; unpack_image_source7f<span class="hljs-number">4000</span> [<span class="hljs-number">00</span>D<span class="hljs-number">553</span>]
+    LDY #<span class="hljs-variable">$5F</span>.B
+    LDA #<span class="hljs-variable">$02</span>.B
+    JSR <span class="hljs-variable">$D54E</span>.<span class="hljs-keyword">W</span> ; decompress_and_unpack_image_tableA [<span class="hljs-number">00</span>D54E]
+    LDY #<span class="hljs-variable">$54</span>.B
+    JSR <span class="hljs-variable">$E766</span>.<span class="hljs-keyword">W</span> ; decompress_tableA_dest7f4000_indexY [<span class="hljs-number">00E766</span>]
+    REP #<span class="hljs-variable">$30</span>
+    LDA <span class="hljs-variable">$00</span>
+    LDX #<span class="hljs-variable">$1480</span>.<span class="hljs-keyword">W</span>
+    PHA 
+    LDY #<span class="hljs-variable">$0008</span>.<span class="hljs-keyword">W</span>
+    JSR <span class="hljs-variable">$D61C</span>.<span class="hljs-keyword">W</span> ; unpack_image_inner [<span class="hljs-number">00</span>D61C]
+    PLA 
+    CLC 
+    ADC #<span class="hljs-variable">$0180</span>.<span class="hljs-keyword">W</span>
+    LDY #<span class="hljs-variable">$0008</span>.<span class="hljs-keyword">W</span>
+    JSR <span class="hljs-variable">$D61C</span>.<span class="hljs-keyword">W</span> ; unpack_image_inner [<span class="hljs-number">00</span>D61C]
+    SEP #<span class="hljs-variable">$30</span>
+    LDY #<span class="hljs-variable">$60</span>.B
+    JSR <span class="hljs-variable">$E766</span>.<span class="hljs-keyword">W</span> ; decompress_tableA_dest7f4000_indexY [<span class="hljs-number">00E766</span>]
+    REP #<span class="hljs-variable">$30</span>
+    LDA <span class="hljs-variable">$00</span>
+    LDX #<span class="hljs-variable">$2280</span>.<span class="hljs-keyword">W</span>
+    LDY #<span class="hljs-variable">$0003</span>.<span class="hljs-keyword">W</span>
+    PHA 
+    JSR <span class="hljs-variable">$D61C</span>.<span class="hljs-keyword">W</span> ; unpack_image_inner [<span class="hljs-number">00</span>D61C]
+    PLA 
+    CLC 
+    ADC #<span class="hljs-variable">$0180</span>.<span class="hljs-keyword">W</span>
+    LDY #<span class="hljs-variable">$0003</span>.<span class="hljs-keyword">W</span>
+    JSR <span class="hljs-variable">$D61C</span>.<span class="hljs-keyword">W</span> ; unpack_image_inner [<span class="hljs-number">00</span>D61C]
+    SEP #<span class="hljs-variable">$30</span>
+    JSR <span class="hljs-variable">$D3C6</span>.<span class="hljs-keyword">W</span> ; label_00D3C<span class="hljs-number">6</span> [<span class="hljs-number">00</span>D3C<span class="hljs-number">6</span>]
+    PLB</code></pre><p>
+</p></span>
+		</div>
+	</body>
+</html>

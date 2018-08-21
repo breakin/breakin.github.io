@@ -1,0 +1,94 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>The SNES Cartridge Part 4</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>The SNES Cartridge Part 4</title><div class="title"> The SNES Cartridge Part 4 </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+So first a really really long recap. I made the ugliest cable ever:
+
+</p><p>
+
+<div class="image" style="float:right;margin:4px 0px 0px 25px;"><a  href="images/frankenchord1.jpg" target="_blank"><img class="markdeep" src="images/frankenchord1.jpg" /></a ><div class="imagecaption">The cable</div></div>
+<div class="image" style="float:right;margin:4px 0px 0px 25px;"><a  href="images/frankenchord2.jpg" target="_blank"><img class="markdeep" src="images/frankenchord2.jpg" /></a ><div class="imagecaption">Soldering</div></div>
+
+</p><p>
+
+That's the recap.
+
+</p><p>
+
+So the day after I made the cable I continued working on the full device. It was hard work with many re-solderings required (due to bad soldering in the first place!) but I finally had this:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/extractor.jpg" target="_blank"><img class="markdeep" src="images/extractor.jpg" /></a ><div class="imagecaption">Full extractor, minus raspberry</div></div></center>
+
+</p><p>
+
+Here from another angle:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/extractor2.jpg" target="_blank"><img class="markdeep" src="images/extractor2.jpg" /></a ><div class="imagecaption">Full extractor, minus raspberry #2</div></div></center>
+
+</p><p>
+
+Just insert a raspberry pi. The raspberry wasn't used for anything special, but I needed about 5 outputs pins and 8 input pins. Some more outputs pins are hooked up but not used in my current setup. Speed is not of the essence when just extracing the ROM; I pretty much decide on what to do and when to do it!
+
+</p><p>
+
+I quickly wrote a Python program to extract the ROM. It was very exciting! Out came a bunch of exciting... zeros. Oh well back to reading on the internet. I found an <a href="http://www.cs.umb.edu/~bazz/snes/cartridges/electronics/speeds.html">excellent page</a> with information on the behaviour of the mask rom inside the cartrdige. The Mask rom is where the data is kept and it has a number of pins (32 for the game I was working on). You can see it on the bottom left here:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/snes-cartd.jpg" target="_blank"><img class="markdeep" src="images/snes-cartd.jpg" /></a ><div class="imagecaption">Mask ROM</div></div></center>
+
+</p><p>
+
+Basically it is what the cartridge is all about, at least for a simple cartridge like this one without support for save games. By reading and guessing I finally had a python program that actually extracted the ROM. Or extracted something. Hm. Not quite there. After reading some more I figured out the problem and I managed to get the full 1MB rom of the Super Scope 6 cartridge. I was quite happy when it worked in the emulator:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/extractedsuperscope6.png" target="_blank"><img class="markdeep" src="images/extractedsuperscope6.png" /></a ><div class="imagecaption">Something that made me happy</div></div></center>
+
+</p><p>
+
+NOTE: Without a Super Scope I still can't play it, but still... Happy!
+
+</p><p>
+
+I only got 20-bits data out from the cartridge (1 MB) since I ran out of space on the breadboard. I'm going to clean up the breadboard and make a proper project page for it so that anyone who is stupid enough to solder that cable can make one for themselves!
+
+</p><p>
+
+As a side note. I found an solution partially by reading online. If I had not found that page I would probably have started figuring out which pins on the snes cartridge mapped to what pins on the mask rom. I would then have tried to find information on mask roms to see how to tickle them to get the data out!
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>

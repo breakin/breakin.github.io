@@ -1,0 +1,120 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>Snes MaskROM Breakout</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>Snes MaskROM Breakout</title><div class="title"> Snes MaskROM Breakout </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+So a little detour. I de-soldered the so-called <a href="http://en.wikipedia.org/wiki/Mask_ROM">MaskROM</a> from a cartridge. Read on to find out what game I destroyed! It was very easy and I'm beginning to think that this should have been how I extracted data from my first cartridge. Oh well sometimes a harder problem is more interesting to solve. If you always get the easiest problem, you never get to make something really hard (since you'll always be good enough not to be challenged).
+
+</p><p>
+
+Let's start the show and tell! MaskROM inside the cartridge:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/maskrom32_in_cartridge.jpg" target="_blank"><img class="markdeep" src="images/maskrom/maskrom32_in_cartridge.jpg" /></a ><div class="imagecaption">MaskROM inside cartridge</div></div></center>
+
+</p><p>
+
+... and outside:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/maskrom32_outside_cartridge.jpg" target="_blank"><img class="markdeep" src="images/maskrom/maskrom32_outside_cartridge.jpg" /></a ><div class="imagecaption">MaskROM outside cartridge</div></div></center>
+
+</p><p>
+
+So what is the MaskROM? Well wikipedia tells me that a MaskROM is a very cost-efficient way to store read-only memory. The name is related to the manufacturing procedure. This particular MaskROM has 32 legs (pins) and contains 1MB.
+
+</p><p>
+
+Let me insert a figure from the snes <a href="http://wiki.superfamicom.org/snes/show/Schematics,+Ports,+and+Pinouts">pinout page</a>:
+
+</p><pre class="listing tilde"><code><span class="hljs-number">32</span>PIN MaskROM                   <span class="hljs-number">36</span>PIN MaskROM
+=====================           =====================
+A17  <span class="hljs-number">01</span>       <span class="hljs-number">32</span>  Vcc           A20  <span class="hljs-number">01</span>       <span class="hljs-number">36</span>  Vcc
+A18  <span class="hljs-number">02</span>       <span class="hljs-number">31</span>  /OE           A21  <span class="hljs-number">02</span>       <span class="hljs-number">35</span>  A22
+A15  <span class="hljs-number">03</span>       <span class="hljs-number">30</span>  A19           A17  <span class="hljs-number">03</span>       <span class="hljs-number">34</span>  Vcc
+A12  <span class="hljs-number">04</span>       <span class="hljs-number">29</span>  A14           A18  <span class="hljs-number">04</span>       <span class="hljs-number">33</span>  /OE
+ A7  <span class="hljs-number">05</span>       <span class="hljs-number">28</span>  A13           A15  <span class="hljs-number">05</span>       <span class="hljs-number">32</span>  A19
+ A6  <span class="hljs-number">06</span>       <span class="hljs-number">27</span>  A18           A12  <span class="hljs-number">06</span>       <span class="hljs-number">31</span>  A14
+ A5  <span class="hljs-number">07</span>       <span class="hljs-number">26</span>  A19            A7  <span class="hljs-number">07</span>       <span class="hljs-number">30</span>  A13
+ A4  <span class="hljs-number">08</span>       <span class="hljs-number">25</span>  A11            A6  <span class="hljs-number">08</span>       <span class="hljs-number">29</span>  A8
+ A3  <span class="hljs-number">09</span>       <span class="hljs-number">24</span>  A16            A5  <span class="hljs-number">09</span>       <span class="hljs-number">28</span>  A9
+ A2  <span class="hljs-number">10</span>       <span class="hljs-number">23</span>  A10            A4  <span class="hljs-number">10</span>       <span class="hljs-number">27</span>  A11
+ A1  <span class="hljs-number">11</span>       <span class="hljs-number">22</span>  /CS            A3  <span class="hljs-number">11</span>       <span class="hljs-number">26</span>  A16
+ A0  <span class="hljs-number">12</span>       <span class="hljs-number">21</span>  D7             A2  <span class="hljs-number">12</span>       <span class="hljs-number">25</span>  A10
+ D0  <span class="hljs-number">13</span>       <span class="hljs-number">20</span>  D6             A1  <span class="hljs-number">13</span>       <span class="hljs-number">24</span>  /CS
+ D1  <span class="hljs-number">14</span>       <span class="hljs-number">19</span>  D5             A0  <span class="hljs-number">14</span>       <span class="hljs-number">23</span>  D7
+ D2  <span class="hljs-number">15</span>       <span class="hljs-number">18</span>  D4             D0  <span class="hljs-number">15</span>       <span class="hljs-number">22</span>  D6
+Vss  <span class="hljs-number">16</span>       <span class="hljs-number">17</span>  D3             D1  <span class="hljs-number">16</span>       <span class="hljs-number">21</span>  D5
+                                 D2  <span class="hljs-number">17</span>       <span class="hljs-number">20</span>  D4
+                                 Vss <span class="hljs-number">18</span>       <span class="hljs-number">19</span>  D3</code></pre><p>
+
+It shows the role of each pin. The D-pins are the 8-bit output data that is being read from the MaskROM. The address fed into the MaskROM does not have A15 going nowhere, all address pins are used. I  inserted the MaskROM in my breadboard (yes, it is compatible!) and hooked it up to the RaspberryPI. My Raspberry does not have the 30 data-pins needed so I used my previous setup using counters to generate the adress. As usual I let it work at 3.3V instead of 5V to make sure the raspberry would survive. It looked something like this:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/maskrom32_extractor.jpg" target="_blank"><img class="markdeep" src="images/maskrom/maskrom32_extractor.jpg" /></a ><div class="imagecaption">MaskROM in breadboard</div></div></center>
+
+</p><p>
+
+and from another angle
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/maskrom/maskrom32_extractor2.jpg" target="_blank"><img class="markdeep" src="images/maskrom/maskrom32_extractor2.jpg" /></a ><div class="imagecaption">MaskROM in breadboard #2</div></div></center>
+
+</p><p>
+
+I've switched to dual 4-bit counters now which mean I can fit 24-bit adress generation using only 8*3=24 rows of the breadboard. However only 20-bits were needed today so 4 of the bits are fed straight to ground. In this cartridge each pin of the MaskROM is directly connected to a pin on the cartridge. For more advanced cartridges that supports save games (SRAM) or more advanced memory layouts that might not be true.
+
+</p><p>
+
+After much trial and error, as well as tearing it all apart and reverting to LED-debugging on each connection, it worked. The python program I ran was quite simple. It can be found <a href="code/maskrom32extract-v1.py">here</a>. The variables at the top specified to what data input/output I tied to pins on the MaskROM.
+
+</p><p>
+
+What did I do with the empty cartridge you might wonder? Let this image be a teaser!
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/snescartridge_breakout.jpg" target="_blank"><img class="markdeep" src="images/snescartridge_breakout.jpg" /></a ><div class="imagecaption">SNES breakout</div></div></center>
+
+</p><p>
+
+This image also says which cartridge I gutted. Hopefully it wasn't the last one!
+
+</p><p>
+
+That's all for this time!
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>

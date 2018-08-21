@@ -1,0 +1,113 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>The SNES Cartridge Part 2</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>The SNES Cartridge Part 2</title><div class="title"> The SNES Cartridge Part 2 </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+Just wanted to give an update.
+
+</p><p>
+
+I managed to find an old &ldquo;standard&rdquo; edge connector with 2*23 pins (just like a SNES cartridge with no extension chips). I found it at the physical store <a href="http://www.temaelektronik.se">Tema Elektronik</a> here in Gothenburg. It is the only physical store that I know of that sells electronics stuff since ELFA closed (Kjell&co does have some stuff and they are super helpful, but still).
+
+</p><p>
+
+Here it is in all its glory:
+
+</p><p>
+
+<div class="image" style="float:right;margin:4px 0px 0px 25px;"><a  href="images/edgecon.jpg" target="_blank"><img class="markdeep" src="images/edgecon.jpg" /></a ><div class="imagecaption">Standard edge connector</div></div>
+<div class="image" style="float:right;margin:4px 0px 0px 25px;"><a  href="images/edgecon2.jpg" target="_blank"><img class="markdeep" src="images/edgecon2.jpg" /></a ><div class="imagecaption">Standard edge connector</div></div>
+
+</p><p>
+
+When mounted on a game it looks like this:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/edgecon_mounted.jpg" target="_blank"><img class="markdeep" src="images/edgecon_mounted.jpg" /></a ><div class="imagecaption">Mounted on SNES cartridge</div></div></center>
+
+</p><p>
+
+I'm not sure if it is 2.54mm or 2.5mm, probably 2.54mm since that is the standard. The game seems to fit tightly though. The pins are a bit large but do fit in a breadboard BUT they are not seperated enough to be placed on opposite sides of the &ldquo;ridge&rdquo;, thus is will short circuit. I haven't found a nice solution here yet... My hope is to be able to use the individual pins of a cable such as
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/cable-40p-male-female.jpg" target="_blank"><img class="markdeep" src="images/cable-40p-male-female.jpg" /></a ><div class="imagecaption">40-pin cable with male-female-connectors</div></div></center>
+
+</p><p>
+
+EDIT: This cable did not work. I got one and just looking at it I can see that the female end have too large holes. Seems that the pins on cables made for breadboards have quite large pins. Expect a future invective-filled post when I've soldered everything instead! I could go for clamp-based solution instead but f*ck it.
+
+</p><p>
+
+and use the females on the edge connector and the males on the breadboard. I do have everything I need to build cables myself, but I'll think I'll buy something this time. To be continued.
+
+</p><p>
+
+I also found some information on <a href="http://www.cs.umb.edu/~bazz/snes/cartridges/">SNES Cartridges</a> here. Especially <a href="http://www.cs.umb.edu/~bazz/snes/cartridges/electronics/simple_components.html">this</a>, <a href="http://www.cs.umb.edu/~bazz/snes/cartridges/electronics/speeds.html">this</a> and <a href="http://www.cs.umb.edu/~bazz/snes/cartridges/lorom.html">this</a> seems helpful. I will probably learn a lot from these.
+
+</p><p>
+
+Feels like I've taken a step forward somehow. I'm back at work after my parental leave and Rasmus has been giving me helpful tips on the electronics side so I feel that I should have something up and running. My biggest challenge is that the RaspberryPi model B+ only have 26 data pins (it has 40 in total, but only 26 that can be used as input/output). One can solder on 4 more somehow so that could be 30. The SNES OTOH uses 32-pins for adress (24-bit) and data (8-bit). Then I need some more pins to communicate.
+
+</p><p>
+
+Of the 46 snes pins I can disregard:
+
+</p><p>
+
+<ul>
+<li class="asterisk">2 +5VDC
+</li>
+<li class="asterisk">2 GND
+</li>
+<li class="asterisk">4 CIC
+</li>
+<li class="asterisk">/CART will always be 1 for ROM extraction
+</li>
+<li class="asterisk">/RESET will probably always have one value
+</li>
+<li class="asterisk">CPU_CLOCK I might be abel to disregard
+</li>
+<li class="asterisk">Perhaps /RD can be ignored, don't know
+</li>
+<li class="asterisk">24-bit adresses means 16MB cartridges. Most games are smaller. Perhaps I can make a compromise here.</li></ul>
+
+</p><p>
+
+So if I'm lucky I only need 34 pins which is larger than 30. But for now I can try to extract first 64kb or something and then move on from there. If I later want to emulate a cartridge and play it back in the SNES I must be 5V and work with all the 46 pins so I need to figure out how to do that with the Raspberry (or with something else!).
+
+</p><p>
+
+Stay tuned!
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>

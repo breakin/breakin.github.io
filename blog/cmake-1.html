@@ -1,0 +1,201 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>CMake</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>CMake</title><div class="title"> CMake </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p>
+<div class="longTOC"><div class="tocHeader">Contents</div><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>Introduction</a><br/>
+<a href="#toc2" class="level1"><span class="tocNumber">2&nbsp; </span>External Dependencies</a><br/>
+<a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>World shortest cmake tutorial</a><br/>
+<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Squirrel</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Another library - Let's test ZLIB</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Some sort of solution</a><br/>
+<a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>Further complications</a><br/>
+<a href="#toc8" class="level1"><span class="tocNumber">8&nbsp; </span>Final Thoughts</a><br/>
+&nbsp;&nbsp;<a href="#toc8.1" class="level2"><span class="tocNumber">8.1&nbsp; </span>TL;DR</a><br/>
+</p></div><a class="target" name="introduction">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Introduction</h1>
+<p>
+
+Today I want to talk about using <a href="https://cmake.org/">cmake</a> with Visual Studio on Windows. I use cmake to generate build files for Visual Studio and it helps me build on other platforms as well. I used to have my own project generator but cmake has improved a lot and some of the problems with cmake has gone away (one being that I no longer care about 32-bit compilation). I especially like the new target inheritance mechanisms described in this <a href="https://schneide.wordpress.com/2016/04/08/modern-cmake-with-target_link_libraries/">blog post</a>. The cmake macro language itself is never fun to use but I don't mind it as much anymore. When using cmake with my own code I am mostly happy. But then comes.. external dependencies! In this blog post I will show how I would want it to work. While I've been using cmake for a long time I do hope that a reader suggests better ways to do this.
+
+</p>
+<a class="target" name="externaldependencies">&nbsp;</a><a class="target" name="toc2">&nbsp;</a><h1>External Dependencies</h1>
+<p>
+
+I recently added scripting support to an application I am developing on my spare time called snestistics. I needed a scripting language and I choose the scripting language <a href="https://github.com/albertodemichelis/squirrel">squirrel</a>. That meant I had my first external dependency. Up to this point I had written all code myself, only depending on the standard library.
+
+</p><p>
+
+I use GIT and I prefer to keep all my dependencies in my source tree (as opposed to letting the user download/build/install them on the system somewhere). That way I can control the exact version being compiled. This time I choose to use a git submodule but sometimes I just put a zip file of the source code in my repository and extract it using cmake on the first compile.
+
+</p><p>
+
+The alternative on some platforms would be to let the user build squirrel themselves and install it on their system. This could perhaps happen as part of an <em class="asterisk">apt-get</em>/<em class="asterisk">homebrew</em> command or something. But then I have little control over the exact version and I can't change build settings. This might be ok on some systems but at least on Windows having explicit control is very important. Since C++ does not have an standard ABI (application binary interface) you must compile all libraries being linked together with the same compiler (most of the time) and with mostly the same compiler settings. Otherwise things will crash. This also makes it impossible to link together release and debug built libraries in most cases.
+
+</p><p>
+
+Because of this I like that all dependencies are compiled <em class="underscore">with</em> my application. That is they are never pre-built and they live in my Visual Studio solution. This makes it easy to experiment with compiler settings, compiler versions etc without having to build/install a lot of different projects. I just change in cmake and it it propagated to all libraries. Switching between different configurations (Release, Debug, ...) doesn't put you in situation where you have mismatch between the different libraries being linked together. Debug build is always available as well as the source code is always available if I want to step into the code of a dependency to see what it does. I simply think it is a nicer way to organize the code. For foreign code that only comes pre-built this is not an option but lets not discuss that today.
+
+</p><p>
+
+Disclaimer; For larger projects that take a long time to compile I realize that pre-building some libraries and keeping them out of the Visual Studio solution helps compile times when building for the first time or doing full rebuild of all projects in the solution.
+
+</p>
+<a class="target" name="worldshortestcmaketutorial">&nbsp;</a><a class="target" name="toc3">&nbsp;</a><h1>World shortest cmake tutorial</h1>
+<p>
+
+
+So how do we do this in cmake? Quick cmake recap first! Cmake requires a file CMakeLists.txt in each directory. From a CMakeLists.txt you can include another directory using add_subdirectory. Cmake is invoked on the root directory (where the root CMakeLists.txt lives) and then it generates Visual Studio projects (or makefiles) into a directory chosen by the user.
+
+</p>
+<a class="target" name="squirrel">&nbsp;</a><a class="target" name="toc4">&nbsp;</a><h1>Squirrel</h1>
+<p>
+
+
+Before squirrel my root CMakeLists.txt looked like this:
+</p><pre class="listing tilde"><code>cmake_minimum_required (<span class="hljs-name">VERSION</span> <span class="hljs-number">2.8</span>.<span class="hljs-number">11</span>)
+project(<span class="hljs-name">snestistics</span>)
+
+set(<span class="hljs-name">CMAKE_CXX_STANDARD</span> <span class="hljs-number">11</span>)
+set(<span class="hljs-name">CMAKE_CXX_STANDARD_REQUIRED</span> on)
+
+if(<span class="hljs-name">MSVC</span>)
+	add_compile_options(<span class="hljs-name">/MP</span>) # Allow multi-processor building
+	set_property(<span class="hljs-name">GLOBAL</span> PROPERTY USE_FOLDERS ON)
+endif(<span class="hljs-name">MSVC</span>)
+
+add_subdirectory(<span class="hljs-name">source</span>)</code></pre><p>
+
+As we can see I have a few build settings that I like all the projects to use. I added the squirrel repro as a GIT submodule in a directory named squirrel. I got the following Visual Studio projects:
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/cmake-1-1.png" target="_blank"><img class="markdeep" src="images/cmake-1-1.png" /></a ><div class="imagecaption">Visual Studio Project without Squirrel</div></div></center>
+
+</p><p>
+
+Then I simply tried what felt most natural to me and added a line to my root CMakeLists.txt like this:
+
+</p><pre class="listing tilde"><code><span class="hljs-keyword">cmake_minimum_required</span> (VERSION <span class="hljs-number">2.8</span>.<span class="hljs-number">11</span>)
+<span class="hljs-keyword">project</span>(snestistics)
+
+...
+
+<span class="hljs-keyword">add_subdirectory</span>(squirrel) <span class="hljs-comment"># The new line!</span>
+<span class="hljs-keyword">add_subdirectory</span>(source)</code></pre><p>
+
+To some degree this actually worked and it made me very happy. Quite a few squirrel libraries popped up in my solution.
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/cmake-1-2.png" target="_blank"><img class="markdeep" src="images/cmake-1-2.png" /></a ><div class="imagecaption">Visual Studio Project with Squirrel (no changes)</div></div></center>
+
+</p><p>
+
+That way in source I can simply add a dependency to the squirrel CMakeLists.txt like this
+
+</p><pre class="listing tilde"><code>...
+<span class="hljs-function"><span class="hljs-title">add_executable</span><span class="hljs-params">(snestistics ${SOURCES})</span></span>
+<span class="hljs-function"><span class="hljs-title">target_link_libraries</span><span class="hljs-params">(snestistics squirrel_static)</span></span>
+<span class="hljs-function"><span class="hljs-title">target_link_libraries</span><span class="hljs-params">(snestistics sqstdlib_static)</span></span>
+<span class="hljs-function"><span class="hljs-title">include_directories</span><span class="hljs-params">(<span class="hljs-string">"../deps/squirrel/include"</span>)</span></span></code></pre><p>
+
+Now I only want to build all dependencies statically into my binary so I don't care about building DLLs for squirrel. Also I didn't need the example squirrel interpretor binary. So to get less squirrel projects in my solution I added this around the call to add_subdirectory(squirrel).
+
+</p><pre class="listing tilde"><code><span class="hljs-keyword">set</span>(DISABLE_DYNAMIC <span class="hljs-number">1</span>)
+<span class="hljs-keyword">set</span>(SQ_DISABLE_INSTALLER <span class="hljs-number">1</span>)
+
+<span class="hljs-keyword">add_subdirectory</span>(squirrel)
+
+<span class="hljs-comment"># Make sure sq_static isn't built</span>
+<span class="hljs-keyword">set_target_properties</span>(sq_static PROPERTIES 
+	EXCLUDE_FROM_ALL <span class="hljs-number">1</span>
+	EXCLUDE_FROM_DEFAULT_BUILD <span class="hljs-number">1</span>)
+
+<span class="hljs-keyword">if</span>(MSVC)
+	<span class="hljs-comment"># Visual Studio folders</span>
+	<span class="hljs-keyword">set_target_properties</span>(sq_static       PROPERTIES FOLDER squirrel)
+	<span class="hljs-keyword">set_target_properties</span>(sqstdlib_static PROPERTIES FOLDER squirrel)
+	<span class="hljs-keyword">set_target_properties</span>(squirrel_static PROPERTIES FOLDER squirrel)
+<span class="hljs-keyword">endif</span>(MSVC)
+
+<span class="hljs-comment"># Don't include the dynamic (shared) libraries</span>
+<span class="hljs-keyword">set</span>(DISABLE_DYNAMIC)
+
+<span class="hljs-comment"># Make sure nothing is installed by squirrel. That should be managed by snestistics</span>
+<span class="hljs-keyword">set</span>(SQ_DISABLE_INSTALLER)</code></pre><p>
+I also move the remaining projects into folders in Visual Studio so I don't have to see them all the time. For sq_static I didn't manage to remove it, but I managed to remove everything being built using EXCLUDE_FROM_ALL and EXCLUDE_FROM_DEFAULT_BUILD. The variables DISABLE_DYNAMIC and SQ_DISABLE_INSTALLER are squirrel specific and I had to look at the squirrel cmake file to know that they existed.
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/cmake-1-3.png" target="_blank"><img class="markdeep" src="images/cmake-1-3.png" /></a ><div class="imagecaption">Visual Studio Project with Squirrel</div></div></center>
+
+</p>
+<a class="target" name="anotherlibrary-let'stestzlib">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Another library - Let's test ZLIB</h1>
+<p>
+
+I tried the same thing with ZLIB. It sortof worked but I got a lot of extra libraries, including example projects. I could use EXCLUDE_FROM_ALL/EXCLUDE_FROM_DEFAULT_BUILD to disable building but I would really liked a varialbe to turn them off before adding the directory.
+
+</p>
+<a class="target" name="somesortofsolution">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>Some sort of solution</h1>
+<p>
+
+
+It would be nice if projects could operate in two modes. One is when they are root. Generate everything, install stuff. The second when being used as a library. Don't build tests/examples (unless when asked for) and don't install anything.
+
+</p><p>
+
+It would also be nice if projects didn't have to produce both static and non-static variants. That could happen automatically by inheriting settings from the outside world. Something like
+
+</p><pre class="listing tilde"><code><span class="hljs-function"><span class="hljs-title">add_subdirectory</span><span class="hljs-params">(directory STATIC)</span></span></code></pre><p>
+or
+</p><pre class="listing tilde"><code><span class="hljs-keyword">set</span>(mode_zlib <span class="hljs-keyword">STATIC</span>)
+add_subdirectory(zlib) # Will <span class="hljs-keyword">read</span> modes <span class="hljs-keyword">for</span> <span class="hljs-keyword">project</span> zlib <span class="hljs-keyword">from</span> mode_zlib</code></pre><p>
+
+It is possible for a script to see if it is running as root or not using something like
+</p><pre class="listing tilde"><code><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )</span></span>
+	set( STANDALONE TRUE )
+<span class="hljs-function"><span class="hljs-title">endif</span><span class="hljs-params">()</span></span></code></pre>
+<a class="target" name="furthercomplications">&nbsp;</a><a class="target" name="toc7">&nbsp;</a><h1>Further complications</h1>
+<p>
+
+When I include a library that has no dependencies it works like shown above. I have a quite a bit of control. But once a dependency has dependencies of its own it does it on its terms. Because of this it would be nice if cmake had a general facility to solve this. The one facility that I've found and often seen used is find_package. It seems tailored toward libraries being pre-built and installed on the system, but I am hoping it can be used/abused in a smart way to give me what I want. Anyone has an example for this?
+
+</p>
+<a class="target" name="finalthoughts">&nbsp;</a><a class="target" name="toc8">&nbsp;</a><h1>Final Thoughts</h1>
+<p>
+
+This is all for today. Before I leave I want to state that while this makes sense under Windows and Visual Studio it might not make sense on linux/osx. There the make/make install paradigm is more established. If I need to I will treat external dependencies differently on different platforms. Unless someone comes up with a solution for me I will dive into find_package to see how it works in more detail!
+
+</p>
+<a class="target" name="tl;dr">&nbsp;</a><a class="target" name="toc8.1">&nbsp;</a><h2>TL;DR</h2>
+<p>
+
+
+It would be nice if it was possible to add external dependencies in a special mode where you only got the library and not other crap, and where dependencies of the dependencies also was controllable. And not via installed packages but actually add it for real!
+</p></span>
+		</div>
+	</body>
+</html>
