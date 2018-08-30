@@ -40,11 +40,12 @@ The problem I am looking at here is how deal with the inconvenient problem of re
 &nbsp;&nbsp;<a href="#toc3.1" class="level2"><span class="tocNumber">3.1&nbsp; </span>Pathtracing on the CPU</a><br/>
 &nbsp;&nbsp;<a href="#toc3.2" class="level2"><span class="tocNumber">3.2&nbsp; </span>Pathtracing on the GPU (without DXR)</a><br/>
 &nbsp;&nbsp;<a href="#toc3.3" class="level2"><span class="tocNumber">3.3&nbsp; </span>Pathtracing on the GPU - with DXR</a><br/>
-<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Example: Progressive rendering with one bounce</a><br/>
-<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Example: Offline rendering, single bounce</a><br/>
-<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Example: Two bounces (and maybe three)</a><br/>
-<a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>Example: Offline rendering</a><br/>
-<a href="#toc8" class="level1"><span class="tocNumber">8&nbsp; </span>Credits</a><br/>
+<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Examples</a><br/>
+&nbsp;&nbsp;<a href="#toc4.1" class="level2"><span class="tocNumber">4.1&nbsp; </span>Progressive rendering with one bounce</a><br/>
+&nbsp;&nbsp;<a href="#toc4.2" class="level2"><span class="tocNumber">4.2&nbsp; </span>Offline rendering, single bounce</a><br/>
+&nbsp;&nbsp;<a href="#toc4.3" class="level2"><span class="tocNumber">4.3&nbsp; </span>Two bounces (and maybe three)</a><br/>
+&nbsp;&nbsp;<a href="#toc4.4" class="level2"><span class="tocNumber">4.4&nbsp; </span>Offline rendering</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Credits</a><br/>
 </p></div><a class="target" name="pathtracing-theshortestoverviewthereeverwas">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Pathtracing - the shortest overview there ever was</h1>
 <p>
 
@@ -197,8 +198,11 @@ What we do know is that paths are started by a ray generation shader. We can ass
 Beyond this it is hard to say anything. With time we will know more about how it works!
 
 </p>
-<a class="target" name="example:progressiverenderingwithonebounce">&nbsp;</a><a class="target" name="toc4">&nbsp;</a><h1>Example: Progressive rendering with one bounce</h1>
+<a class="target" name="examples">&nbsp;</a><a class="target" name="toc4">&nbsp;</a><h1>Examples</h1>
+
+<a class="target" name="progressiverenderingwithonebounce">&nbsp;</a><a class="target" name="toc4.1">&nbsp;</a><h2>Progressive rendering with one bounce</h2>
 <p>
+
 
 We will start with an example with ONE secondary ray since it is already hard enough.
 
@@ -243,8 +247,9 @@ To make this concrete lets say that we are doing our own GPU raytracing. We use 
 Note that this would probably also work well for &ldquo;Realtime rendering with TAA&rdquo;. The random sequence would be different but the general idea would work out.
 
 </p>
-<a class="target" name="example:offlinerendering,singlebounce">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Example: Offline rendering, single bounce</h1>
+<a class="target" name="offlinerendering,singlebounce">&nbsp;</a><a class="target" name="toc4.2">&nbsp;</a><h2>Offline rendering, single bounce</h2>
 <p>
+
 
 Here we are not concerned with being able to produce a good image after each frame. This helps us find coherency. Lets say we want to do 256. If we let all pixels have the same 256 random directions there will be banding instead of noise. If we do total randomization there will be noise but no coherency.
 
@@ -269,8 +274,9 @@ To see why this work consider a hemisphere with well-placed points. Now we form 
 Here is the paper: <a href="http://pascal.lecocq.home.free.fr/publications/sig2016_cacheFriendlyMicroJitteredSampling.pdf">Cache-Friendly Micro-Jittered Sampling</a>.
 
 </p>
-<a class="target" name="example:twobounces(andmaybethree)">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>Example: Two bounces (and maybe three)</h1>
+<a class="target" name="twobounces(andmaybethree)">&nbsp;</a><a class="target" name="toc4.3">&nbsp;</a><h2>Two bounces (and maybe three)</h2>
 <p>
+
 
 Now lets say that we've shot our camera rays and our first level of coherent diffuse rays (using interleaved sampling or micro-jitter perhaps). Now we are at the second bounce positions. Hopefully many paths has been terminated (if we are outside) but some will live on. Maybe we should compact rays again. But can we create coherent rays yet again?
 
@@ -283,8 +289,9 @@ Not easily in my experience. Lets keep the idea of micro-jitter in mind. After t
 <a href="https://twitter.com/PascalLecocq">Pascal Lecocq</a>, one of the authors of the micro-jitter paper, says that their approach tend to maintain coherent rays for about 3 bounces given that the scene has reasonable geometry (think typical architectural scenes with somewhat flat surfaces). It is being used in an experimental version of the  Cycles render (called &ldquo;scrambling distance&rdquo;). It can be tried <a href="https://t.co/REg9UC4CBw">here</a>. So I believe this it s a good viable approach. I have to convince myself it doesn't suffer from what I described above, but the problem might only be in my head so take my scepticism with a grain of salt.
 
 </p>
-<a class="target" name="example:offlinerendering">&nbsp;</a><a class="target" name="toc7">&nbsp;</a><h1>Example: Offline rendering</h1>
+<a class="target" name="offlinerendering">&nbsp;</a><a class="target" name="toc4.4">&nbsp;</a><h2>Offline rendering</h2>
 <p>
+
 
 Here we can maybe afford to do multi-bounce GI depending on our budget. Since we don't need to present a good image after each frame we can let the result have banding until we converge. It is important that we compact the rays so that paths that die don't consume &ldquo;dead&rdquo; threads in wave/warps. This is probably handled implicitly behind the scenes in DXR. If you are doing you own GPU implementation then there doesn't have to be explicit compaction; It can be handled by path restarting or persistent threads and some sort of ray queue. Important part is to not leave threads idle during computation.
 
@@ -311,7 +318,7 @@ Multi-BVH Ray Stream Tracing
 Before I leave I want to point out this really nice paper. It highlights what can happen if you have really expensive shading. <a href="http://www.highperformancegraphics.org/wp-content/uploads/Laine-MegakernelsConsideredHarmful.pdf">Megakernels Considered Harmful: Wavefront Path Tracing on GPUs</a>. It will be interesting so see if the key takeaways here change now that we have callable shaders in DXR.
 
 </p>
-<a class="target" name="credits">&nbsp;</a><a class="target" name="toc8">&nbsp;</a><h1>Credits</h1>
+<a class="target" name="credits">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Credits</h1>
 <p>
 
 Most if the insights I got around path tracing on the GPU was when I was working on the stingray GPU light baker together with <a href="https://twitter.com/tobias_persson">Tobias Persson</a>. We had many discussions while trying to do performance optimizations. Also thanks to <a href="https://twitter.com/Atrix256">Alan Wolfe</a> for proof-reading of early drafts; your comments and questions made the text better! Thanks to <a href="https://twitter.com/PascalLecocq">Pascal Lecocq</a> for comments on micro-jittering.
