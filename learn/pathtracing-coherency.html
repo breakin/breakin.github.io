@@ -23,18 +23,7 @@
 <span class="md"><p><title>Pathtracing Coherency</title><div class="title"> Pathtracing Coherency </div>
 
 <div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
-<div class="afterTitles"></div><div class="mediumTOC"><center><b>Contents</b></center><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>Pathtracing - the shortest overview there ever was</a><br/>
-<a href="#toc2" class="level1"><span class="tocNumber">2&nbsp; </span>Rendering - so many choices</a><br/>
-<a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>So what is this coherency then?</a><br/>
-&nbsp;&nbsp;<a href="#toc3.1" class="level2"><span class="tocNumber">3.1&nbsp; </span>Pathtracing on the CPU</a><br/>
-&nbsp;&nbsp;<a href="#toc3.2" class="level2"><span class="tocNumber">3.2&nbsp; </span>Pathtracing on the GPU (without DXR)</a><br/>
-&nbsp;&nbsp;<a href="#toc3.3" class="level2"><span class="tocNumber">3.3&nbsp; </span>Pathtracing on the GPU - with DXR</a><br/>
-<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Example: Progressive rendering with one bounce</a><br/>
-<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Example: Offline rendering, single bounce</a><br/>
-<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Example: Two bounces (and maybe three)</a><br/>
-<a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>Example: Offline rendering</a><br/>
-<a href="#toc8" class="level1"><span class="tocNumber">8&nbsp; </span>Credits</a><br/>
-</p></div>
+<div class="afterTitles"></div>
 
 </p><p>
 
@@ -45,7 +34,18 @@
 The problem I am looking at here is how deal with the inconvenient problem of reduced performance when shooting incoherent rays. This problem present itself in different ways depending on what you are trying to do. My focus is GPUs but I will touch CPU rendering a bit as well.
 
 </p>
-<a class="target" name="pathtracing-theshortestoverviewthereeverwas">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Pathtracing - the shortest overview there ever was</h1>
+<div class="longTOC"><div class="tocHeader">Contents</div><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>Pathtracing - the shortest overview there ever was</a><br/>
+<a href="#toc2" class="level1"><span class="tocNumber">2&nbsp; </span>Rendering - so many choices</a><br/>
+<a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>So what is this coherency then?</a><br/>
+&nbsp;&nbsp;<a href="#toc3.1" class="level2"><span class="tocNumber">3.1&nbsp; </span>Pathtracing on the CPU</a><br/>
+&nbsp;&nbsp;<a href="#toc3.2" class="level2"><span class="tocNumber">3.2&nbsp; </span>Pathtracing on the GPU (without DXR)</a><br/>
+&nbsp;&nbsp;<a href="#toc3.3" class="level2"><span class="tocNumber">3.3&nbsp; </span>Pathtracing on the GPU - with DXR</a><br/>
+<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Example: Progressive rendering with one bounce</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Example: Offline rendering, single bounce</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Example: Two bounces (and maybe three)</a><br/>
+<a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>Example: Offline rendering</a><br/>
+<a href="#toc8" class="level1"><span class="tocNumber">8&nbsp; </span>Credits</a><br/>
+</p></div><a class="target" name="pathtracing-theshortestoverviewthereeverwas">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Pathtracing - the shortest overview there ever was</h1>
 <p>
 
 

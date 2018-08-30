@@ -23,10 +23,23 @@
 <span class="md"><p><title>FPGA intro</title><div class="title"> FPGA intro </div>
 
 <div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
-<div class="afterTitles"></div><div class="shortTOC"><a href="#toc1">Introduction</a> &middot; <a href="#toc2">Side quest: Buying a FPGA</a> &middot; <a href="#toc3">A better mental model of our FPGA</a> &middot; <a href="#toc4">Side quest: How to you develop for a FPGA?</a> &middot; <a href="#toc5">The cost of code</a> &middot; <a href="#toc6">Summary</a></div>
+<div class="afterTitles"></div>
 
 </p>
-<a class="target" name="introduction">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Introduction</h1>
+<div class="longTOC"><div class="tocHeader">Contents</div><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>Introduction</a><br/>
+<a href="#toc2" class="level1"><span class="tocNumber">2&nbsp; </span>Side quest: Buying a FPGA</a><br/>
+<a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>A better mental model of our FPGA</a><br/>
+&nbsp;&nbsp;<a href="#toc3.1" class="level2"><span class="tocNumber">3.1&nbsp; </span>Combinational computations</a><br/>
+&nbsp;&nbsp;<a href="#toc3.2" class="level2"><span class="tocNumber">3.2&nbsp; </span>Clocked computations</a><br/>
+&nbsp;&nbsp;<a href="#toc3.3" class="level2"><span class="tocNumber">3.3&nbsp; </span>All together</a><br/>
+&nbsp;&nbsp;<a href="#toc3.4" class="level2"><span class="tocNumber">3.4&nbsp; </span>What about clock frequency?</a><br/>
+<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Side quest: How to you develop for a FPGA?</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>The cost of code</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Summary</a><br/>
+&nbsp;&nbsp;<a href="#toc6.1" class="level2"><span class="tocNumber">6.1&nbsp; </span>TL;DR</a><br/>
+&nbsp;&nbsp;<a href="#toc6.2" class="level2"><span class="tocNumber">6.2&nbsp; </span>Recommended Reading / Watching</a><br/>
+&nbsp;&nbsp;<a href="#toc6.3" class="level2"><span class="tocNumber">6.3&nbsp; </span>Lies, lies, lies...</a><br/>
+</p></div><a class="target" name="introduction">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Introduction</h1>
 <p>
 
 I've been spending some time playing around with FPGAs. It has been quite challenging since they don't allow for as much sloppiness as a micro controller. I even managed to get a friend hooked on FPGAs. When I met him later he told me that he stopped because he got stuck in some details... And that made realize that I should write up my first stumbling steps into FPGAs. Maybe it could have helped him and maybe it will someone else! I will here assume that a FPGA is the right tool for you and describe how my understanding improved from not even beginner level to beginner level. In reality a FPGA might often not be the tool you need. But it is a fun tool!

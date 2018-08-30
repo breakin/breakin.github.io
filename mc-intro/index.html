@@ -23,7 +23,7 @@
 <span class="md"><p><title>Monte Carlo Integration</title><div class="title"> Monte Carlo Integration </div>
 
 <div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
-<div class="afterTitles"></div><div class="shortTOC"><a href="#toc1">Variance</a> &middot; <a href="#toc2">Importance Sampling</a> &middot; <a href="#toc3">Multiple Importance Sampling</a> &middot; <a href="#toc4">Jittered Sampling</a> &middot; <a href="#toc5">References</a> &middot; <a href="#toc6">About</a></div>
+<div class="afterTitles"></div>
 
 </p><p>
 
@@ -110,7 +110,15 @@ F = \frac{1}{N} \sum_i^N \frac{f(x_i)}{p(x_i)}
 where \(x_i\) are out x-values, \(f\) is the function we want to integrate, \(p\) is the probability distribution function that says how often we choose a \(x\)-value and \(N\) is the number of x-values. \(F\) is a single value representing the integral of \(f\) (which is a function). Note that it is just an approximation of the true integral.
 
 </p>
-<a class="target" name="variance">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Variance</h1>
+<div class="longTOC"><div class="tocHeader">Contents</div><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>Variance</a><br/>
+<a href="#toc2" class="level1"><span class="tocNumber">2&nbsp; </span>Importance Sampling</a><br/>
+<a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>Multiple Importance Sampling</a><br/>
+&nbsp;&nbsp;<a href="#toc3.1" class="level2"><span class="tocNumber">3.1&nbsp; </span>MIS In the Context of Path Tracing</a><br/>
+<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Jittered Sampling</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>References</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>About</a><br/>
+&nbsp;&nbsp;<a href="#toc6.1" class="level2"><span class="tocNumber">6.1&nbsp; </span>Credits</a><br/>
+</p></div><a class="target" name="variance">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Variance</h1>
 <p>
 
 
