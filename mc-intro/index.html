@@ -115,7 +115,7 @@ where \(x_i\) are out x-values, \(f\) is the function we want to integrate, \(p\
 <a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>Multiple Importance Sampling</a><br/>
 &nbsp;&nbsp;<a href="#toc3.1" class="level2"><span class="tocNumber">3.1&nbsp; </span>MIS In the Context of Path Tracing</a><br/>
 <a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Jittered Sampling</a><br/>
-<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Intervals</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Intervals and rescaling of random numbers</a><br/>
 <a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>References</a><br/>
 <a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>About</a><br/>
 &nbsp;&nbsp;<a href="#toc7.1" class="level2"><span class="tocNumber">7.1&nbsp; </span>Credits</a><br/>
@@ -564,11 +564,15 @@ Note that when using importance sampling we must involve the probability of choo
 When using jittered sampling it is natural to think of estimating in <em class="asterisk">passes</em>. This is because we need to finish all samples in a pass (here 16) before we are unbiased. For the second pass we might do 16 more samples, or maybe 64. We can change the amount freely when we are doing a new <em class="asterisk">pass</em>. But we need to finish each pass!
 
 </p>
-<a class="target" name="intervals">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Intervals</h1>
+<a class="target" name="intervalsandrescalingofrandomnumbers">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Intervals and rescaling of random numbers</h1>
 <p>
 
 
-This is a result I am including since I find it cute! Lets say you have two intervals \(a,b\) and you want to choose one of them. Probability to choose them are \(p_a\) and \(p_b\) (with \(p_a+p_b=1.0\)). It is easy to see that if you have a random number \(u \in [0,1]\) we should choose interval \(a\) if \(u < p_\), otherwise we should choose interval \(b\). Now comes the cute part.
+This is a result I am including since I find it cute! Lets say you have two intervals \(a,b\) and you want to choose one of them. Probability to choose them are \(p_a\) and \(p_b\) (with \(p_a+p_b=1.0\)). It is easy to see that if you have a random number \(u \in [0,1]\) we should choose interval \(a\) if \(u < p_a\), otherwise we should choose interval \(b\).
+
+</p><p>
+
+Now comes the cute part.
 
 </p><p>
 
