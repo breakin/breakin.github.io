@@ -580,26 +580,31 @@ Note that this works with more than two intervals (just rescale based on the two
 
 </p><p>
 
+I've included a list of examples here. They are all for pathtracing. The idea is that for each pixel we need to make a choice. Since we do many samples we need to make a new choice for each sample. Each such choice is a random number from a sequence. Neighbor pixels need different sequences or results will be correlated (ugly!).
+
+</p><p>
+
 Examples:
 
 </p><p>
 
 <ul>
-<li class="asterisk">In a raytracer/pathtracer; Finding what transparant surface we should stop at
+<li class="asterisk">Finding what transparant surface we should stop at
 <ul>
 	<li class="asterisk">If the first transparant surface blocks 30% of light and lets 70% through we have two intervals.
 </li>
-	<li class="asterisk">If we didn't stop, rescale random number of keep using it
+	<li class="asterisk">If we didn't stop, rescale random number and keep using it for something
+<ul>
+		<li class="asterisk">Unless I am mistaken it should work like any random number so we should be able to use it for an interval choice in the next bounce
 </li>
-	<li class="asterisk">Need to adjust probabilities
-</li>
-	<li class="asterisk">Note that we can use one series for one pixel for the first bounce.. but for secondary bounce we need a new series (or a way to create a uncorrelated series from it)
+		<li class="asterisk">Or we use it to sample some material property!
 </li></ul>
-<li class="asterisk">In a pathtracer; When choosing light sources we need a 1D random number
+</li></ul>
+<li class="asterisk">When choosing light sources we need a 1D random number
 <ul>
 	<li class="asterisk">If each light source has one interval, we can use the rescaled random number for something in the light sampling
 </li></ul>
-<li class="asterisk">In a pathtracer; When choosing between reflection/refraction, we can use rescaled for something in material sampling
+<li class="asterisk">When choosing between reflection/refraction, we can use rescaled for something in material sampling
 </li>
 <li class="asterisk">Finding a node in a binary tree (choosing lights)
 <ul>
@@ -608,6 +613,10 @@ Examples:
 <li class="asterisk">Finding a node in a quad tree (choosing lights)
 <ul>
 	<li class="asterisk">See <a href="http://fileadmin.cs.lth.se/graphics/research/papers/2008/pps/">Practical Product Importance Sampling for Direct Illumination</a></li></ul></li></ul>
+
+</p><p>
+
+Note that if taken to absurdum precision will suffer in the rescaled number. Use with caution!
 
 </p>
 <a class="target" name="references">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>References</h1>
