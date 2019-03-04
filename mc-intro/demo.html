@@ -1,33 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <html>
-	<head>
-		<title>Monte Carlo Integration - Demo</title>
-		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
-		</span>
-
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
-
-		<link rel="stylesheet" type="text/css" href="../default.css">
-	</head>
-
-	<body>
-		<div style="text-align: center;">
-			<a href="../index.html">home</a>
-			<a href="../blog/index.html">blog</a>
-			<a href="../journal/index.html">journal</a>
-			<a href="../learn/index.html">learn</a>
-			<a href="../about.html">about</a>
-		</div>
-		<div id="markdeep_content">
-<span class="md"><p><div class="longTOC"><div class="tocHeader">Contents</div><p></p></div><title>Monte Carlo Integration - Demo</title><div class="title"> Monte Carlo Integration - Demo </div>
-
-<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
-<div class="afterTitles"></div>
-
-</p><p>
-
-<html>
   <head>
     <style>
       select { }
@@ -35,12 +8,8 @@
     </style>
     <script>
 
-</p><p>
-
       // Array of our random numbers [0-1]. Stored here so we are can re-use (no support for seed in Math.random)
       var random_numbers = undefined;
-
-</p><p>
 
       // Our base functions
       function fun_one(x) { return 1.0; }
@@ -58,14 +27,10 @@
         return 0.0;
       }
 
-</p><p>
-
       var f_numerical = undefined;
       var function_b = undefined
       var function_l = undefined
       var function_v = undefined
-
-</p><p>
 
       function init_function(id, storage_variable) {
         var current = window[storage_variable];
@@ -75,27 +40,15 @@
           return false;
         }
 
-</p><p>
-
         let f = undefined
-
-</p><p>
 
         f = window['fun_' + type];
 
-</p><p>
-
         let sum_f = 0.0;
-
-</p><p>
 
         let num_steps = 500;
 
-</p><p>
-
         let cdf = new Float32Array(num_steps);
-
-</p><p>
 
         let dx = Math.PI / num_steps;
         for (let i = 0; i< num_steps; i++) {
@@ -105,32 +58,20 @@
           cdf[i] = sum_f;
         }
 
-</p><p>
-
         let inv_sum_f = 1.0/sum_f;
-
-</p><p>
 
         for (let i = 0; i < num_steps; i++) {
           cdf[i] *= inv_sum_f;
         }
 
-</p><p>
-
         const p = function(x) {
           return f(x) * inv_sum_f;
         };
 
-</p><p>
-
         const is = function(u) {
           // We want to know for what x CDF(x)=u
 
-</p><p>
-
           let left = 0, right = num_steps-1;
-
-</p><p>
 
           while (left < right) {
             let middle = Math.floor((left + right) / 2);
@@ -145,32 +86,22 @@
             }
           }
 
-</p><p>
-
           let u0 = left === 0 ? 0.0 : cdf[left-1];
           let u1 = cdf[left];
           return (left + (u-u0)/(u1-u0)) * Math.PI / num_steps;
         };
-
-</p><p>
 
         let f_obj = {f: f, p: p, is: is, type: type};
         window[storage_variable] = f_obj;
         return true;
       }
 
-</p><p>
-
       function draw_function(ctx, steps, f, color) {
         var x0 = 0.0;
         var y0 = f(x0)
 
-</p><p>
-
         ctx.beginPath();
         ctx.moveTo(x0, y0);
-
-</p><p>
 
         for (let i = 1; i < steps; i++) {
           let x = i / (steps-1) * Math.PI;
@@ -179,19 +110,13 @@
         }
         ctx.strokeStyle = color;
 
-</p><p>
-
         ctx.save();
         ctx.setTransform(1,0,0,1,0,0);
         ctx.stroke();
         ctx.restore();
       }
 
-</p><p>
-
       var N = 32;
-
-</p><p>
 
       function resample() {
         if (random_numbers === undefined) random_numbers = new Float32Array(N);
@@ -200,28 +125,18 @@
         }
       }
 
-</p><p>
-
       function redraw() {
-
-</p><p>
 
         let dirty = false;
         if (init_function('select_b', 'function_b')) dirty = true;
         if (init_function('select_l', 'function_l')) dirty = true;
         if (init_function('select_v', 'function_v')) dirty = true;
 
-</p><p>
-
         let {f: fun_b, p: pb, is: is_b} = function_b;
         let {f: fun_l, p: pl, is: is_l} = function_l;
         let {f: fun_v, p: pv, is: is_v} = function_v;
 
-</p><p>
-
         var f = function(x) { return fun_b(x) * fun_l(x) * fun_v(x); }
-
-</p><p>
 
         if (dirty || f_numerical === undefined) {
           const evaluations = 500;
@@ -231,20 +146,14 @@
             let x = i * dx;
             estimate += f(x) * dx;
           }
-          console.log(&ldquo;Estimate is " + estimate);
+          console.log("Estimate is " + estimate);
           f_numerical = estimate;
         }
 
-</p><p>
-
         if (random_numbers === undefined) resample();
-
-</p><p>
 
         var mode_element = document.getElementById('mode');
         var mode = mode_element.options[mode_element.selectedIndex].value;
-
-</p><p>
 
         var canvas = document.getElementById('canvas');
         canvas.width = canvas.offsetWidth;
@@ -252,43 +161,29 @@
         var w = canvas.width;
         var h = canvas.height;
 
-</p><p>
-
         var f = function(x) { return fun_b(x) * fun_l(x) * fun_v(x); }
         var pbi = function(x) { return f(x) / pb(x); }
         var pli = function(x) { return f(x) / pl(x); }
         var pbli = function(x) { return f(x) / (pb(x) + pl(x)); }
 
-</p><p>
-
         // Draw samples
-        if (mode == &ldquo;sampling&rdquo;) {
+        if (mode == "sampling") {
 
-</p><p>
-
-          var ctx = canvas.getContext(&ldquo;2d&rdquo;);
+          var ctx = canvas.getContext("2d");
           ctx.lineWidth = 2;
           ctx.setTransform(1,0,1,0,0,0);
           ctx.clearRect(0, 0, w, h);
 
-</p><p>
-
           var range_y = document.getElementById('range_y');
           var max_y = range_y.value;
 
-</p><p>
-
           let steps = w;
-
-</p><p>
 
           // Map x=[0,PI] and y=[0,max_y] into the full canvas (also factor in widht/height)
           let margin = 10;
           let scale_x = (w-margin*2.0)/Math.PI;
           let scale_y = (h-margin*2.0)/max_y;
           ctx.setTransform(scale_x, 0.0, 0.0, -scale_y, 0.5+margin, h-0.5-margin);
-
-</p><p>
 
           ctx.setLineDash([5,5])
           if (document.getElementById('show_pb').checked) draw_function(ctx, steps, pb, '#AA0000');
@@ -302,26 +197,16 @@
           if (document.getElementById('show_v').checked) draw_function(ctx, steps, fun_v, '#0000FF');
           if (document.getElementById('show_f').checked) draw_function(ctx, steps, f, '#000000');
 
-</p><p>
-
           let psx = 8.0/scale_x;
           let psy = 8.0/scale_y;
 
-</p><p>
-
           let jitter = document.getElementById('use_jitter').checked;
-
-</p><p>
 
           var sample_mode_element = document.getElementById('sample_mode');
           var sample_mode = sample_mode_element.options[sample_mode_element.selectedIndex].value;
 
-</p><p>
-
           let sampler = undefined;
           let sampler_prob = undefined;
-
-</p><p>
 
           if (sample_mode === 'uniform') {
             sampler = function(u) {
@@ -340,20 +225,14 @@
             // TODO
             N = N / 2;
           } else {
-            console.log(&ldquo;Unsupported sample_mode&rdquo;);
+            console.log("Unsupported sample_mode");
           }
-
-</p><p>
 
           ctx.beginPath();
           ctx.setLineDash([5,5]);
-          ctx.strokeStyle = "#AAAAAA&rdquo;;
-
-</p><p>
+          ctx.strokeStyle = "#AAAAAA";
 
           let estimate = 0.0;
-
-</p><p>
 
           for (let i = 0; i<N; ++i) {
             let u = random_numbers[i];
@@ -363,23 +242,15 @@
             let x = sampler(u);
             let p = sampler_prob(x);
 
-</p><p>
-
             let fx = f(x);
             estimate += fx / p / N;
-
-</p><p>
 
             ctx.moveTo(x, 0.0);
             ctx.lineTo(x, fx);
 
-</p><p>
-
             ctx.fillRect(x-psx*0.5, fx-psy*0.5, psx, psy);
             ctx.fillRect(x-psx*0.5, 0.0-psy*0.5, psx, psy);
           }
-
-</p><p>
 
           ctx.save();
           ctx.setTransform(1,0,0,1,0,0);
@@ -395,8 +266,6 @@
       <table>
         <tr>
 
-</p><p>
-
           <td class="option">Mode</td>
           <td>
             <select id="mode" onchange="redraw()">
@@ -405,8 +274,6 @@
           </select>
           </td>
         </tr>
-
-</p><p>
 
         <tr>
           <td class="option">Importance Sampling</td>
@@ -424,18 +291,12 @@
           <td><input type="checkbox" id="use_jitter" value="" onchange="redraw()"/></td>
         </tr>
 
-</p><p>
-
         <tr>
           <td class="option">&nbsp;</td>
           <td><button type="button" onclick="resample();redraw();">Resample</button></td>
         </tr>
 
-</p><p>
-
         <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-
-</p><p>
 
         <tr>
           <td class="option">B(x)</td>
@@ -445,11 +306,11 @@
               <option value="sin" selected="selected">sin(x)</option>
               <option value="steps">Steps</option>
               <option value="grow">Increasing</option>
-              <option value="sin2">sin<sup>2</sup>(x)</option>
-              <option value="sin3">sin<sup>3</sup>(x)</option>
-              <option value="sin4">sin<sup>4</sup>(x)</option>
-              <option value="sin5">sin<sup>5</sup>(x)</option>
-              <option value="sin6">sin<sup>6</sup>(x)</option>
+              <option value="sin2">sin^2(x)</option>
+              <option value="sin3">sin^3(x)</option>
+              <option value="sin4">sin^4(x)</option>
+              <option value="sin5">sin^5(x)</option>
+              <option value="sin6">sin^6(x)</option>
             </select>
           </td>
         </tr>
@@ -461,16 +322,14 @@
               <option value="sin">sin(x)</option>
               <option value="steps">Steps</option>
               <option value="grow" selected="selected">Increasing</option>
-              <option value="sin2">sin<sup>2</sup>(x)</option>
-              <option value="sin3">sin<sup>3</sup>(x)</option>
-              <option value="sin4">sin<sup>4</sup>(x)</option>
-              <option value="sin5">sin<sup>5</sup>(x)</option>
-              <option value="sin6">sin<sup>6</sup>(x)</option>
+              <option value="sin2">sin^2(x)</option>
+              <option value="sin3">sin^3(x)</option>
+              <option value="sin4">sin^4(x)</option>
+              <option value="sin5">sin^5(x)</option>
+              <option value="sin6">sin^6(x)</option>
             </select>
           </td>
         </tr>
-
-</p><p>
 
         <tr>
           <td class="option">V(x)</td>
@@ -480,20 +339,16 @@
               <option value="sin">sin(x)</option>
               <option value="steps" selected="selected">Steps</option>
               <option value="grow">Increasing</option>
-              <option value="sin2">sin<sup>2</sup>(x)</option>
-              <option value="sin3">sin<sup>3</sup>(x)</option>
-              <option value="sin4">sin<sup>4</sup>(x)</option>
-              <option value="sin5">sin<sup>5</sup>(x)</option>
-              <option value="sin6">sin<sup>6</sup>(x)</option>
+              <option value="sin2">sin^2(x)</option>
+              <option value="sin3">sin^3(x)</option>
+              <option value="sin4">sin^4(x)</option>
+              <option value="sin5">sin^5(x)</option>
+              <option value="sin6">sin^6(x)</option>
             </select>
           </td>
         </tr>
 
-</p><p>
-
         <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-
-</p><p>
 
         <tr>
           <td class="option">Show F</td>
@@ -532,18 +387,12 @@
           <td><input type="checkbox" id="show_pbl_inv" value="" onchange="redraw()"/></td>
         </tr>
 
-</p><p>
-
         <tr>
           <td class="option">Y-range</td>
           <td><input id="range_y" type="range" min="1" max="5" value="1" class="slider" onchange="redraw()"></td>
         </tr>
 
-</p><p>
-
     </table>
-
-</p><p>
 
     <p>This interactive visualization lets you explore the concepts introduced in <a href="index.html">my Monte Carlo Tutorial</a></p>
     <p>As in the article we have that F(X)=B(x)L(x)V(x).</p>
@@ -552,9 +401,5 @@
   </body>
 </html>
 
-</p><p>
 
-</p></span>
-		</div>
-	</body>
-</html>
+
