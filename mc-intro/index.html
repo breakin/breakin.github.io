@@ -118,7 +118,8 @@ where \(x_i\) are out x-values, \(f\) is the function we want to integrate, \(p\
 <a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Intervals and rescaling of random numbers</a><br/>
 <a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>References</a><br/>
 <a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>About</a><br/>
-&nbsp;&nbsp;<a href="#toc7.1" class="level2"><span class="tocNumber">7.1&nbsp; </span>Credits</a><br/>
+<a href="#toc8" class="level1"><span class="tocNumber">8&nbsp; </span>Errata & History</a><br/>
+&nbsp;&nbsp;<a href="#toc8.1" class="level2"><span class="tocNumber">8.1&nbsp; </span>Credits</a><br/>
 </p></div><a class="target" name="variance">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Variance</h1>
 <p>
 
@@ -201,7 +202,7 @@ Lets say that we have a function \(f(x)\) that we want to integrate (find area u
 
 </p><p>
 
-Now in this example we don't actually have access to this function. Instead it is composed as the product of three terms, like \(f(x)=B(x)L(x)V(x)\). The two first terms, \(L(x)\) and \(B(x)\), have known analytical expressions and we can do importance sampling of those individually. It doesn't have to be optimal importance sampling. The third term \(V(x)\) is expensive to calculate but we know that all values are below 1.0 such that it can only make the product smaller.
+Now in this example we don't actually have access to this full function. Instead it is composed as the product of three terms, like \(f(x)=B(x)L(x)V(x)\). The first two terms, \(L(x)\) and \(B(x)\), have known analytical expressions and we can do importance sampling of those individually. It doesn't have to be perfect importance sampling, but we can sample them better than doing uniform sampling. The third term \(V(x)\) is expensive to calculate but we know that all values are below 1.0 such that it can only make the product smaller.
 
 </p><p>
 
@@ -213,7 +214,7 @@ Now in this example we don't actually have access to this function. Instead it i
 
 </p><p>
 
-If we remove \(V(x)\) from \(f(x)\) we get \(B(x)L(x)\) which is what we can hope to importance sample since \(V(x)\) has no analytical expression. First we assume that we are unable to actually do importance sampling according to \(B(x)L(x)\) which is often what happens as soon as we enter higher-dimensional functions (x is maybe three dimension and both B and L depends on many other parameters as well). Here we can see the function that want to importance sample somehow
+If we remove \(V(x)\) from \(f(x)\) we get \(B(x)L(x)\) which is what we can hope to importance sample since \(V(x)\) has no analytical expression. First we assume that we are unable to actually do importance sampling according to \(B(x)L(x)\) which is often what happens as soon as we enter higher-dimensional functions (x is maybe a three dimensional variable and both B and L depends on many other parameters as well). Here we can see the function that want to importance sample somehow
 
 </p><p>
 
@@ -221,7 +222,7 @@ If we remove \(V(x)\) from \(f(x)\) we get \(B(x)L(x)\) which is what we can hop
 
 </p><p>
 
-Note that we will still use the full function \(B(x)L(x)V(x)\), it just that we can't factor in \(V\) so we just have to hope that it won't mess up. Now lets first think about why standard importance sampling is a bad idea. First lets name the probability distribution functions \(p_B(x)\) and \(p_L(x)\) that says how often we pick a x-value when doing importance sampling according to \(B\) or \(L\). When we do monte carlo integration we must sometimes choose x values that are unlikely. We do so with a low probability and then, to stay unbiased, we must boost them. We do that by dividing by the probability of choosing that x-value. Dividing by a small number yields a big number. If we importance sample according to \(B(x)\) and hit a large value in \(L(x)\) there will be a boost. Here I've tried to graph the badness of sampling using improper importance sampling. What is pictures if \(\frac{f(x)}{p(x)}\) when using importance sampling with two different choices of \(p\)
+Note that we will still use the full function \(B(x)L(x)V(x)\), it just that we can't factor in \(V\) so we just have to hope that it won't mess up. Now lets first think about why standard importance sampling is a bad idea. First lets name the probability distribution functions \(p_B(x)\) and \(p_L(x)\) that says how often we pick a x-value when doing importance sampling according to \(B\) or \(L\). When we do monte carlo integration we must sometimes choose x values that are unlikely. We do so with a low probability and then, to stay unbiased, we must boost their contribution. We do that by dividing by the probability of choosing that x-value. Dividing by a small number yields a big number. If we importance sample according to \(B(x)\) and hit a large value in \(L(x)\) there will be a boost. Here I've tried to graph the badness of sampling using improper importance sampling. What is pictures if \(\frac{f(x)}{p(x)}\) when using importance sampling with two different choices of \(p\)
 
 </p><p>
 
@@ -229,7 +230,7 @@ Note that we will still use the full function \(B(x)L(x)V(x)\), it just that we 
 
 </p><p>
 
-We see that the maximum value is quite big. When sampling using importance sampling based on \(L\) we sometimes get a very bright color (larger than 13) back. Same when are sampling according to \(B\). This makes us realize that importance sampling is best when either lighting is very flat (single color sky) or material is very smooth (diffuse). Otherwise we might get worse result from importance sampling compared to doing uniform sampling.
+We see that the maximum value is quite big. When sampling using importance sampling based on \(L\) we sometimes get a very bright color (larger than 13) back. Same when we are sampling according to \(B\). This makes us realize that importance sampling is best when either lighting is very flat (single color sky) or material is very smooth (diffuse). Otherwise we might get worse result from importance sampling compared to doing uniform sampling.
 
 </p><p>
 
@@ -241,7 +242,7 @@ The idea now is to introduce two functions such that \(f(x)=f_L(x) + f_B(x)\). T
 
 </p><p>
 
-The idea here is to look at each x-value and see what technique would perform better. For each x-value we select a weight that says how much of each technique we should use. In the case of two techniques this can be thouhg of as a blending-factor (as in lerp). If they are equally good the factor will be 0.5. If one is superior lets go with 1.0 or 0.0 to choose one of the two techniques.
+The idea here is to look at each x-value and see what technique would perform better. For each x-value we select a weight that says how much of each technique we should use. In the case of two techniques this can be thought of as a blending-factor (as in lerp). If they are equally good the factor will be 0.5. If one is superior lets go with 1.0 or 0.0 to choose one of the two techniques.
 
 </p><p>
 
@@ -378,7 +379,7 @@ So why is it better to sample \(f_L\) and \(f_b\) then using their respective im
 
 </p><p>
 
-<center><div class="image" style=""><a  href="images/mc_mis_prob_div.svg" target="_blank"><img class="markdeep" src="images/mc_mis_prob_div.svg" /></a ><div class="imagecaption">Badness importance sampling \(f_B\) or \(f_L\) using \(p_B\) and \(p_L\).</div></div></center>
+<center><div class="image" style=""><a  href="images/mc_mis_prob_div2.svg" target="_blank"><img class="markdeep" src="images/mc_mis_prob_div2.svg" /></a ><div class="imagecaption">Badness importance sampling \(f_B\) or \(f_L\) using \(p_B\) and \(p_L\).</div></div></center>
 
 </p><p>
 
@@ -411,32 +412,42 @@ The true beauty of this system comes when we use it. Then \(B,L,V\) might not be
 
 Some pseudo-code that might help clarify!
 
-</p><pre class="listing tilde"><code><span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">eval_f</span><span class="hljs-params">(<span class="hljs-keyword">float</span> x)</span> </span>{
+</p><pre class="listing tilde"><code><span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">eval_f</span>(<span class="hljs-params"><span class="hljs-keyword">float</span> x</span>) </span>{
   <span class="hljs-comment">// The function we want to integrate</span>
   <span class="hljs-keyword">return</span> B(x)*L(x)*V(x);
 }
 
-<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">importance_sample_pb</span><span class="hljs-params">(<span class="hljs-keyword">float</span> u, <span class="hljs-keyword">float</span> *prob)</span> </span>{
+<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">importance_sample_pb</span>(<span class="hljs-params"><span class="hljs-keyword">float</span> u, <span class="hljs-keyword">float</span> *prob</span>) </span>{
   <span class="hljs-comment">// Given random value return x-value</span>
   <span class="hljs-comment">// Importance sampled according to B(x)</span>
   <span class="hljs-comment">// Probability of choosing that x-value is written to prob</span>
+  ...
+  *prob = p;
+  <span class="hljs-keyword">return</span> x;
 }
 
-<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">importance_sample_pl</span><span class="hljs-params">(<span class="hljs-keyword">float</span> u, <span class="hljs-keyword">float</span> *prob)</span> </span>{
+<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">importance_sample_pl</span>(<span class="hljs-params"><span class="hljs-keyword">float</span> u, <span class="hljs-keyword">float</span> *prob</span>) </span>{
   <span class="hljs-comment">// Given random value return x-value</span>
   <span class="hljs-comment">// Importance sampled according to L(x)</span>
   <span class="hljs-comment">// Probability of choosing that x-value is written to prob</span>
+  ...
+  *prob = p;
+  <span class="hljs-keyword">return</span> x:
 }
 
-<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">pb</span><span class="hljs-params">(<span class="hljs-keyword">float</span> x)</span> </span>{
+<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">pb</span>(<span class="hljs-params"><span class="hljs-keyword">float</span> x</span>) </span>{
   <span class="hljs-comment">// Probability of choosing x when importance samling using B(x)</span>
+  ...
+  <span class="hljs-keyword">return</span> p;
 }
 
-<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">pl</span><span class="hljs-params">(<span class="hljs-keyword">float</span> x)</span> </span>{
+<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">pl</span>(<span class="hljs-params"><span class="hljs-keyword">float</span> x</span>) </span>{
   <span class="hljs-comment">// Probability of choosing x when importance samling using L(x)</span>
+  ...
+  <span class="hljs-keyword">return</span> p;
 }
 
-<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">estimate_f</span><span class="hljs-params">(<span class="hljs-keyword">int</span> N)</span> </span>{
+<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">estimate_f</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> N</span>) </span>{
   <span class="hljs-keyword">float</span> f = <span class="hljs-number">0</span>;
   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>; i &lt; N; i++) {
     <span class="hljs-comment">// Tech 1 (sample pB)</span>
@@ -454,13 +465,13 @@ Some pseudo-code that might help clarify!
     <span class="hljs-keyword">float</span> wl = prob_ll/(prob_ll+prob_lb);
 
     <span class="hljs-comment">// Note we eval f at two different places</span>
-    f += eval_f(xb) * wb + eval_f(xl) * wl;
+    f += eval_f(xb) / prob_bb * wb + eval_f(xl) / prob_ll * wl;
   }
   <span class="hljs-keyword">return</span> f/N;
 }
 
 <span class="hljs-comment">// Same as estimate_f, just written differently</span>
-<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">estimate_f_variant</span><span class="hljs-params">(<span class="hljs-keyword">int</span> N)</span> </span>{
+<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">estimate_f_variant</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> N</span>) </span>{
   <span class="hljs-keyword">float</span> f = <span class="hljs-number">0</span>;
   <span class="hljs-comment">// Tech 1 (sample pB)</span>
   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>; i &lt; N; i++) {
@@ -468,7 +479,7 @@ Some pseudo-code that might help clarify!
     <span class="hljs-keyword">float</span> xb = importance_sample_pb(uniform(), &amp;prob_bb);
     <span class="hljs-keyword">float</span> prob_bl = pl(xb);
     <span class="hljs-keyword">float</span> wb = prob_bb/(prob_bb+prob_bl);
-    f += eval_f(xb) * wb;
+    f += eval_f(xb) / prob_bb * wb;
   }
   <span class="hljs-comment">// Tech 2 (sample pL)</span>
   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>; i &lt; N; i++) {
@@ -476,10 +487,14 @@ Some pseudo-code that might help clarify!
     <span class="hljs-keyword">float</span> xl = importance_sample_pl(uniform(), &amp;prob_ll);
     <span class="hljs-keyword">float</span> prob_lb = pb(xl);
     <span class="hljs-keyword">float</span> wl = prob_ll/(prob_ll+prob_lb);
-    f += eval_f(xl) * wk;
+    f += eval_f(xl) / prob_bb * wk;
   }
   <span class="hljs-keyword">return</span> f/N;
-}</code></pre>
+}</code></pre><p>
+
+Note that there was an error in an earlier version of this pseudo-code. See credits for more information.
+
+</p>
 <a class="target" name="misinthecontextofpathtracing">&nbsp;</a><a class="target" name="toc3.1">&nbsp;</a><h2>MIS In the Context of Path Tracing</h2>
 <p>
 
@@ -647,12 +662,31 @@ Note that if taken to absurdum precision will suffer in the rescaled number. Use
 For contact information and license see my main equation text <a href="https://www.breakin.se/equations" class="url">https://www.breakin.se/equations</a>
 
 </p>
-<a class="target" name="credits">&nbsp;</a><a class="target" name="toc7.1">&nbsp;</a><h2>Credits</h2>
+<a class="target" name="errata&history">&nbsp;</a><a class="target" name="toc8">&nbsp;</a><h1>Errata & History</h1>
 <p>
 
 
-Thanks to <a href="https://twitter.com/Atrix256">Alan Wolfe</a> for comments on an early draft of the MIS-section.
-Formatting using <a href="https://casual-effects.com/markdeep/">Markdeep</a> by <a href="https://casual-effects.com/markdeep/#credits">Morgan McGuire</a>.
+
+<ul>
+<li class="asterisk">Errors corrected on 2020-06-10
+<ul>
+	<li class="asterisk">I forgot to divide by <em class="asterisk">prob_ll</em> and <em class="asterisk">prob_bb</em> in the last MIS pseudo code. Thanks to <strong class="asterisk">Mateusz Kielan</strong> and <strong class="asterisk">Krzysztof Szenk</strong> of <strong class="asterisk">DevSH Graphics Programming Sp. z O.O</strong> for finding this!
+</li>
+	<li class="asterisk">The figure with subtitle &ldquo;Boosting due to importance sampling when using \(p_B\) and \(p_L\)" showed an incorrect image.</li></ul></li></ul>
+
+</p>
+<a class="target" name="credits">&nbsp;</a><a class="target" name="toc8.1">&nbsp;</a><h2>Credits</h2>
+<p>
+
+
+
+<ul>
+<li class="asterisk">Thanks to <a href="https://twitter.com/Atrix256">Alan Wolfe</a> for comments on an early draft of the MIS-section.
+
+</p><p>
+
+</li>
+<li class="asterisk">Formatting using <a href="https://casual-effects.com/markdeep/">Markdeep</a> by <a href="https://casual-effects.com/markdeep/#credits">Morgan McGuire</a>.</li></ul>
 
 </p><p>
 
