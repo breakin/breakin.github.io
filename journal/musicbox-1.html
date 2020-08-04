@@ -1,0 +1,87 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>Musicbox</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>Musicbox</title><div class="title"> Musicbox </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+I've been meaning to do electronics projects with or for the kids. The first one to be finished was a MP3-player for my 2½ year old. She loves music and sings a lot, but she can't play music herself. She has to ask and then she always asks for the youtube version on the TV. Ideally I would have purchased her a casette deck or a CD-player, or even an old iPod... but whatever I did it had to be quite simple so she could use it.
+
+</p><p>
+
+I wanted to build something myself and I eventually found a cheap (4$) mp3-player chip. It has SD-card, MP3-player and an amplifier. I also bough a small loud speaker and some buttons. My good friend Albert helped me build it all into a nice plastic box. We went with a larger box which to make it more fun to use! And also easier to build. It has three buttons; play next song (volume up if held), play previous song (volume down if held) and a power switch. That is it as far as user interface goes.
+
+</p><p>
+
+<div class="image" style="float:right;margin:4px 0px 0px 25px;"><a  href="images/musicbox_2.jpg" target="_blank"><img class="markdeep" src="images/musicbox_2.jpg" /></a ><div class="imagecaption">Front side with buttons</div></div>
+<div class="image" style="float:right;margin:4px 0px 0px 25px;"><a  href="images/musicbox_1.jpg" target="_blank"><img class="markdeep" src="images/musicbox_1.jpg" /></a ><div class="imagecaption">On/off switch</div></div>
+
+</p><p>
+
+Albert bullied me into using a larger speaker that I bought by mistake, insisting that everyone needs hifi. But when mounting it we had to crush it with a hammer so I'm not sure if it is hifi anymore. Albert also helped med with test songs on the SD-card which is how I got <a href="https://www.youtube.com/watch?v=HpdsTeEldRA">rickrolled</a>. Thanks!
+
+</p><p>
+
+I put her favorite songs on it. The music box (&ldquo;musiklådan&rdquo;) is appreciated and used a lot. Maybe over time it will accumulate some stickers... we will see what happens :)
+
+</p><p>
+
+This was my project but huge thanks to Albert for making it happen this year. The physical box would not been as nice had I do. I sure loved to make a physical box! The mp3 chip has support for a lot more features that I'm not using. Maybe I should make a new project with something even cooler? I'm currently thinking about making a smaller version with a headphone jack or maybe having multiple profiles so we can have a set of songs for each family member... who knows!
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/musicbox_3.jpg" target="_blank"><img class="markdeep" src="images/musicbox_3.jpg" /></a ><div class="imagecaption">Inside photo while mending battery that came loose</div></div></center>
+
+</p>
+<div class="longTOC"><div class="tocHeader">Contents</div><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>Details</a><br/>
+</p></div><a class="target" name="details">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Details</h1>
+<p>
+
+Here are some details, mostly to help me remember what I ended up with!
+
+</p><p>
+
+<ul>
+<li class="asterisk">MP3-chip is <a href="https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299">DFR0299 DFPlayer Mini</a>
+</li>
+<li class="asterisk">Running of 9V battery
+<ul>
+	<li class="asterisk">Voltage lowered to around 4.4V (mp3 chip wants 3.2-5V, prefers 4.2V)
+<ul>
+		<li class="asterisk">Using Voltage Regulator to get down to 5V
+</li>
+		<li class="asterisk">Using Zener Diode to lower that an additional 0.6V
+</li></ul>
+</li></ul>
+<li class="asterisk">Top and bottom of box separated by cables that can be detached. Makes it possible to decouple while building them/making improvements. Helps with cable mess.
+</li>
+<li class="asterisk">Some unused cables going to the lid was intended for on/off-switch but it made more sense to put the switch in the bottom of the box.</li></ul>
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>
