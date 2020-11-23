@@ -221,7 +221,28 @@ I think my approach now will be to specify all string up-front, but let each fil
 <a class="target" name="closingwords">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Closing words</h1>
 <p>
 
-I have no idea if I will actually use <em class="asterisk">ziglang</em> or not but I will at least keep an eye on it. It feels like it could be a better C and might actually be exactly what I want for a lot of cases. It makes sense for anything embedded as well as WebAssembly. I could see myself writing a lot of different types of programs in it. In the end I might end up in Rust instead but it just doesn't feel fun and fun is a big factor for smaller projects, especially hobby projects. I recommend testing it out!
+I have no idea if I will actually use <em class="asterisk">ziglang</em> or not but I will at least keep an eye on it. It feels like it could be a better C and might actually be exactly what I want for a lot of cases. It makes sense for anything embedded as well as WebAssembly.
+
+</p><p>
+
+Some things I am thinking about now:
+
+</p><p>
+
+<ul>
+<li class="asterisk">No inheritance and no virtual functions, how to structure programs?
+</li>
+<li class="asterisk">Can I see comptime code (without using asm)?
+</li>
+<li class="asterisk">How does it compare to emscripten in the wasm case? Performance and binary size.
+</li>
+<li class="asterisk">Is it mature enough now? If not, when will it be?
+</li>
+<li class="asterisk">What is the story on concurrency and simd? It seems to talk about and partially support it but I haven't looked that close at it yes since my main focus has been single-threaded WebAssembly for now.</li></ul>
+
+</p><p>
+
+I could see myself writing a lot of different types of programs in it. In the end I might end up in Rust instead but it just doesn't feel fun and fun is a big factor for smaller projects, especially hobby projects. Either way I recommend testing it out!
 
 </p>
 <a class="target" name="somereferences">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>Some References</h1>
@@ -238,10 +259,8 @@ Here are just some references I found while playing around:
 </li></ul>
 <li class="asterisk"><a href="https://ziglang.org/documentation/master/">Ziglang Documentation</a>
 </li>
-<li class="asterisk"><a href="https://ziglang.org/documentation/master/std/">Ziglang Standard libary</a>
-<ul>
-	<li class="asterisk"><a href="https://github.com/ziglang/zig/wiki/FAQ#where-is-the-documentation-for-the-zig-standard-library">Status</a>
-</li></ul>
+<li class="asterisk"><a href="https://ziglang.org/documentation/master/std/">Ziglang Standard libary</a> (<a href="https://github.com/ziglang/zig/wiki/FAQ#where-is-the-documentation-for-the-zig-standard-library">caveat</a>)
+</li>
 <li class="asterisk"><a href="https://kristoff.it/blog/what-is-zig-comptime/">What is Zig's Comptime</a>
 </li>
 <li class="asterisk"><a href="https://andrewkelley.me/post/string-matching-comptime-perfect-hashing-zig.html">String Matching based on Compile Time Perfect Hashing in Zig</a></li></ul>
