@@ -33,6 +33,7 @@
 &nbsp;&nbsp;<a href="#toc4.1" class="level2"><span class="tocNumber">4.1&nbsp; </span>Example: Compile Time Reflection</a><br/>
 &nbsp;&nbsp;<a href="#toc4.2" class="level2"><span class="tocNumber">4.2&nbsp; </span>Example: Detect hash collisions</a><br/>
 <a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Closing words</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Some References</a><br/>
 </p></div><a class="target" name="introduction">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Introduction</h1>
 <p>
 
@@ -216,7 +217,30 @@ I think my approach now will be to specify all string up-front, but let each fil
 <a class="target" name="closingwords">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Closing words</h1>
 <p>
 
-I have no idea if I will actually use <em class="asterisk">ziglang</em> or not but I will at least keep an eye on it. It feels like it could be a better C and might actually be exactly what I want for a lot of cases. Anything embedded makes sense and WebAssembly too. In the end I might learn Rust instead but it just doesn't feel fun and fun is a big factor for smaller projects, especially hobby projects.
+I have no idea if I will actually use <em class="asterisk">ziglang</em> or not but I will at least keep an eye on it. It feels like it could be a better C and might actually be exactly what I want for a lot of cases. It makes sense for anything embedded as well as WebAssembly. I could see myself writing a lot of different types of programs in it. In the end I might end up in Rust instead but it just doesn't feel fun and fun is a big factor for smaller projects, especially hobby projects. I recommend testing it out!
+
+</p>
+<a class="target" name="somereferences">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>Some References</h1>
+<p>
+
+Here are just some references I found while playing around:
+
+</p><p>
+
+<ul>
+<li class="asterisk">Small ziglang+wasm+Webgl+node tests I did - <a href="https://github.com/breakin/zig-webgl-node-test">zig-webgl-node-test</a>
+<ul>
+	<li class="asterisk">Very similar to <a href="https://github.com/raulgrell/zig-wasm-webgl">zig-wasm-webgl</a> but with node
+</li></ul>
+<li class="asterisk"><a href="https://ziglang.org/documentation/master/">Ziglang Documentation</a>
+</li>
+<li class="asterisk"><a href="https://ziglang.org/documentation/master/std/">Ziglang Standard libary</a>
+<ul>
+	<li class="asterisk"><a href="https://github.com/ziglang/zig/wiki/FAQ#where-is-the-documentation-for-the-zig-standard-library">Status</a>
+</li></ul>
+<li class="asterisk"><a href="https://kristoff.it/blog/what-is-zig-comptime/">What is Zig's Comptime</a>
+</li>
+<li class="asterisk"><a href="https://andrewkelley.me/post/string-matching-comptime-perfect-hashing-zig.html">String Matching based on Compile Time Perfect Hashing in Zig</a></li></ul>
 
 </p><p>
 
