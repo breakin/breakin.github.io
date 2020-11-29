@@ -32,8 +32,10 @@
 <a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>Compile Time (Reflection)</a><br/>
 &nbsp;&nbsp;<a href="#toc4.1" class="level2"><span class="tocNumber">4.1&nbsp; </span>Example: Compile Time Reflection</a><br/>
 &nbsp;&nbsp;<a href="#toc4.2" class="level2"><span class="tocNumber">4.2&nbsp; </span>Example: Detect hash collisions</a><br/>
-<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Closing words</a><br/>
-<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Some References</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>Debugging</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>Closing words</a><br/>
+<a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>Some References</a><br/>
+<a href="#toc8" class="level1"><span class="tocNumber">8&nbsp; </span>Source code</a><br/>
 </p></div><a class="target" name="introduction">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>Introduction</h1>
 <p>
 
@@ -103,11 +105,11 @@ In <em class="asterisk">ziglang</em> I've found that a lot of code seems be full
 
 </p><p>
 
-A good introduction to ziglang compile time can be found <a href="https://kristoff.it/blog/what-is-zig-comptime/">here</a>.
+A better introduction to ziglang compile time can be found <a href="https://kristoff.it/blog/what-is-zig-comptime/">here</a>!
 
 </p><p>
 
-I have not found a way to inspect the code generated at compile time. Maybe it shows up if I try to debug my program. This is something I am looking at. But you can always look at asm if you really must know!
+I have not found a way to inspect the code generated at compile time, but it is possible to log during compile time to a special log such that you could verify that good things happens that way.
 
 </p>
 <a class="target" name="example:compiletimereflection">&nbsp;</a><a class="target" name="toc4.1">&nbsp;</a><h2>Example: Compile Time Reflection</h2>
@@ -118,9 +120,8 @@ I'm looking to build a material system for a WebGL2 renderer.
 
 </p><p>
 
-First I have some struct
-</p><pre class="listing tilde"><code><span class="hljs-comment">// Generic system for materials</span>
-<span class="hljs-keyword">pub</span> <span class="hljs-keyword">const</span> MaterialStateTexture = <span class="hljs-class"><span class="hljs-keyword">struct</span> {</span>
+First I have a struct
+</p><pre class="listing tilde"><code><span class="hljs-keyword">pub</span> <span class="hljs-keyword">const</span> MaterialStateTexture = <span class="hljs-class"><span class="hljs-keyword">struct</span> {</span>
     texture_id: c_uint = <span class="hljs-number">0</span>
 };</code></pre><p>
 
@@ -129,18 +130,21 @@ Here we can see that types (such as structs) are first class in <em class="aster
 </p><p>
 
 Now let us define a struct holding some properties
-</p><pre class="listing tilde"><code>can still <span class="hljs-keyword">be</span> used <span class="hljs-keyword">for</span> instancing etc
-<span class="hljs-keyword">pub</span> <span class="hljs-keyword">const</span> PBRMaterialState = <span class="hljs-class"><span class="hljs-keyword">struct</span> {</span>
-    albedo_texture: MaterialStateTexture = MaterialStateTexture {},
-    emissive_texture: MaterialStateTexture = MaterialStateTexture {},
-    roughness: <span class="hljs-built_in">f32</span> = <span class="hljs-number">0.0</span>,
+</p><pre class="listing tilde"><code>pub const PBRMaterialState = <span class="hljs-class">struct </span>{
+<span class="hljs-symbol">    albedo_texture:</span> MaterialStateTexture = <span class="hljs-class">MaterialStateTexture </span>{},
+<span class="hljs-symbol">    emissive_texture:</span> MaterialStateTexture = <span class="hljs-class">MaterialStateTexture </span>{},
+<span class="hljs-symbol">    roughness:</span> f32 = <span class="hljs-number">0.0</span>,
 
     ...</code></pre><p>
 
-Now let us say that we want to create a function that calculate a hash key based on the content of the struct. We do this as a member function of our struct
-</p><pre class="listing tilde"><code>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_hash</span></span>(<span class="hljs-keyword">self</span>: PBRMaterialState) <span class="hljs-built_in">u64</span> {
-        <span class="hljs-keyword">const</span> hasher = hash.Murmur2_64;
-        var hv : <span class="hljs-built_in">u64</span> = <span class="hljs-number">0</span>;
+Now let us say that we want to create a function that calculate a hash key based on the content of the struct. Note that while we use the Murmur hash we don't recommend it. It is only to show what is possible, do reasearch on better hash functions if you need them!
+
+</p><p>
+
+We add a member function to our struct
+</p><pre class="listing tilde"><code>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_hash</span></span>(<span class="hljs-keyword">self</span>: PBRMaterialState) <span class="hljs-built_in">u32</span> {
+        <span class="hljs-keyword">const</span> hasher = hash.Murmur2_32;
+        var hv : <span class="hljs-built_in">u32</span> = <span class="hljs-number">0</span>;
         <span class="hljs-keyword">const</span> t = @typeInfo(PBRMaterialState);
         inline <span class="hljs-keyword">for</span> (t.Struct.fields) |value| {
             <span class="hljs-keyword">if</span> (value.field_type == MaterialStateTexture) {
@@ -152,21 +156,18 @@ Now let us say that we want to create a function that calculate a hash key based
         }
         <span class="hljs-keyword">return</span> hv;
     }</code></pre><p>
-So there is a lot to unpack here. This function is executed at runtime, but the inline for is unrolled such that at runtime it is no longer a loop. The function <em class="asterisk">@typeInfo</em> can only work at compile time when we have type information. The same goes for the expression <em class="asterisk">inline for</em>. Since <em class="asterisk">value</em> is compile-time known the if-statement will also be evaluated at compile time.
+There is a lot to unpack here. The function is executed at runtime, but the <em class="asterisk">inline for</em> is evaluated at compile time such that at runtime it is no longer a loop. The function <em class="asterisk">@typeInfo</em> can only work at compile time when we have type information. The same goes for the expression <em class="asterisk">inline for</em>. Since <em class="asterisk">value</em> is compile-time known the if-statement will also be evaluated at compile time.
 
 </p><p>
 
 I imagine that what is left looks like this when preprocessed
-</p><pre class="listing tilde"><code>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_hash_preprocessed</span></span>(<span class="hljs-keyword">self</span>: PBRMaterialState) <span class="hljs-built_in">u64</span> {
-        <span class="hljs-keyword">const</span> hasher = hash.Murmur2_64;
-        var hv : <span class="hljs-built_in">u64</span> = <span class="hljs-number">0</span>;
+</p><pre class="listing tilde"><code>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_hash_preprocessed</span></span>(<span class="hljs-keyword">self</span>: PBRMaterialState) <span class="hljs-built_in">u32</span> {
+        <span class="hljs-keyword">const</span> hasher = hash.Murmur2_32;
+        var hv : <span class="hljs-built_in">u32</span> = <span class="hljs-number">0</span>;
         hv = hasher.hashUint32WithSeed(<span class="hljs-keyword">self</span>.albedo_texture.texture_id, hv);
         hv = hasher.hashUint32WithSeed(<span class="hljs-keyword">self</span>.emissive_texture.texture_id, hv);
         <span class="hljs-keyword">return</span> hv;
     }</code></pre><p>
-(but I haven't found a way to actually see the generated code). I am not sure if that matters; the compiler has been very helpful so far. It is also possible to log things during compile time which helps in understanding what happens.
-
-</p><p>
 
 Now all we have to do is to finish the struct
 </p><pre class="listing tilde"><code>}<span class="hljs-comment">;</span></code></pre><p>
@@ -218,23 +219,60 @@ It is also not possible to do lazy compile time values, which makes sense since 
 I think my approach now will be to specify all string up-front, but let each file contribute a list of strings such that it can be somewhat modular. It would be nice to be able to detect unused strings though somehow. Lets see what I come up with.
 
 </p>
-<a class="target" name="closingwords">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Closing words</h1>
+<a class="target" name="debugging">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>Debugging</h1>
+<p>
+
+I was able to load my binary in Visual Studio Community and place breakpoints. I could step around in my code and I could inspect numbers and structs on the stack.
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/ziglang-1-debug-1.png" target="_blank"><img class="markdeep" src="images/ziglang-1-debug-1.png" /></a ><div class="imagecaption">Debugging of numbers and structs</div></div></center>
+
+</p><p>
+
+It is possible to step into runtime functions that have comptime elements in them but it feels a bit weird. I can't inspect compile time information and I also can't see the generated code. If I enable ASM I do see that it is working like I want it to.
+
+</p><p>
+
+<center><div class="image" style=""><a  href="images/ziglang-1-debug-2.png" target="_blank"><img class="markdeep" src="images/ziglang-1-debug-2.png" /></a ><div class="imagecaption">Debugging of comptime</div></div></center>
+
+</p><p>
+
+There is a compile time log that you can use while designing compile time algorithm where the code can let you know what it is up to. It is also sometimes possible to make sure that things are happening at compile using by storing results in constant variables.
+
+</p>
+<a class="target" name="closingwords">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>Closing words</h1>
 <p>
 
 I have no idea if I will actually use <em class="asterisk">ziglang</em> or not but I will at least keep an eye on it. It feels like it could be a better C and might actually be exactly what I want for a lot of cases. It makes sense for anything embedded as well as WebAssembly.
 
 </p><p>
 
-Some things I am thinking about now:
+Things I am excited about:
 
 </p><p>
 
 <ul>
-<li class="asterisk">No inheritance and no virtual functions, how to structure programs?
+<li class="asterisk">Compile time reflection
 </li>
-<li class="asterisk">Can I see comptime code (without using asm)?
+<li class="asterisk">Wasm native!
 </li>
-<li class="asterisk">How does it compare to emscripten in the wasm case? Performance and binary size.
+<li class="asterisk">Much talk about doing super fast incremental builds. I love the focus on build time/performance.
+</li>
+<li class="asterisk">Looks like a good contender for the better-C that I've been looking for.</li></ul>
+
+</p><p>
+
+Some things I want to learn more about:
+
+</p><p>
+
+<ul>
+<li class="asterisk">No inheritance and no virtual functions, how to structure programs? Can I at least inherit structs?
+</li>
+<li class="asterisk">Will I miss not being able to see compile time generated code? Is it possible?
+</li>
+<li class="asterisk">How does it compare to emscripten when targeting wasm? Both performance wise and size wise.
 </li>
 <li class="asterisk">Is it mature enough now? If not, when will it be?
 </li>
@@ -242,13 +280,13 @@ Some things I am thinking about now:
 
 </p><p>
 
-I could see myself writing a lot of different types of programs in it. In the end I might end up in Rust instead but it just doesn't feel fun and fun is a big factor for smaller projects, especially hobby projects. Either way I recommend testing it out!
+I could see myself writing a lot of different types of programs in it. In the end I might end up in Rust instead but it just doesn't feel fun and fun is a big factor for smaller projects, especially hobby projects. But I have a feeling that Rust maybe becomes fun once you've given up to it :) Either way I recommend testing zig out!
 
 </p>
-<a class="target" name="somereferences">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>Some References</h1>
+<a class="target" name="somereferences">&nbsp;</a><a class="target" name="toc7">&nbsp;</a><h1>Some References</h1>
 <p>
 
-Here are just some references I found while playing around:
+Here are some more references I found while playing around:
 
 </p><p>
 
@@ -261,9 +299,13 @@ Here are just some references I found while playing around:
 </li>
 <li class="asterisk"><a href="https://ziglang.org/documentation/master/std/">Ziglang Standard libary</a> (<a href="https://github.com/ziglang/zig/wiki/FAQ#where-is-the-documentation-for-the-zig-standard-library">caveat</a>)
 </li>
-<li class="asterisk"><a href="https://kristoff.it/blog/what-is-zig-comptime/">What is Zig's Comptime</a>
-</li>
 <li class="asterisk"><a href="https://andrewkelley.me/post/string-matching-comptime-perfect-hashing-zig.html">String Matching based on Compile Time Perfect Hashing in Zig</a></li></ul>
+
+</p>
+<a class="target" name="sourcecode">&nbsp;</a><a class="target" name="toc8">&nbsp;</a><h1>Source code</h1>
+<p>
+
+Source code for my comptime example can be found <a href="files/ziglang-1.zig">here</a>. Build using <em class="asterisk">zig build-exe ziglang-1.zig</em>.
 
 </p><p>
 
