@@ -66,15 +66,7 @@ It was time to setup a proper frustum for clipping. This was actually fun to der
 
 </p><p>
 
-The math itself was easy to derive. Projection is something like 
-
-</p><pre class="listing tilde"><code><span class="hljs-keyword">x</span>' = width/<span class="hljs-number">2</span> + width/<span class="hljs-number">2</span> * f*<span class="hljs-keyword">x</span>/z </code></pre><p>
-
-where the constant f depends on the fov as well as the aspect ratio. Ok fov might only come into play for y' but still, f is some global constant for all points. Now we want to find the planes that define the screen. Now I decided to do my frustum in view space for now and have +1 mean fully right and &minus;1 mean fully left. Because of that the expression above simplifies to
-
-</p><pre class="listing tilde"><code><span class="hljs-keyword">x</span>' = f*<span class="hljs-keyword">x</span>/z </code></pre><p>
-
-Now for the right clipping plane we want to find the plane such that x'=1. We
+The math itself was easy and fun to derive. Lets write it down here later!
 
 </p><p>
 
@@ -116,7 +108,7 @@ There is some cheating around fixed point right now since I felt that I didn't w
 
 </p><p>
 
-<center><div class="image" style=""><a  href="images/halzfluz/image4.png" target="_blank"><img class="markdeep" src="images/halzfluz/image4.png" /></a ><div class="imagecaption">More debug graphics</div></div></center>
+<center><div class="image" style=""><a  href="images/halzfluz/image5.png" target="_blank"><img class="markdeep" src="images/halzfluz/image5.png" /></a ><div class="imagecaption">More debug graphics</div></div></center>
 
 </p><p>
 
@@ -128,7 +120,7 @@ This was also the first time that I googled something. I wanted my polygon raste
 
 </p><p>
 
-<center><div class="image" style=""><a  href="images/halzfluz/image4.png" target="_blank"><img class="markdeep" src="images/halzfluz/image4.png" /></a ><div class="imagecaption">Polygons!</div></div></center>
+<center><div class="image" style=""><a  href="images/halzfluz/image6.png" target="_blank"><img class="markdeep" src="images/halzfluz/image6.png" /></a ><div class="imagecaption">Polygons!</div></div></center>
 
 </p>
 <a class="target" name="2023-09-11">&nbsp;</a><a class="target" name="toc7">&nbsp;</a><h1>2023-09-11</h1>
