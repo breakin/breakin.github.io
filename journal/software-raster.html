@@ -1,0 +1,196 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html>
+	<head>
+		<title>I'm coding a software rasterizer!</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "AMS"} } });</script><span style="display:none">$$\newcommand{\n}{\hat{n}}\newcommand{\w}{\hat{\omega}}\newcommand{\wi}{\w_\mathrm{i}}\newcommand{\wo}{\w_\mathrm{o}}\newcommand{\wh}{\w_\mathrm{h}}\newcommand{\Li}{L_\mathrm{i}}\newcommand{\Lo}{L_\mathrm{o}}\newcommand{\Le}{L_\mathrm{e}}\newcommand{\Lr}{L_\mathrm{r}}\newcommand{\Lt}{L_\mathrm{t}}\newcommand{\O}{\mathrm{O}}\newcommand{\degrees}{{^{\large\circ}}}\newcommand{\T}{\mathsf{T}}\newcommand{\mathset}[1]{\mathbb{#1}}\newcommand{\Real}{\mathset{R}}\newcommand{\Integer}{\mathset{Z}}\newcommand{\Boolean}{\mathset{B}}\newcommand{\Complex}{\mathset{C}}\newcommand{\un}[1]{\,\mathrm{#1}}$$
+		</span>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>		
+
+		<link rel="stylesheet" type="text/css" href="../default.css">
+	</head>
+
+	<body>
+		<div style="text-align: center;">
+			<a href="../index.html">home</a>
+			<a href="../blog/index.html">blog</a>
+			<a href="../journal/index.html">journal</a>
+			<a href="../learn/index.html">learn</a>
+			<a href="../about.html">about</a>
+		</div>
+		<div id="markdeep_content">
+<span class="md"><p><title>I'm coding a software rasterizer!</title><div class="title"> I'm coding a software rasterizer! </div>
+
+<div class="subtitle"> Anders Lindqvist (<a href="https://twitter.com/anders_breakin">breakin</a>) </div>
+<div class="afterTitles"></div>
+
+</p><p>
+
+Note that the journal was started on 2023-09-15 so the beginning is recreated from memory and git log.
+
+</p>
+<div class="longTOC"><div class="tocHeader">Contents</div><p><a href="#toc1" class="level1"><span class="tocNumber">1&nbsp; </span>2023-08-19</a><br/>
+<a href="#toc2" class="level1"><span class="tocNumber">2&nbsp; </span>2023-08-20</a><br/>
+<a href="#toc3" class="level1"><span class="tocNumber">3&nbsp; </span>2023-08-21</a><br/>
+<a href="#toc4" class="level1"><span class="tocNumber">4&nbsp; </span>2023-08-27</a><br/>
+<a href="#toc5" class="level1"><span class="tocNumber">5&nbsp; </span>2023-09-07</a><br/>
+<a href="#toc6" class="level1"><span class="tocNumber">6&nbsp; </span>2023-09-10</a><br/>
+<a href="#toc7" class="level1"><span class="tocNumber">7&nbsp; </span>2023-09-11</a><br/>
+<a href="#toc8" class="level1"><span class="tocNumber">8&nbsp; </span>2023-09-13</a><br/>
+<a href="#toc9" class="level1"><span class="tocNumber">9&nbsp; </span>2023-09-14</a><br/>
+</p></div><a class="target" name="2023-08-19">&nbsp;</a><a class="target" name="toc1">&nbsp;</a><h1>2023-08-19</h1>
+<p>
+
+This was the first day of the project. All I really did was to make a SDL2-backend. I kept things really simple; SDL is not leaked out at all and I just did the most basic scaled blit. Since a goal I have is to be able to target DOS later I made sure that whatever resolution the framebuffer is it will be shown in 4:3, just like on an old DOS monitor!
+
+</p>
+<a class="target" name="2023-08-20">&nbsp;</a><a class="target" name="toc2">&nbsp;</a><h1>2023-08-20</h1>
+<p>
+
+To kick things off I added some matrix functions (rotate around X and transform a point). I made a really bad line drawer and did a circle. This way I could test that that I actually got things to be round, respecting aspect ratio and all.
+
+</p><p>
+
+First I made a line drawer that just placed 100 points on the line but the version I settled on tries to do less work for shorter lines and looks very close to the bresenham line drawer without actually being as good. I will revisit nice lines later I am sure!
+
+</p><p>
+
+!(Lines!)[images/halzfluz/image1.png]
+
+</p>
+<a class="target" name="2023-08-21">&nbsp;</a><a class="target" name="toc3">&nbsp;</a><h1>2023-08-21</h1>
+<p>
+
+It was time to setup a proper frustum for clipping. This was actually fun to derive. With everything I know now this was quite easy but back in the days it was not! I draw a few circles with dots and I color dots inside the frustum green and dots outside the frustum red. To make the red dots visible I shrunk the frustum a bit!
+
+</p><p>
+
+The math itself was easy to derive. Projection is something like 
+
+</p><pre class="listing tilde"><code><span class="hljs-keyword">x</span>' = width/<span class="hljs-number">2</span> + width/<span class="hljs-number">2</span> * f*<span class="hljs-keyword">x</span>/z </code></pre><p>
+
+where the constant f depends on the fov as well as the aspect ratio. Ok fov might only come into play for y' but still, f is some global constant for all points. Now we want to find the planes that define the screen. Now I decided to do my frustum in view space for now and have +1 mean fully right and &minus;1 mean fully left. Because of that the expression above simplifies to
+
+</p><pre class="listing tilde"><code><span class="hljs-keyword">x</span>' = f*<span class="hljs-keyword">x</span>/z </code></pre><p>
+
+Now for the right clipping plane we want to find the plane such that x'=1. We
+
+</p><p>
+
+!(Frustum classication!)[images/halzfluz/image2.png]
+
+</p>
+<a class="target" name="2023-08-27">&nbsp;</a><a class="target" name="toc4">&nbsp;</a><h1>2023-08-27</h1>
+<p>
+
+Started a flat-shader. This way maybe more about creating a 3d-cube. There is no clipping so the cube is kept fully on screen. The blue lines indicate the top of a polygon.
+
+</p><p>
+
+!(Debug graphics for flat shader)[images/halzfluz/image3.png]
+
+</p>
+<a class="target" name="2023-09-07">&nbsp;</a><a class="target" name="toc5">&nbsp;</a><h1>2023-09-07</h1>
+<p>
+
+3d clipping working for polygons, mostly. Also moved fixed point calculations outside of the polygon routine, thinking that neighbouring polygons share a lot of vertices and it might be better to convert them once.
+
+</p><p>
+
+3d clipping was very fun to write but also quiet easy since I have some similar things so many times! All things are easy once you already know how to do it!
+
+</p><p>
+
+!(3d-clipping!)[images/halzfluz/image4.png]
+
+</p>
+<a class="target" name="2023-09-10">&nbsp;</a><a class="target" name="toc6">&nbsp;</a><h1>2023-09-10</h1>
+<p>
+
+I can now rasterize the first lines of a triangle (the ones from the top down to the middle vertex). In the image we can see a grid of quads. Since my mapper only supported triangles I only show one of the quads and then only the upper part of the triangle is shown in lovely purple.
+
+</p><p>
+
+There is some cheating around fixed point right now since I felt that I didn't want to tackle all problems at once. Deltas etc are calculated by going to float and then back to fixed point. A funny thing I noticed in hindsight is that I casually added subpixel correction, feeling quite smug about it. But I can see that in going between fixed and float I forgot to multiply by 65536 and hence there was actually no subpixel correction happening. But it somehow felt smoother with it.
+
+</p><p>
+
+!(More debug graphics)[images/halzfluz/image4.png]
+
+</p><p>
+
+Later during the day I also fixed support for general polygons. I realized that going from the top-part of a triangle to the full triangle meant that I needed to move to a new edge on either the left or the right side. It was actually as easy to do it for a general polygon directly so I never did the full triangle. A funny thing to note here is the the subpixel correction that was broken now also started to be based on the wrong vertex but I still didn't notice since the effect went away anyway.
+
+</p><p>
+
+!(3d-clipping!)[images/halzfluz/image4.png]
+
+</p>
+<a class="target" name="2023-09-11">&nbsp;</a><a class="target" name="toc7">&nbsp;</a><h1>2023-09-11</h1>
+<p>
+
+After a lot of debugging I realized that the reason that polygons flickered close to the edge was that my float->fixed-point conversion was 100% broken. So if a coordinated ended up at say X=319.999999 after clipping it was truncated to X=319.0 which is too little to raster the last pixel to the right.
+
+</p><p>
+
+Instead of 
+</p><pre class="listing tilde"><code><span class="hljs-keyword">int</span> fp = (<span class="hljs-keyword">int</span>)floatValue*<span class="hljs-number">65536</span>;</code></pre><p>
+I did
+</p><pre class="listing tilde"><code>int fp = (<span class="hljs-name">int</span>)(<span class="hljs-name">floatValue*65536</span>)<span class="hljs-comment">;</span></code></pre><p>
+and it worked.
+
+</p><p>
+
+This fix made things much smoother and also fixed the problem with the flickering lines. I thought my vertical subpixel precision correction was working <em class="asterisk">even</em> better.
+
+</p>
+<a class="target" name="2023-09-13">&nbsp;</a><a class="target" name="toc8">&nbsp;</a><h1>2023-09-13</h1>
+<p>
+
+I made subpixel correct horizontally. Before I just did something that worked but now I did it for real. I also added some dithering experiments where the pixel center was different from line to line, but only sidewise.
+
+</p><p>
+
+Here I got frustrated by the SDL2 integration I had done. When I made the window larger to better see my pixels (320&times;200 rendered on 3840&times;2160 screen!) things strated crawling at 1fps from the software resizing in SDL2. After some googling I had moved over to a hardware accelerated renderer and things were really really fast. Rock solid 60fps (due to vsync) even when scaling. Much better. It is hard to resist the pull to move on the &ldquo;backend&rdquo;. What if I add zoom support so I can really look at the pixels? Line and point debug drawer? Manipulate time somehow, maybe a GUI? I am resisting this for now but eventually I will need some of it.
+
+</p>
+<a class="target" name="2023-09-14">&nbsp;</a><a class="target" name="toc9">&nbsp;</a><h1>2023-09-14</h1>
+<p>
+
+Today I felt that I finally should fix those parts of fixed point that still were made in floats. Lets look at how I have been doing things so far.
+
+</p><p>
+
+<ul>
+<li class="asterisk">Fixed point numbers were stored in int32_t 16:16 precision (with one of the top-bits being the sign-bit).
+</li>
+<li class="asterisk">It sems that shifting a negative number to the right is not defined by the C-specification so I will most likely move away from it later.
+</li>
+<li class="asterisk">Using 32-bit for everything is overkill and will probably not survive once I try to get for performance.</li></ul>
+
+</p><p>
+
+There were two operations that I hadn't done yet in fixed.
+
+</p><pre class="listing tilde"><code>int delt<span class="hljs-built_in">a_x</span> = vertex1.x - vertex0.x<span class="hljs-comment">;</span>
+int delt<span class="hljs-built_in">a_y</span> = vertex1.y - vertex0.y<span class="hljs-comment">;</span>
+int32_t dxdy = delt<span class="hljs-built_in">a_x</span> / delt<span class="hljs-built_in">a_y</span><span class="hljs-comment">; // A/B</span>
+left_x += subpixel_correction * dxdy<span class="hljs-comment">; // A*B</span></code></pre><p>
+
+TODO: Fill in details here
+
+</p><p>
+
+Something that confused me here was that I wanted a few top-bits for guardband, but I also might not be able to use a 32-bit number. A workaround for the division case might be to do it in float during polygon setup. That way we don't have to have as many top-bits. When we get to texture mapping we are probably using wrapping texture coordinates that doesn't need as many top bits.
+
+</p><p>
+
+While working in this I noticed that subpixel correction was not multiplying with 65536! But once I did that everything broke. I then spotted that I was using the wrong vertex to do the correction; you are supposed to use the top-vertex that you are starting from but I had accidentally used the other one when converting into a general polygon rasterizer. Subpixel was finally working and things was SOOOO smooth. But maybe it is still broken, who knows?
+
+</p><p>
+
+</p></span>
+		</div>
+	</body>
+</html>
